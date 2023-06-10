@@ -4,20 +4,88 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
-<html>
-    <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script> 
-    </head>
-    <body>
+<div class="d-flex fex-row">
+    <div class="border-end">
+        <div class="d-flex flex-row">
+            <div class="d-flex flex-row me-1">
+                <i class="fa-regular fa-arrow-up"></i>
+                <i class="fa-regular fa-arrow-down"></i>
+                <select class="form-select" aria-label="Default select example">
+                    <option selected value="name">Sắp xếp theo tên</option>
+                </select>
+            </div>
+            
+            <div class="d-flex flex-row">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-x"></i>
+                <input type="email" class="form-control mb-1 ng-valid ng-dirty ng-touched" placeholder="name@example.com">
+            </div>
+        </div>
+        
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="watting-tab" data-bs-toggle="tab" data-bs-target="#watting" type="button" role="tab" aria-controls="watting" aria-selected="true"><i class="fa-solid fa-door-open"></i> Phòng chờ</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="false"><i class="fa-solid fa-door-closed"></i> Phòng đang thuê</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="clean-tab" data-bs-toggle="tab" data-bs-target="#clean" type="button" role="tab" aria-controls="clean" aria-selected="false"><i class="fa-sharp fa-solid fa-broom-wide"></i> Phòng cần dọn</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sữ</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="watting" role="tabpanel" aria-labelledby="watting-tab">
+                <div>
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Phòng đơn
+                                </button>
+                            </h5>
+                        </div>
 
-        <p>Date: <input type="text" id="datepicker"></p>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between">
+                                            <p>Phòng vip</p>
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fa-regular fa-circle-ellipsis-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
 
-
-    </body>
-</html>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rented" role="tabpanel" aria-labelledby="rented-tab">...</div>
+            <div class="tab-pane fade" id="clean" role="tabpanel" aria-labelledby="clean-tab">...</div>
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">...</div>
+        </div>
+    </div>
+    <div></div>
+</div>
 
 <script>
     $(function () {
