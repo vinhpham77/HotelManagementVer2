@@ -8,5 +8,9 @@ namespace HotelManagement.Controllers
         {
             return View();
         }
-    }
+		public IActionResult RegistrationForm()
+		{
+			return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
+		}
+	}
 }
