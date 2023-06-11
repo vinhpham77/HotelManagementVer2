@@ -14,6 +14,6 @@ namespace HotelManagementAPI.Models
 
         [JsonProperty("description")]
         public string Description { get; set; } = null!;
-        public List<Room> rooms { get; set; }
+        public List<Room>? rooms { get; set; }
     }
 }

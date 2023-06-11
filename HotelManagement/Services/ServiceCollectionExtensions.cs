@@ -13,9 +13,17 @@ public static class ServiceCollectionExtensions
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-        
+
         // Register other services...
+
+        services.AddHttpClient<RentRoomService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
 
         return services;
     }
+
 }

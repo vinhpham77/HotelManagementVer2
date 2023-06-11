@@ -1,12 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HotelManagement.Models;
+using HotelManagement.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.Controllers
 {
     public class RentController : Controller
     {
-        public IActionResult Index()
+        private readonly RentRoomService _rentRoomService;
+        private readonly ReOrderService _reOrderService;
+        private readonly ILogger<RentController> _logger;
+
+        public RentController(RentRoomService rentRoomService, ReOrderService reOrderService, ILogger<RentController> logger)
         {
-            return View();
+            _rentRoomService = rentRoomService;
+            _reOrderService = reOrderService;
+            _logger = logger;
+        }
+        public async Task<IActionResult> Index(string? keyword, string? sort, string? order, Boolean? checkedOut)
+        {
+            try
+            {
+                var rentRooms = await _rentRoomService.GetAsync(keyword, sort, order);
+                var reOrder = await _reOrderService.GetAsync(checkedOut);
+                var data = new Rent {
+                    RentRooms = rentRooms,
+                    ReOrders = reOrder
+                };
+                return View(data);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error retrieving room types");
+                return View("Error");
+            }
         }
 
         public IActionResult Edit(string id)
