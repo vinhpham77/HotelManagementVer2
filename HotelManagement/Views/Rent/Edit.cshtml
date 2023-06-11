@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+}
+@model dynamic
+
+<style>
+    input[type="number"] {
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+
+    .quantity-input {
+        width: 36px;
+        padding: 5px 0;
+        outline: none;
+    }
+
+    .out-none {
+        outline: none;
+    }
+</style>
+
+<div class="hearder border-end d-flex justify-content-between">
+    <p>Phòng VIP</p>
+    <button type="button" class="btn btn-success">Lưu</button>
+</div>
+
+<div class="body">
+    <div class="d-flex">
+        <div>
+            <p>Ngày nhận phòng</p>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" id="checkInDate" readonly value="04/05/2023">
+                <span class="input-group" id="icon_checkInDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <p>Giờ nhận phòng</p>
+            <input type="text" class="form-control" id="checkInTime" value="09:16">
+        </div>
+    </div>
+    <div class="d-flex mt-3">
+        <input type="number" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+        <span class="border-bottom">.000 ₫</span>
+    </div>
+    <div class="d-flex justify-content-between border-top border-bottoom mt-3">
+        <p>Menu sử dụng</p>
+        <i class="btn fa-regular fa-square-plus"></i>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Tên menu</th>
+                <th scope="col">Số lượng </th>
+                <th scope="col">Thành tiền</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">7 up</th>
+                <td class="d-fex align-items-center">
+                    <button class="btn">
+                        <i class="fa-regular fa-minus"></i>
+                    </button>
+                    <input type="number" class="quantity-input border" min="1">
+                    <button class="btn">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </td>
+                <td> 15.000 ₫ </td>
+                <td><i class="fa-solid fa-x"></i></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        let checkInDate = $("#checkInDate");
+        $("#icon_checkInDate").click(function () {
+            $("#checkInDate").datepicker("show");
+        });
+
+        $("#checkInDate").datepicker({
+            beforeShowDay: function (date) {
+                var currentDate = new Date();
+                currentDate.setDate(currentDate.getDate());
+                return [date < currentDate];
+            }
+        });
+
+        var error = false;
+
+        $("#checkInTime").change(function () {
+            let isTime = forMatTime($(this).val())
+            
+            if(!isTime){
+                $(this).addClass("is-invalid");
+            }
+            else
+                $(this).removeClass("is-invalid");
+        });
+
+        function forMatTime(s) {
+            let subS = s.split(":");
+            let isAllDigitsHourse = /^\d+$/.test(subS[0]);
+            let isAllDigitsMinute = /^\d+$/.test(subS[1]);
+            if (isAllDigitsHourse && parseInt(subS[0]) < 24 && isAllDigitsMinute && parseInt(subS[1]) < 60)
+                return true;
+            return false;
+        }
+    })
+</script>

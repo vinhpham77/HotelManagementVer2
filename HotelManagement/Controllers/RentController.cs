@@ -8,5 +8,11 @@ namespace HotelManagement.Controllers
         {
             return View();
         }
+
+        public IActionResult Edit(string id)
+        {
+            var data = new { Id = id};
+            return View(data);
+        }
     }
 }
