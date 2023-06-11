@@ -14,5 +14,25 @@ namespace HotelManagement.Controllers
             var data = new { Id = id};
             return View(data);
         }
+
+        public IActionResult BottomMenu()
+        {
+            return View();
+        }
+
+        public IActionResult Order()
+        {
+            return View();
+        }
+
+        public IActionResult ChangeRoom()
+        {
+            return View();
+        }
+
+        public IActionResult Check()
+        {
+            return View();
+        }
     }
 }

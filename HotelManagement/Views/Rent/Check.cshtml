@@ -1,7 +1,7 @@
-﻿@{
+﻿
+@{
     Layout = null;
 }
-@model dynamic
 
 <style>
     input[type="number"] {
@@ -96,10 +96,86 @@
             <input type="text" class="form-control" id="checkInTime" value="09:16">
         </div>
     </div>
-    <div class="d-flex mt-3">
-        <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
-        <span class="border-bottom">.000 ₫</span>
+    <div class="d-flex">
+        <div>
+            <p>Ngày trả phòng</p>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" id="checkOutDate" readonly value="04/05/2023">
+                <span class="input-group" id="icon_checkOutDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <p>Giờ trả phòng</p>
+            <input type="text" class="form-control" id="checkOutTime" value="09:16">
+        </div>
     </div>
+    <div class="d-flex">
+        <div>
+            <p>Nhận sớm 2 giờ 44 phút</p>
+        </div>
+        <div>
+            <p>Trả muộn 4 giờ 42 phút </p>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div>
+            <label>Tiền phòng</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceRoom" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>Tiền phòng 2 ngày</div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Phụ thu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputCollectionFee" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tiền trả trước</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Tiền menu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tổng tiền</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Tiền cần thanh toán</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
         <div>Menu sử dụng</div>
         <button class="btn" id="showMenuBtn">
@@ -161,61 +237,6 @@
 </div>
 <script>
     $(document).ready(function () {
-        let checkInDate = $("#checkInDate");
-        
-        $("#icon_checkInDate").click(function () {
-            checkInDate.datepicker("show");
-        });
-
-        checkInDate.datepicker({
-            beforeShowDay: function (date) {
-                var currentDate = new Date();
-                currentDate.setDate(currentDate.getDate());
-                return [date < currentDate];
-            }
-        });
-
-        var errorDate = false;
-
-        $("#checkInTime").change(function () {
-            var kt = forMatTime($(this).val())
-            
-            if (kt) {
-                
-                var chooceDate = new Date(checkInDate.val() + ' ' + $(this).val() + ':00');
-                var toDay = new Date();
-                if (chooceDate.getTime() < toDay.getTime());
-                {
-                    $(this).addClass("is-valid");
-                    errorDate = false;
-                    return;
-                }
-            }
-            $(this).removeClass("is-invalid");
-            errorDate = true;
-        });
-
-        var errorDeposit = false;
-        
-        $("#inputDeposit").change(function() {
-            if (Number($(this).val()) >= 0) {
-                $(this).removeClass("error");
-                errorDeposit = false;
-            }
-            else {
-                $(this).addClass("error");
-                errorDeposit = true;
-            }
-        })
-
-        function forMatTime(s) {
-            let subS = s.split(":");
-            let isAllDigitsHourse = /^\d+$/.test(subS[0]);
-            let isAllDigitsMinute = /^\d+$/.test(subS[1]);
-            if (isAllDigitsHourse && parseInt(subS[0]) < 24 && isAllDigitsMinute && parseInt(subS[1]) < 60)
-                return true;
-            return false;
-        }
 
         var v = 0;
 
@@ -231,17 +252,17 @@
             });
         });
 
-        $(".btn-minus").each(function(index, item) {
-            $(item).click(function() {
+        $(".btn-minus").each(function (index, item) {
+            $(item).click(function () {
                 var next = $(this).next();
-                if(next.val() > 1) {
+                if (next.val() > 1) {
                     next.val(Number(next.val()) - 1);
                 }
             })
         })
 
-        $(".btn-add").each(function(index, item) {
-            $(item).click(function() {
+        $(".btn-add").each(function (index, item) {
+            $(item).click(function () {
                 var inp = $(this).parent().children().eq(1);
                 inp.val(Number(inp.val()) + 1);
             })
@@ -249,14 +270,14 @@
 
         var viewBottomMenu = $("#bottomMenuView");
 
-        $("#showMenuBtn").click(function() {
-            viewBottomMenu.css('display','flex');
+        $("#showMenuBtn").click(function () {
+            viewBottomMenu.css('display', 'flex');
         })
-        $("#bottomMenuView").click(function() {
+        $("#bottomMenuView").click(function () {
             viewBottomMenu.hide();
         })
 
-        $("#contentMenu").click(function(event) {
+        $("#contentMenu").click(function (event) {
             event.stopPropagation();
         })
     })
