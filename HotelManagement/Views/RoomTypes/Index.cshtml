@@ -1,0 +1,223 @@
+@model IEnumerable<RoomType>
+
+@{
+    ViewBag.Title = "Loại phòng";
+    Layout = "_Layout";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div>
+            <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
+            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="selectAll" class=""/>
+                    </th>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <td>Thao tác</td>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th></th>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <td>Thao tác</td>
+                </tr>
+                </tfoot>
+                <tbody>
+                @foreach (var roomType in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="rowCheckbox " name="selectedRoomTypes" value="@roomType.Id"/>
+                        </td>
+                        <td>@roomType.Name</td>
+                        <td>@roomType.Description</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="edit('@roomType.Id')">Sửa</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRoomType('@roomType.Id')">Xóa</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- RoomType Modal -->
+<div class="modal fade" id="roomTypeModal" tabindex="-1" aria-labelledby="roomTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roomTypeModalLabel">Thêm/Sửa Loại Phòng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="roomTypeForm">
+                    <input type="hidden" id="roomTypeId" name="roomTypeId"/>
+                    <div class="form-group">
+                        <label for="roomTypeName">Tên</label>
+                        <input type="text" class="form-control" id="roomTypeName" name="roomTypeName" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomTypeDescription">Mô tả</label>
+                        <textarea class="form-control" id="roomTypeDescription" name="roomTypeDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveRoomType()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+            let table = $('#dataTable').DataTable();
+
+            // Xử lý sự kiện click cho checkbox chọn tất cả
+            $('#selectAll').on('click', function () {
+                let isChecked = $(this).is(':checked');
+                $('.rowCheckbox').prop('checked', isChecked);
+                updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+            });
+
+            // Xử lý sự kiện click cho checkbox của từng dòng
+            $('.rowCheckbox').on('click', function () {
+                let totalCheckboxes = $('.rowCheckbox').length;
+                let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+                // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+                // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+                $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+                updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+            });
+
+            async function getRoomTypeById(roomTypeId) {
+                let response = await fetch(`/RoomTypes/GetById/${roomTypeId}`);
+                let roomType = await response.json();
+                return roomType;
+            }
+
+            async function createRoomType(roomType) {
+                let response = await fetch('/RoomTypes/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roomType)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            }
+
+            async function updateRoomType(id, roomType) {
+                let response = await fetch(`/RoomTypes/Update/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roomType)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            }
+
+            async function deleteRoomType(roomTypeId) {
+                let response = await fetch(`/RoomTypes/Delete/${roomTypeId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            }
+
+            async function deleteManyRoomTypes(roomTypeIds) {
+                let response = await fetch('/RoomTypes/DeleteMany', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roomTypeIds)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            }
+            
+            function add() {
+                $('#roomTypeId').val('');
+                $('#roomTypeName').val('');
+                $('#roomTypeDescription').val('');
+                $('#roomTypeModalLabel').text('Thêm loại phòng');
+                $('#roomTypeModal').modal('show');
+            }
+            
+            async function edit(roomTypeId) {
+                let roomType = await getRoomTypeById(roomTypeId);
+                // Điền thông tin loại phòng vào các trường trong modal
+                $('#roomTypeId').val(roomType.id);
+                $('#roomTypeName').val(roomType.name);
+                $('#roomTypeDescription').val(roomType.description);
+                $('#roomTypeModalLabel').text('Sửa loại phòng'); // Cập nhật tên của modal
+                $('#roomTypeModal').modal('show');
+            }
+
+            function saveRoomType() {
+                let roomTypeId = $('#roomTypeId').val();
+                let roomTypeName = $('#roomTypeName').val();
+                let roomTypeDescription = $('#roomTypeDescription').val();
+
+                let roomType = {
+                    id: roomTypeId,
+                    name: roomTypeName,
+                    description: roomTypeDescription
+                };
+
+                if (roomTypeId) {
+                    updateRoomType(roomTypeId, roomType);
+                } else {
+                    createRoomType(roomType);
+                }
+
+                // Đóng modal
+                $('#roomTypeModal').modal('hide');
+            }
+
+            function updateDeleteButton() {
+                let checkedCheckboxes = $('.rowCheckbox:checked').length;
+                $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+            }
+
+            function deleteSelected() {
+                // Lấy danh sách roomTypeId của các loại phòng được chọn
+                let selectedRoomTypeIds = $('input[name="selectedRoomTypes"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                // Xóa các loại phòng được chọn
+                deleteManyRoomTypes(selectedRoomTypeIds);
+            }
+    </script>
+}

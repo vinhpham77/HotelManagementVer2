@@ -1,7 +1,21 @@
+using HotelManagement.Models;
+using HotelManagement.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Read appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json");
+
+// Register ApiSettings
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
+// Register services
+builder.Services.AddApiServices();
+
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 
@@ -23,8 +37,4 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "Book",
-    pattern: "{controller=Book}/{action=Index}");
-
 app.Run();
