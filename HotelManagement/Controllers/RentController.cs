@@ -16,12 +16,12 @@ namespace HotelManagement.Controllers
             _reOrderService = reOrderService;
             _logger = logger;
         }
-        public async Task<IActionResult> Index(string? keyword, string? sort, string? order, Boolean? checkedOut)
+        public async Task<IActionResult> Index(string? keyword, string? sort, string? order)
         {
             try
             {
                 var rentRooms = await _rentRoomService.GetAsync(keyword, sort, order);
-                var reOrder = await _reOrderService.GetAsync(checkedOut);
+                var reOrder = await _reOrderService.GetAsync(false);
                 var data = new Rent {
                     RentRooms = rentRooms,
                     ReOrders = reOrder
@@ -35,10 +35,10 @@ namespace HotelManagement.Controllers
             }
         }
 
-        public IActionResult Edit(string id)
+        public IActionResult Edit(string roomId)
         {
-            var data = new { Id = id};
-            return View(data);
+            
+            return View();
         }
 
         public IActionResult BottomMenu()

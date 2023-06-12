@@ -45,7 +45,10 @@
                 <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sữ</button>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+        @{
+            var today = DateTime.Now;
+        }
+        <div class="tab-content" id="myTabContent" date="@(today.ToString("yyyy-MM-dd HH:mm:ss"))">
             <div class="tab-pane fade show active" id="watting" role="tabpanel" aria-labelledby="watting-tab">
                 <div>
                     @if (Model.RentRooms != null)
@@ -55,26 +58,26 @@
                             <div class="card">
                                 <div class="card-header" id="headingOne">
                                     <h5 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWatting1" aria-expanded="true" aria-controls="collapseWatting1">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseW@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseW@(rentRoom.Id)">
                                             @rentRoom.Name
                                         </button>
                                     </h5>
                                 </div>
 
-                                <div id="collapseWatting1" class="collapse show">
+                                <div id="collapseW@(rentRoom.Id)" class="collapse show">
                                     <div class="card-body">
                                         <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
                                             @foreach (var room in rentRoom.rooms)
                                             {
-                                                if (room != null)
+                                                if (room != null && room.IsEmpty)
                                                 {
                                                     <div class="card mt-3 me-3">
                                                         <div class="card-header d-flex align-items-center justify-content-between">
-                                                            <p>room.name</p>
+                                                            <p>@room.Name</p>
                                                             <div class="dropdown">
-                                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownWatting1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownW@(rentRoom.Id)" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 </button>
-                                                                <ul class="dropdown-menu" aria-labelledby="dropdownWatting1">
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownW@(rentRoom.Id)">
                                                                     <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
                                                                     <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
                                                                     @if (room.IsCleaned)
@@ -123,67 +126,98 @@
             </div>
             <div class="tab-pane fade" id="rented" role="tabpanel" aria-labelledby="rented-tab">
                 <div>
-                    <div class="card">
-                        <div class="card-header" id="headingRentedOne">
-                            <h5 class="mb-0">
-                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRented1" aria-expanded="true" aria-controls="collapseRented1">
-                                    Phòng đơn
-                                </button>
-                            </h5>
-                        </div>
+                    @if (Model.RentRooms != null)
+                    {
+                        @foreach (var rentRoom in Model.RentRooms)
+                        {
+                            <div class="card">
+                                <div class="card-header" id="headingRentedOne">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseR@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseR@(rentRoom.Id)">
+                                            @rentRoom.Name
+                                        </button>
+                                    </h5>
+                                </div>
 
-                        <div id="collapseRented1" class="collapse show">
-                            <div class="card-body">
-                                <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
-                                    <div class="card">
-                                        <div class="card-header d-flex align-items-center justify-content-between">
-                                            <p>Phòng vip</p>
-                                            <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownRented1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownRented1">
-                                                    <li><button class="dropdown-item" idroom="762723612" id="viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div>
-                                                <i class="fa-solid fa-clock"></i>
-                                                37 Ngày 7 Giờ
-                                            </div>
-                                            <div class="d-flex">
-                                                <div class="me-3">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fa-solid fa-burger-soda me-2"></i>
-                                                        0
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <i class="fa-regular fa-credit-card me-2"></i>
-                                                        0
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fa-solid fa-bed me-2"></i>
-                                                        0
-                                                    </div>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fa-solid fa-dollar-sign me-2"></i>
-                                                        0
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <div id="collapseR@(rentRoom.Id)" class="collapse show">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                            @foreach (var room in rentRoom.rooms)
+                                            {
+                                                if (room != null && !room.IsEmpty)
+                                                {
+                                                    @functions {
+                                                        public ReOrder? GetReOrder(string roomId)
+                                                        {
+                                                            foreach(var reOrder in Model.ReOrders)
+                                                            {
+                                                                if(reOrder.Detail.RoomId == roomId)
+                                                                    return reOrder;
+                                                            }
+                                                            return null;
+                                                        }
+                                                    }
+                                                    var reOrder = GetReOrder(room.Id);
+                                                    if(reOrder != null)
+                                                    {
+                                                        var orderPrice = reOrder.Order.TotalPrice(reOrder.Order);
+                                                        var roomPiceDay = reOrder.Detail.roomPiceDay(reOrder.Detail, reOrder.Detail.CheckedInAt, today);
+                                                        var roomSurcharge = reOrder.Detail.roomSurcharge(reOrder.Detail, room, reOrder.Detail.CheckedInAt, today);
+                                                        <div class="card mt-3 me-3">
+                                                            <div class="card-header d-flex align-items-center justify-content-between">
+                                                                <p>@room.Name</p>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownR@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    </button>
+                                                                    <ul class="dropdown-menu" aria-labelledby="dropdownR@(room.Id)" roomid="@(room.Id)">
+                                                                        <li><button class="dropdown-item viewEdit" id="viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div>
+                                                                    <i class="fa-solid fa-clock"></i>
+                                                                    @reOrder.Detail.daysIn(reOrder.Detail.CheckedInAt, today) Ngày
+                                                                </div>
+                                                                <div class="d-flex">
+                                                                    <div class="me-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-burger-soda me-2"></i>
+                                                                            @orderPrice
+                                                                        </div>
+                                                                        <div class="d-flex">
+                                                                            <i class="fa-regular fa-credit-card me-2"></i>
+                                                                            @reOrder.Detail.Deposit
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-bed me-2"></i>
+                                                                            @roomPiceDay
+                                                                        </div>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-dollar-sign me-2"></i>
+                                                                            @(roomPiceDay + orderPrice + roomSurcharge - reOrder.Detail.Deposit)
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        }
+                    }
                 </div>
             </div>
             <div class="tab-pane fade" id="clear" role="tabpanel" aria-labelledby="clear-tab">
@@ -278,16 +312,18 @@
 
 <script>
     $(document).ready(function () {
-        let editBtn = $("#viewEdit");
+        let editBtn = $(".viewEdit");
         var rightLayout = $("#rightLayout");
-        editBtn.click(function () {
-            $.ajax({
-                url: '/rent/Edit',
-                type: 'GET',
-                data: { id: editBtn.attr("idroom") },
-                success: function (result) {
-                    rightLayout.html(result);
-                }
+        editBtn.each(function(index, item){
+            item.click(function () {
+                $.ajax({
+                    url: '/rent/Edit',
+                    type: 'GET',
+                    data: { roomId: $(this).parent().parent().attr("roomid") },
+                    success: function (result) {
+                        rightLayout.html(result);
+                    }
+                })
             })
         })
     })
