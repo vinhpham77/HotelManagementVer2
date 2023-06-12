@@ -1,7 +1,10 @@
 ﻿@{
     Layout = null;
 }
-@model dynamic
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@model MergeRRO
 
 <style>
     input[type="number"] {
@@ -72,9 +75,13 @@
         border-color: red !important;
     }
 </style>
-
+@{
+    var detail = JsonConvert.SerializeObject(Model.Detail);
+    var order = JsonConvert.SerializeObject(Model.Order);
+    var menu = JsonConvert.SerializeObject(Model.Menu);
+}
 <div class="hearder border-end d-flex justify-content-between">
-    <p>Phòng VIP</p>
+    <p>@Model.Room.Name</p>
     <button type="button" class="btn btn-success">Lưu</button>
 </div>
 
@@ -83,7 +90,7 @@
         <div>
             <p>Ngày nhận phòng</p>
             <div class="d-flex me-3">
-                <input type="text" class="form-control" id="checkInDate" readonly value="04/05/2023">
+                <input type="text" class="form-control" id="checkInDate" readonly value="@(Model.Detail.CheckedInAt.ToString("MM-dd-yyyy"))">
                 <span class="input-group" id="icon_checkInDate">
                     <span class="input-group-text bg-white">
                         <i class="fa fa-calendar"></i>
@@ -93,11 +100,11 @@
         </div>
         <div>
             <p>Giờ nhận phòng</p>
-            <input type="text" class="form-control" id="checkInTime" value="09:16">
+            <input type="text" class="form-control" id="checkInTime" value="@(Model.Detail.CheckedInAt.ToString("HH:mm"))">
         </div>
     </div>
     <div class="d-flex mt-3">
-        <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+        <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" value="@(Model.Detail.Deposit/1000)" min="0" />
         <span class="border-bottom">.000 ₫</span>
     </div>
     <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
@@ -115,21 +122,8 @@
                 <th scope="col">Thao tác</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <th scope="row" class="align-middle">7 up</th>
-                <td class="d-fex align-items-center">
-                    <button class="btn btn-minus">
-                        <i class="fa-regular fa-minus"></i>
-                    </button>
-                    <input type="number" class="inputQuantity quantity-input text-center border" value="1" min="1">
-                    <button class="btn btn-add">
-                        <i class="fa-regular fa-plus"></i>
-                    </button>
-                </td>
-                <td class="align-middle"> 15.000 ₫ </td>
-                <td class="text-center align-middle"><i class="fa-solid fa-x"></i></td>
-            </tr>
+        <tbody id="bodyDetailMenu">
+            
         </tbody>
     </table>
 </div>
@@ -145,119 +139,223 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
-                <div class="d-flex flex-wrap p-2">
-                    <div class="item border">
-                        <div class="header-item d-flex flex-row">
-                            <div class="item-name text-warning px-3 text-center">7 úp</div>
-                        </div>
-                    </div>
+                <div class="d-flex flex-wrap p-2" id="bodyMenuItem">
+                    
                 </div>
             </div>
-            <div class="tab-pane fade" id="nav-fastfoot" role="tabpanel" aria-labelledby="nav-fastfoot-tab">...</div>
-            <div class="tab-pane fade" id="nav-drink" role="tabpanel" aria-labelledby="nav-drink-tab">...</div>
-            <div class="tab-pane fade" id="nav-other" role="tabpanel" aria-labelledby="nav-other-tab">...</div>
+            <div class="tab-pane fade" id="nav-fastfoot" role="tabpanel" aria-labelledby="nav-fastfoot-tab">
+                <div class="d-flex flex-wrap p-2" id="bodyMenuItemFood">
+                </div>
+            </div>
+            <div class="tab-pane fade" id="nav-drink" role="tabpanel" aria-labelledby="nav-drink-tab">
+                <div class="d-flex flex-wrap p-2" id="bodyMenuItemDrink">
+                </div>
+            </div>
+            <div class="tab-pane fade" id="nav-other" role="tabpanel" aria-labelledby="nav-other-tab">
+                <div class="d-flex flex-wrap p-2" id="bodyMenuItemOther">
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        let checkInDate = $("#checkInDate");
-        
-        $("#icon_checkInDate").click(function () {
-            checkInDate.datepicker("show");
-        });
+    var detail = @Html.Raw(detail);
+    var order = @Html.Raw(order);
+    var menu = @Html.Raw(menu);
+    detail.checkedInAt = new Date(detail.checkedInAt);
+    let checkInDate = $("#checkInDate");
 
-        checkInDate.datepicker({
-            beforeShowDay: function (date) {
-                var currentDate = new Date();
-                currentDate.setDate(currentDate.getDate());
-                return [date < currentDate];
-            }
-        });
+    order.details.forEach(function (item, index) {
+        var m = getMenuItem(item.itemId);
+        addHtmlDetail(createHtmlDetail(item, m.name))
+    });
 
-        var errorDate = false;
-
-        $("#checkInTime").change(function () {
-            var kt = forMatTime($(this).val())
-            
-            if (kt) {
-                
-                var chooceDate = new Date(checkInDate.val() + ' ' + $(this).val() + ':00');
-                var toDay = new Date();
-                if (chooceDate.getTime() < toDay.getTime());
-                {
-                    $(this).addClass("is-valid");
-                    errorDate = false;
-                    return;
-                }
-            }
-            $(this).removeClass("is-invalid");
-            errorDate = true;
-        });
-
-        var errorDeposit = false;
-        
-        $("#inputDeposit").change(function() {
-            if (Number($(this).val()) >= 0) {
-                $(this).removeClass("error");
-                errorDeposit = false;
-            }
-            else {
-                $(this).addClass("error");
-                errorDeposit = true;
-            }
-        })
-
-        function forMatTime(s) {
-            let subS = s.split(":");
-            let isAllDigitsHourse = /^\d+$/.test(subS[0]);
-            let isAllDigitsMinute = /^\d+$/.test(subS[1]);
-            if (isAllDigitsHourse && parseInt(subS[0]) < 24 && isAllDigitsMinute && parseInt(subS[1]) < 60)
-                return true;
-            return false;
+    menu.forEach(function (item, index) {
+        if (!existItem(item.id)) {
+            addHtmlMenu(createHtmlMenu(item), item);
         }
+    })
 
-        var v = 0;
+    function addHtmlDetail(t) {
+        $("#bodyDetailMenu").append(t);
+    }
 
-        $(".inputQuantity").each(function (index, item) {
-            $(item).focus(function () {
-                v = $(this).val();
-            });
+    function addHtmlMenu(t, item) {
+        $("#bodyMenuItem").append(t);
+        if (item.type)
+            $("#bodyMenuItemFood").append(t);
+        else if (item.type == false)
+            $("#bodyMenuItemDrink").append(t);
+        else
+            $("#bodyMenuItemOther").append(t);
+    }
 
-            $(item).focusout(function () {
-                if ($(this).val() < 1) {
-                    $(this).val(v);
-                }
-            });
-        });
+    function createHtmlDetail(item, name) {
+        return '<tr><th scope="row" class="align-middle" >' + name + '</th><td class="d-fex align-items-center"><button class="btn btn-minus" onclick="clickMinus(\'' + item.itemId + '\')"><i class="fa-regular fa-minus"></i></button><input type="number" class="inputQuantity quantity-input text-center border" id="' + item.itemId + 'ip" onfocus="focousInput(\'' + item.itemId + '\')" onfocusout="focousOutInput(\'' + item.itemId + '\')" value="' + item.quantity + '" min="1"><button class="btn btn-add" onclick="clickAdd(\'' + item.itemId + '\')"><i class="fa-regular fa-plus"></i></button></td><td class="align-middle" id="'+ item.itemId +'to">' + item.quantity * item.price + ' ₫ </td><td class="text-center align-middle"><button class="btn" id="' + item.itemId + 'int" onclick="removeDetailItem(\'' + item.itemId + '\')"><i class="fa-solid fa-x" ></i></button></td ></tr>';
+    }
 
-        $(".btn-minus").each(function(index, item) {
-            $(item).click(function() {
-                var next = $(this).next();
-                if(next.val() > 1) {
-                    next.val(Number(next.val()) - 1);
-                }
-            })
-        })
+    function createHtmlMenu(item) {
+        return '<div class="item border btn btn_chooseMenu ' + item.id + '" onclick="chooseClick(\'' + item.id + '\')"><div class="header-item d-flex flex-row"><div class="item-name text-warning px-3 text-center">' + item.name + '</div></div></div>';
+    }
 
-        $(".btn-add").each(function(index, item) {
-            $(item).click(function() {
-                var inp = $(this).parent().children().eq(1);
-                inp.val(Number(inp.val()) + 1);
-            })
-        })
+    function existItem(id) {
+        for (let item of order.details) {
+            if (item.itemId == id)
+                return true;
+        }
+        return false;
+    }
 
-        var viewBottomMenu = $("#bottomMenuView");
+    function getMenuItem(id) {
+        for (let item of menu) {
+            if (item.id == id)
+                return item;
+        }
+        return null;
+    }
 
-        $("#showMenuBtn").click(function() {
-            viewBottomMenu.css('display','flex');
-        })
-        $("#bottomMenuView").click(function() {
-            viewBottomMenu.hide();
-        })
+    async function chooseClick(id) {
+        var t = getMenuItem(id)
+        reMoveHtmlMenu(t.type, t.id);
+        var detailItem = {
+            itemId: t.id,
+            quantity: 0,
+            price: t.exportPrice,
+            orderedAt: new Date()
+        }
+        order.details.push(detailItem);
+        addHtmlDetail(createHtmlDetail(detailItem, t.name));
+    }
 
-        $("#contentMenu").click(function(event) {
-            event.stopPropagation();
-        })
+
+    function reMoveHtmlMenu(type, id) {
+        $("#bodyMenuItem").find("." + id).remove();
+        if (type == 'true')
+            $("#bodyMenuItemFood").find("." + id).remove();
+        else if (type == 'false')
+            $("#bodyMenuItemDrink").find("." + id).remove();
+        else
+            $("#bodyMenuItemOther").find("." + id).remove();
+    }
+
+    async function removeDetailItem(id) {
+        var t = getDetailItem(id);
+        var m = getMenuItem(id)
+
+        $("#" + id + "int").parent().parent().remove();
+        order.details.splice(t, 1);
+        addHtmlMenu(createHtmlMenu(m), m);
+    }
+
+
+    $("#icon_checkInDate").click(function () {
+        checkInDate.datepicker("show");
+    });
+
+    checkInDate.datepicker({
+        beforeShowDay: function (date) {
+            var currentDate = new Date();
+            currentDate.setDate(currentDate.getDate());
+            return [date < currentDate];
+        }
+    });
+
+    var errorDate = false;
+
+    $("#checkInTime").change(function () {
+        var kt = forMatTime($(this).val())
+
+        if (kt) {
+
+            var chooceDate = new Date(checkInDate.val() + ' ' + $(this).val() + ':00');
+            var toDay = new Date();
+            if (chooceDate.getTime() < toDay.getTime());
+            {
+                $(this).addClass("is-valid");
+                errorDate = false;
+                return;
+            }
+        }
+        $(this).removeClass("is-invalid");
+        errorDate = true;
+    });
+
+    var errorDeposit = false;
+
+    $("#inputDeposit").change(function () {
+        if (Number($(this).val()) >= 0) {
+            $(this).removeClass("error");
+            errorDeposit = false;
+        }
+        else {
+            $(this).addClass("error");
+            errorDeposit = true;
+        }
+    })
+
+    function forMatTime(s) {
+        let subS = s.split(":");
+        let isAllDigitsHourse = /^\d+$/.test(subS[0]);
+        let isAllDigitsMinute = /^\d+$/.test(subS[1]);
+        if (isAllDigitsHourse && parseInt(subS[0]) < 24 && isAllDigitsMinute && parseInt(subS[1]) < 60)
+            return true;
+        return false;
+    }
+
+    var v = 0;
+
+    async function focousInput(id) {
+        v = $("#" + id + "ip").val();
+    }
+
+    async function focousOutInput(id) {
+        if ($("#" + id + "ip").val() < 1) {
+            $("#" + id + "ip").val(v);
+        }
+        else {
+            var index = getDetailItem(id);
+            order.details[index].quantity = Number($("#" + id + "ip").val());
+            $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+        }
+    }
+
+    function getDetailItem(id) {
+
+        for (var index = 0; index < order.details.length; index++) {
+            if (order.details[index].itemId == id)
+                return index;
+        }
+        return -1;
+    }
+
+    async function clickMinus(id) {
+        var el = $("#" + id + "ip");
+        if (el.val() > 1) {
+            el.val(Number(el.val()) - 1);
+            var index = getDetailItem(id);
+            order.details[index].quantity = Number(el.val());
+            $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+        }
+    }
+
+    async function clickAdd(id) {
+        var el = $("#" + id + "ip");
+        el.val(Number(el.val()) + 1);
+        var index = getDetailItem(id);
+        order.details[index].quantity = Number(el.val());
+        $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+    }
+
+    var viewBottomMenu = $("#bottomMenuView");
+
+    $("#showMenuBtn").click(function () {
+        viewBottomMenu.css('display', 'flex');
+    })
+    $("#bottomMenuView").click(function () {
+        viewBottomMenu.hide();
+    })
+
+    $("#contentMenu").click(function (event) {
+        event.stopPropagation();
     })
 </script>

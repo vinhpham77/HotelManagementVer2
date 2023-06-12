@@ -51,6 +51,13 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
 
+        services.AddHttpClient<MenuItemService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
         return services;
     }
 

@@ -15,7 +15,7 @@ namespace HotelManagement.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<ReservationDetail>?> GetAsync(string? reservationDetailId)
+        public async Task<List<Order>?> GetAsync(string? reservationDetailId)
         {
             var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
             queryBuilder["reservationDetailId"] = reservationDetailId;
@@ -28,7 +28,7 @@ namespace HotelManagement.Services
             if (response.IsSuccessStatusCode)
             {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservationDetail>>(jsonResponse);
+                return JsonConvert.DeserializeObject<List<Order>>(jsonResponse);
             }
 
             throw new HttpRequestException($"Request to {requestUrl} failed with status code: {response.StatusCode}");

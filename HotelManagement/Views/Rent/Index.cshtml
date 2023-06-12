@@ -170,7 +170,7 @@
                                                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownR@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
                                                                     </button>
                                                                     <ul class="dropdown-menu" aria-labelledby="dropdownR@(room.Id)" roomid="@(room.Id)">
-                                                                        <li><button class="dropdown-item viewEdit" id="viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
+                                                                        <li><button class="dropdown-item viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
@@ -315,7 +315,7 @@
         let editBtn = $(".viewEdit");
         var rightLayout = $("#rightLayout");
         editBtn.each(function(index, item){
-            item.click(function () {
+            $(item).click(function () {
                 $.ajax({
                     url: '/rent/Edit',
                     type: 'GET',
