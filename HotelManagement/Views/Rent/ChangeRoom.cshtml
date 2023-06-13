@@ -1,0 +1,49 @@
+﻿
+@{
+    Layout = null;
+}
+
+<div class="hearder border-end d-flex justify-content-between">
+    <p>Phòng VIP</p>
+    <button type="button" class="btn btn-success">Lưu</button>
+</div>
+
+<div class="body">
+    <div>
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWatting1" aria-expanded="true" aria-controls="collapseWatting1">
+                        Phòng đơn
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseWatting1" class="collapse show">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <p>Phòng vip</p>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownWatting1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownWatting1">
+                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
+                                        <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i>  Đổi phòng & và yêu cầu dọn phòng</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-x me-2"></i>
+                                    Chưa dọn
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,5 +12,15 @@ namespace HotelManagement.Models
 
         [JsonProperty("details")]
         public OrderDetail[]? Details { get; set; } = null;
+
+        public double TotalPrice(Order order)
+        {
+            double total = 0;
+            foreach(OrderDetail item in order.Details)
+            {
+                total += item.Price * item.Quantity;
+            }
+            return Math.Floor(total);
+        }
     }
 }

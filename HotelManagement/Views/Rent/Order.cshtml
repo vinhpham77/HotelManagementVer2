@@ -1,0 +1,103 @@
+﻿
+@{
+    Layout = null;
+}
+
+<style>
+    input[type="number"] {
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+
+    .quantity-input {
+        width: 36px;
+        padding: 5px 0;
+        outline: none;
+    }
+
+    .out-none {
+        outline: none;
+    }
+</style>
+
+<div class="hearder border-end d-flex justify-content-between">
+    <p>Phòng VIP</p>
+    <button type="button" class="btn btn-success">Lưu</button>
+</div>
+
+<div class="body">
+    <input class="form-control p-2 mb-2 border-bottom w-100 fs-6" placeholder="Tìm kiếm" />
+    <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
+        <div>Menu sử dụng</div>
+        <button class="btn" id="showMenuBtn">
+            <i class="fa-regular fa-square-plus"></i>
+        </button>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Tên menu</th>
+                <th scope="col">Số lượng </th>
+                <th scope="col">Thành tiền</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row" class="align-middle">7 up</th>
+                <td class="d-fex align-items-center">
+                    <button class="btn btn-minus">
+                        <i class="fa-regular fa-minus"></i>
+                    </button>
+                    <input type="number" class="inputQuantity quantity-input text-center border" value="1" min="1">
+                    <button class="btn btn-add">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </td>
+                <td class="align-middle"> 15.000 ₫ </td>
+                <td class="text-center align-middle"><i class="fa-solid fa-x"></i></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var v = 0;
+
+        $(".inputQuantity").each(function (index, item) {
+            $(item).focus(function () {
+                v = $(this).val();
+            });
+
+            $(item).focusout(function () {
+                if ($(this).val() < 1) {
+                    $(this).val(v);
+                }
+            });
+        });
+
+        $(".btn-minus").each(function (index, item) {
+            $(item).click(function () {
+                var next = $(this).next();
+                if (next.val() > 1) {
+                    next.val(Number(next.val()) - 1);
+                }
+            })
+        })
+
+        $(".btn-add").each(function (index, item) {
+            $(item).click(function () {
+                var inp = $(this).parent().children().eq(1);
+                inp.val(Number(inp.val()) + 1);
+            })
+        })
+    })
+</script>
+

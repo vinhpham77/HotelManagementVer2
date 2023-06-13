@@ -1,0 +1,284 @@
+﻿
+@{
+    Layout = null;
+}
+
+<style>
+    input[type="number"] {
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+
+    .quantity-input {
+        width: 36px;
+        padding: 5px 0;
+        outline: none;
+    }
+
+    .out-none {
+        outline: none;
+    }
+</style>
+
+<style>
+    .container-bottom-menu {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: flex-end;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-menu {
+        padding: 8px 16px;
+        width: 800px;
+        min-height: 400px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        max-height: 80vh;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+
+    .item {
+        margin-top: 0.75rem;
+        margin-right: 0.75rem;
+        border-radius: 3px;
+    }
+
+    .item-name {
+        line-height: 40px;
+        text-align: center;
+        width: auto;
+        font-size: 15px;
+        user-select: none;
+    }
+
+    .error {
+        border-color: red !important;
+    }
+</style>
+
+<div class="hearder border-end d-flex justify-content-between">
+    <p>Phòng VIP</p>
+    <button type="button" class="btn btn-success">Lưu</button>
+</div>
+
+<div class="body">
+    <div class="d-flex">
+        <div>
+            <p>Ngày nhận phòng</p>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" id="checkInDate" readonly value="04/05/2023">
+                <span class="input-group" id="icon_checkInDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <p>Giờ nhận phòng</p>
+            <input type="text" class="form-control" id="checkInTime" value="09:16">
+        </div>
+    </div>
+    <div class="d-flex">
+        <div>
+            <p>Ngày trả phòng</p>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" id="checkOutDate" readonly value="04/05/2023">
+                <span class="input-group" id="icon_checkOutDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <p>Giờ trả phòng</p>
+            <input type="text" class="form-control" id="checkOutTime" value="09:16">
+        </div>
+    </div>
+    <div class="d-flex">
+        <div>
+            <p>Nhận sớm 2 giờ 44 phút</p>
+        </div>
+        <div>
+            <p>Trả muộn 4 giờ 42 phút </p>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div>
+            <label>Tiền phòng</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceRoom" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>Tiền phòng 2 ngày</div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Phụ thu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputCollectionFee" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tiền trả trước</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Tiền menu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tổng tiền</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div>
+            <label>Tiền cần thanh toán</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="0" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
+        <div>Menu sử dụng</div>
+        <button class="btn" id="showMenuBtn">
+            <i class="fa-regular fa-square-plus"></i>
+        </button>
+    </div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Tên menu</th>
+                <th scope="col">Số lượng </th>
+                <th scope="col">Thành tiền</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row" class="align-middle">7 up</th>
+                <td class="d-fex align-items-center">
+                    <button class="btn btn-minus">
+                        <i class="fa-regular fa-minus"></i>
+                    </button>
+                    <input type="number" class="inputQuantity quantity-input text-center border" value="1" min="1">
+                    <button class="btn btn-add">
+                        <i class="fa-regular fa-plus"></i>
+                    </button>
+                </td>
+                <td class="align-middle"> 15.000 ₫ </td>
+                <td class="text-center align-middle"><i class="fa-solid fa-x"></i></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container-bottom-menu" id="bottomMenuView">
+    <div class="content-menu" id="contentMenu">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">Tất cả</button>
+                <button class="nav-link" id="nav-fastfoot-tab" data-bs-toggle="tab" data-bs-target="#nav-fastfoot" type="button" role="tab" aria-controls="nav-fastfoot" aria-selected="false">Đồ ăn</button>
+                <button class="nav-link" id="nav-drink-tab" data-bs-toggle="tab" data-bs-target="#nav-drink" type="button" role="tab" aria-controls="nav-drink" aria-selected="false">Đồ uống</button>
+                <button class="nav-link" id="nav-other-tab" data-bs-toggle="tab" data-bs-target="#nav-other" type="button" role="tab" aria-controls="nav-other" aria-selected="false">Loại khác</button>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+                <div class="d-flex flex-wrap p-2">
+                    <div class="item border">
+                        <div class="header-item d-flex flex-row">
+                            <div class="item-name text-warning px-3 text-center">7 úp</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="nav-fastfoot" role="tabpanel" aria-labelledby="nav-fastfoot-tab">...</div>
+            <div class="tab-pane fade" id="nav-drink" role="tabpanel" aria-labelledby="nav-drink-tab">...</div>
+            <div class="tab-pane fade" id="nav-other" role="tabpanel" aria-labelledby="nav-other-tab">...</div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var v = 0;
+
+        $(".inputQuantity").each(function (index, item) {
+            $(item).focus(function () {
+                v = $(this).val();
+            });
+
+            $(item).focusout(function () {
+                if ($(this).val() < 1) {
+                    $(this).val(v);
+                }
+            });
+        });
+
+        $(".btn-minus").each(function (index, item) {
+            $(item).click(function () {
+                var next = $(this).next();
+                if (next.val() > 1) {
+                    next.val(Number(next.val()) - 1);
+                }
+            })
+        })
+
+        $(".btn-add").each(function (index, item) {
+            $(item).click(function () {
+                var inp = $(this).parent().children().eq(1);
+                inp.val(Number(inp.val()) + 1);
+            })
+        })
+
+        var viewBottomMenu = $("#bottomMenuView");
+
+        $("#showMenuBtn").click(function () {
+            viewBottomMenu.css('display', 'flex');
+        })
+        $("#bottomMenuView").click(function () {
+            viewBottomMenu.hide();
+        })
+
+        $("#contentMenu").click(function (event) {
+            event.stopPropagation();
+        })
+    })
+</script>

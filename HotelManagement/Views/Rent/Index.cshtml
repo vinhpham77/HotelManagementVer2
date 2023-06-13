@@ -1,75 +1,263 @@
 ﻿
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
+<<<<<<< HEAD
 git p
+=======
+
+@model HotelManagement.Models.Rent
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+>>>>>>> 0dfed4b90534a1630db12b868fc82a42dbe2680b
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-<div class="d-flex fex-row">
+<div class="d-flex fex-row py-4">
     <div class="border-end">
-        <div class="d-flex flex-row">
-            <div class="d-flex flex-row me-1">
-                <i class="fa-regular fa-arrow-up"></i>
-                <i class="fa-regular fa-arrow-down"></i>
+        <div class="d-flex flex-row mb-3">
+            <div class="d-flex flex-row align-items-center me-2">
+                <i class="fa-regular fa-arrow-up me-2"></i>
+                <i class="fa-regular fa-arrow-down me-2"></i>
                 <select class="form-select" aria-label="Default select example">
                     <option selected value="name">Sắp xếp theo tên</option>
                 </select>
-            </div>         
-            <div class="d-flex flex-row">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <i class="fa-solid fa-x"></i>
+            </div>
+            
+            <div class="d-flex flex-row align-items-center">
+                <i class="fa-solid fa-magnifying-glass me-2"></i>
+                <i class="fa-solid fa-x me-2"></i>
                 <input type="email" class="form-control mb-1 ng-valid ng-dirty ng-touched" placeholder="name@example.com">
             </div>
         </div>
         
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="watting-tab" data-bs-toggle="tab" data-bs-target="#watting" type="button" role="tab" aria-controls="watting" aria-selected="true"><i class="fa-solid fa-door-open"></i> Phòng chờ</button>
+                <button class="nav-link active" id="watting-tab" data-bs-toggle="tab" data-bs-target="#watting" type="button" role="tab" aria-controls="watting" aria-selected="true"><i class="fa-solid fa-door-open me-2"></i> Phòng chờ</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="false"><i class="fa-solid fa-door-closed"></i> Phòng đang thuê</button>
+                <button class="nav-link" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="false"><i class="fa-solid fa-door-closed me-2"></i> Phòng đang thuê</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="clean-tab" data-bs-toggle="tab" data-bs-target="#clean" type="button" role="tab" aria-controls="clean" aria-selected="false"><i class="fa-sharp fa-solid fa-broom-wide"></i> Phòng cần dọn</button>
+                <button class="nav-link" id="clear-tab" data-bs-toggle="tab" data-bs-target="#clear" type="button" role="tab" aria-controls="clear" aria-selected="false"><i class="fa-sharp fa-solid fa-broom-wide me-2"></i> Phòng cần dọn</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sữ</button>
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sữ</button>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+        @{
+            var today = DateTime.Now;
+        }
+        <div class="tab-content" id="myTabContent" date="@(today.ToString("yyyy-MM-dd HH:mm:ss"))">
             <div class="tab-pane fade show active" id="watting" role="tabpanel" aria-labelledby="watting-tab">
                 <div>
+                    @if (Model.RentRooms != null)
+                    {
+                        @foreach (var rentRoom in Model.RentRooms)
+                        {
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseW@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseW@(rentRoom.Id)">
+                                            @rentRoom.Name
+                                        </button>
+                                    </h5>
+                                </div>
+
+                                <div id="collapseW@(rentRoom.Id)" class="collapse show">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                            @foreach (var room in rentRoom.rooms)
+                                            {
+                                                if (room != null && room.IsEmpty)
+                                                {
+                                                    <div class="card mt-3 me-3">
+                                                        <div class="card-header d-flex align-items-center justify-content-between">
+                                                            <p>@room.Name</p>
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownW@(rentRoom.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownW@(rentRoom.Id)">
+                                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
+                                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
+                                                                    @if (room.IsCleaned)
+                                                                    {
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-regular fa-check"></i> Phòng đã được dọn dẹp</button></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li><button class="dropdown-item" type="button" disabled><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fa-solid fa-person-walking me-2"></i>
+                                                                Chưa sử dụng
+                                                            </div>
+                                                            @if (room.IsCleaned)
+                                                            {
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fa-solid fa-check me-2"></i>
+                                                                    Đã dọn phòng
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fa-solid fa-x me-2"></i>
+                                                                    Chưa dọn phòng
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    
+                    
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rented" role="tabpanel" aria-labelledby="rented-tab">
+                <div>
+                    @if (Model.RentRooms != null)
+                    {
+                        @foreach (var rentRoom in Model.RentRooms)
+                        {
+                            <div class="card">
+                                <div class="card-header" id="headingRentedOne">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseR@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseR@(rentRoom.Id)">
+                                            @rentRoom.Name
+                                        </button>
+                                    </h5>
+                                </div>
+
+                                <div id="collapseR@(rentRoom.Id)" class="collapse show">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                            @foreach (var room in rentRoom.rooms)
+                                            {
+                                                if (room != null && !room.IsEmpty)
+                                                {
+                                                    @functions {
+                                                        public ReOrder? GetReOrder(string roomId)
+                                                        {
+                                                            foreach(var reOrder in Model.ReOrders)
+                                                            {
+                                                                if(reOrder.Detail.RoomId == roomId)
+                                                                    return reOrder;
+                                                            }
+                                                            return null;
+                                                        }
+                                                    }
+                                                    var reOrder = GetReOrder(room.Id);
+                                                    if(reOrder != null)
+                                                    {
+                                                        var orderPrice = reOrder.Order.TotalPrice(reOrder.Order);
+                                                        var roomPiceDay = reOrder.Detail.roomPiceDay(reOrder.Detail, reOrder.Detail.CheckedInAt, today);
+                                                        var roomSurcharge = reOrder.Detail.roomSurcharge(reOrder.Detail, room, reOrder.Detail.CheckedInAt, today);
+                                                        <div class="card mt-3 me-3">
+                                                            <div class="card-header d-flex align-items-center justify-content-between">
+                                                                <p>@room.Name</p>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownR@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    </button>
+                                                                    <ul class="dropdown-menu" aria-labelledby="dropdownR@(room.Id)" roomid="@(room.Id)">
+                                                                        <li><button class="dropdown-item viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div>
+                                                                    <i class="fa-solid fa-clock"></i>
+                                                                    @reOrder.Detail.daysIn(reOrder.Detail.CheckedInAt, today) Ngày
+                                                                </div>
+                                                                <div class="d-flex">
+                                                                    <div class="me-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-burger-soda me-2"></i>
+                                                                            @orderPrice
+                                                                        </div>
+                                                                        <div class="d-flex">
+                                                                            <i class="fa-regular fa-credit-card me-2"></i>
+                                                                            @reOrder.Detail.Deposit
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-bed me-2"></i>
+                                                                            @roomPiceDay
+                                                                        </div>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <i class="fa-solid fa-dollar-sign me-2"></i>
+                                                                            @(roomPiceDay + orderPrice + roomSurcharge - reOrder.Detail.Deposit)
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="clear" role="tabpanel" aria-labelledby="clear-tab">
+                <div>
                     <div class="card">
-                        <div class="card-header" id="headingOne">
+                        <div class="card-header" id="headingClearOne">
                             <h5 class="mb-0">
-                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClear1" aria-expanded="true" aria-controls="collapseClear1">
                                     Phòng đơn
                                 </button>
                             </h5>
                         </div>
 
-                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div id="collapseClear1" class="collapse show">
                             <div class="card-body">
                                 <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
                                     <div class="card">
-                                        <div class="card-header d-flex justify-content-between">
+                                        <div class="card-header d-flex align-items-center justify-content-between">
                                             <p>Phòng vip</p>
                                             <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa-regular fa-circle-ellipsis-vertical"></i>
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownClear1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
-                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownClear1">
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-check"></i> Đã dọn</button></li>
                                                 </ul>
                                             </div>
                                         </div>
                                         <div class="card-body">
-
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa-regular fa-hourglass me-2"></i>
+                                                Chưa sử dụng
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa-solid fa-clock me-2"></i>
+                                                3 ngày trước
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -78,16 +266,69 @@ git p
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="rented" role="tabpanel" aria-labelledby="rented-tab">...</div>
-            <div class="tab-pane fade" id="clean" role="tabpanel" aria-labelledby="clean-tab">...</div>
-            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">...</div>
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div>
+                    <div class="card">
+                        <div class="card-header" id="headingHistoryOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="true" aria-controls="collapseHistory">
+                                    Lịch sử
+                                </button>
+                            </h5>
+                        </div>
+
+                        <div id="collapseHistory" class="collapse show">
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                    <div class="card">
+                                        <div class="card-header d-flex align-items-center justify-content-between">
+                                            <p>Phòng vip</p>
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownHistory1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownHistory1">
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
+                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa-solid fa-user-check me-2"></i>
+                                                3 ngày trước
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa-solid fa-dollar-sign me-2"></i>
+                                                80.000
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div></div>
+    <div id="rightLayout" class="p-3"></div>
 </div>
 
 <script>
-    $(function () {
-        $("#datepicker").datepicker();
-    });
+    $(document).ready(function () {
+        let editBtn = $(".viewEdit");
+        var rightLayout = $("#rightLayout");
+        editBtn.each(function(index, item){
+            $(item).click(function () {
+                $.ajax({
+                    url: '/rent/Edit',
+                    type: 'GET',
+                    data: { roomId: $(this).parent().parent().attr("roomid") },
+                    success: function (result) {
+                        rightLayout.html(result);
+                    }
+                })
+            })
+        })
+    })
 </script>
