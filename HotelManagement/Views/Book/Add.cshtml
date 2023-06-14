@@ -19,73 +19,62 @@
 </head>
 
 <style>
-    *{
+    * {
         margin: 0;
         padding: 0;
-    box-sizing: border-box;
-}
+        box-sizing: border-box;
+    }
 
-.    un    list-Styl
-    e li{
-        cur    so    r: pointer;
+    .unlist-Style li {
+        cursor: pointer;
+        /* background-color: aqua; */
+        display: inline-block;
+    }
 
-    /    *     bac    kground    -c    olor:     aqu    a; 
-           */
-        dis    p    lay:
-        i    n
-    line    -bl    ock;
-}
-    .un
-    li    st-    Styl    e     li
-    :hover{        
-    cursor: p
-   oint    er;
-}
+        .unlist-Style li:hover {
+            cursor: pointer;
+        }
 
-.acti    ve-    t    ab{
+    .active-tab {
+        border-bottom: 3px solid rgb(0, 94, 255);
+    }
 
-        b    ord    er-bo    t
-           tom    : 3px 
-    sol    id     rgb(    
-       0,     94, 255);
-}
+    .tab-list li {
+        text-align: center;
+        height: 60px;
+        line-height: 60px;
+        padding: 0 20px;
+    }
 
+    .control-space li {
+        padding: 0px 5px;
+    }
 
-.tab-list li{
-    text
-    -align: center;
-    height: 60px;
-    line-height: 60px;
-    padding: 0 20px;
-}
+    .square {
+        display: inline-block;
+        height: 10px;
+        width: 10px;
+    }
 
-.control-space li{
-    padding: 0px 5px;
-}
+    .note-square li {
+        padding: 4px 10px;
+    }
 
-.square{
-    display: inline-block;
-    height: 10px;
-    width: 10px;
-}
+    .hide {
+        display: none;
+    }
 
-.note-square li{
-    padding: 4px 10px;
-}
+    .show {
+        display: block;
+    }
 
-.hide{
-    display: none;
-}
-.show{
-    display: block;
-}
+    #btnThemMoi {
+        background-color: transparent;
+    }
 
-#btnThemMoi{
-    background-color: transparent;
-}
-#btnThemMoi:hover{
-    background-color: rgb(234, 234, 234);
-}
+        #btnThemMoi:hover {
+            background-color: rgb(234, 234, 234);
+        }
 </style>
 
 <body>
