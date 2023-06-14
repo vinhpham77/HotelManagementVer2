@@ -8,14 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/styles/index.css">
+    <link rel="stylesheet" href="~/styles/order.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
     <link rel="icon" href="./images/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/simple-jscalendar@1.4.4/source/jsCalendar.min.js" integrity="sha384-0LaRLH/U5g8eCAwewLGQRyC/O+g0kXh8P+5pWpzijxwYczD3nKETIqUyhuA8B/UB" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-jscalendar@1.4.4/source/jsCalendar.min.css" integrity="sha384-44GnAqZy9yUojzFPjdcUpP822DGm1ebORKY8pe6TkHuqJ038FANyfBYBpRvw8O9w" crossorigin="anonymous">
     <title>Hotel</title>
 </head>
-
 
 <style>
     * {
@@ -24,18 +25,39 @@
         box-sizing: border-box;
     }
 
-    /* icon */
-    #icon_thueTrongNgay::before {
-        content: "\f079";
-        color: black;
-    }
-
-    p {
-        margin: 0;
-    }
-
-    .menu-his:hover {
+    .unlist-Style li {
         cursor: pointer;
+        /* background-color: aqua; */
+        display: inline-block;
+    }
+
+        .unlist-Style li:hover {
+            cursor: pointer;
+        }
+
+    .active-tab {
+        border-bottom: 3px solid rgb(0, 94, 255);
+    }
+
+    .tab-list li {
+        text-align: center;
+        height: 60px;
+        line-height: 60px;
+        padding: 0 20px;
+    }
+
+    .control-space li {
+        padding: 0px 5px;
+    }
+
+    .square {
+        display: inline-block;
+        height: 10px;
+        width: 10px;
+    }
+
+    .note-square li {
+        padding: 4px 10px;
     }
 
     .hide {
@@ -44,30 +66,15 @@
 
     .show {
         display: block;
-        ;
     }
 
-    .unlist-Style {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+    #btnThemMoi {
+        background-color: transparent;
     }
 
-        .unlist-Style li {
-            padding-left: 4px;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            cursor: pointer;
+        #btnThemMoi:hover {
+            background-color: rgb(234, 234, 234);
         }
-
-            .unlist-Style li:hover {
-                background-color: antiquewhite;
-                padding-left: 8px;
-                padding-bottom: 6px;
-                padding-top: 6px;
-                cursor: pointer;
-            }
-
 </style>
 
 <body>
@@ -82,12 +89,12 @@
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item">
-                    <a href="./index.html" class="nav-link active" aria-current="page">
+                    <a href="./index.html" class="nav-link link-dark" aria-current="page">
                         <i class="fas fa-home" style="width: 30px;"></i> Trang Chủ
                     </a>
                 </li>
                 <li>
-                    <a href="./order.html" class="nav-link link-dark">
+                    <a href="./order.html" class="nav-link active">
                         <i style="width: 30px;" class="far fa-calendar-alt"></i>
                         Đặt Phòng
                     </a>
@@ -100,183 +107,310 @@
         </div>
     </nav>
 
-    <div class="ms-5">
-        <div class="grid gap-0 column-gap-3 p-2">
-            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
+    <div class="row row-cols-2">
+        <div class="col col-8">
+            <!-- tabs -->
+            <div style="padding-left: 10px;">
+                <button id="btnThemMoi" style="padding: 15px 14px; margin-left: 20px; border: none; color: rgb(0, 124, 0);">
+                    <i class="fas fa-plus"></i> Thêm mới
+                </button>
+                <ul class="unlist-Style tab-list">
+                    <li class="active-tab" id="lichTheoPhong">
+                        <i class="fas fa-bed" style="width: 30px;"></i> Lịch theo phòng
+                    </li>
+                    <li id="lichTheoLoaiPhong">
+                        <i class="fas fa-calendar-alt" style="width: 30px;"></i> Lịch theo loaị phòng
+                    </li>
+                    <li id="xemTheoNgay">
+                        <i class="fas fa-calendar-check" style="width: 30px;"></i> Xem theo ngày
+                    </li>
+                    <li id="timKiem">
+                        <i class="fas fa-search" style="width: 30px;"></i> Tìm kiếm
+                    </li>
+                </ul>
+            </div>
+
+            <div id="box1" class="show">
+                <ul class="unlist-Style control-space">
+                    <li>
+                        <label class="fs-6">Từ ngày</label>
+                        <input class="form-control" type="date" name="" id="">
+                    </li>
+                    <li>
+                        <label class="fs-6">Đến ngày</label>
+                        <input class="form-control" type="date" name="" id="">
+                    </li>
+                    <li>
+                        <select class="form-select" name="loaiPhong" id="loaiPhong">
+                            <option value="">Loại phòng</option>
+                            <option value="don">Phòng đơn</option>
+                            <option value="doi">Phòng đôi</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label class="fs-6">Tên phòng</label>
+                        <input class="form-control" type="text" name="" id="">
+                    </li>
+                </ul>
+
+                <ul class="unlist-Style note-square">
+                    <li>
+                        <span class="square" style="background-color: rgb(0, 162, 255);"></span> Chưa nhận phòng
+                    </li>
+                    <li>
+                        <span class="square" style="background-color: rgb(0, 142, 35);"></span> Đã nhận phòng
+                    </li>
+                    <li>
+                        <span class="square" style="background-color: rgb(191, 255, 0);"></span> Đã trả phòng
+                    </li>
+                </ul>
+
                 <div>
-                    <div class="w-100 row col-2">
-                        <div class="col-4">
-                            <div class="w-100" style="height: 67px;">
-                                <img class="h-100" src="./images/iconThuePhong.jpg" style="object-fit: cover;" />
-                            </div>
-                        </div>
-                        <div class="col p-0" style="text-align: right;">
-                            <p>Thuê trong ngày</p>
-                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
-                        </div>
-                    </div>
-                    <hr style="width: 100%" />
-                    <div>
-                        <p><i _ngcontent-c5="" class="fas fa-sync text-muted"></i> Cập nhật</p>
-                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Phòng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
-                <div>
-                    <div class="w-100 row col-2">
-                        <div class="col-4">
-                            <div class="w-100" style="height: 67px;">
-                                <img class="h-100" src="./images/iconPhongCho.jpg" style="object-fit: cover;" />
-                            </div>
-                        </div>
-                        <div class="col p-0" style="text-align: right;">
-                            <p>Thuê trong ngày</p>
-                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
-                        </div>
-                    </div>
-                    <hr style="width: 100%" />
-                    <div>
-                        <p><i _ngcontent-c5="" class="fas fa-key text-muted"></i> Thuê phòng</p>
-                    </div>
-                </div>
+            <div id="box2" class="hide">
+                <ul class="unlist-Style">
+                    <li><i class="fas fa-arrow-left"></i></li>
+                    <li class="ms-3"><i class="fas fa-arrow-right"></i></li>
+                    <li class="ms-4">Tháng 6 - 2023</li>
+                </ul>
             </div>
 
-            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
-                <div>
-                    <div class="w-100 row col-2">
-                        <div class="col-4">
-                            <div class="w-100" style="height: 67px;">
-                                <img class="h-100" src="./images/iconPhongDangThue.jpg" style="object-fit: cover;" />
-                            </div>
-                        </div>
-                        <div class="col p-0" style="text-align: right;">
-                            <p>Thuê trong ngày</p>
-                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
-                        </div>
-                    </div>
-                    <hr style="width: 100%" />
-                    <div>
-                        <p><i _ngcontent-c5="" class="fas fa-reply text-muted"></i> Thêm menu & trả phòng</p>
-                    </div>
-                </div>
+            <div id="box3" class="hide">
+                <ul class="unlist-Style">
+                    <li><i class="fas fa-arrow-left"></i></li>
+                    <li class="ms-3"><i class="fas fa-arrow-right"></i></li>
+                    <li class="ms-4">Tháng 6 - 2023</li>
+                    <li class="ms-2">
+                        <input style="width: 22px;" type="date" name="" id="">
+                    </li>
+                </ul>
             </div>
 
-            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
-                <div>
-                    <div class="w-100 row col-2">
-                        <div class="col-4">
-                            <div class="w-100" style="height: 67px;">
-                                <img class="h-100" src="./images/iconPhongCanDon.jpg" style="object-fit: cover;" />
-                            </div>
-                        </div>
-                        <div class="col p-0" style="text-align: right;">
-                            <p>Thuê trong ngày</p>
-                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
-                        </div>
-                    </div>
-                    <hr style="width: 100%" />
-                    <div>
-                        <p><i _ngcontent-c5="" class="fas fa-broom text-muted"></i> Dọn phòng</p>
-                    </div>
-                </div>
+            <div id="box4" class="hide">
+                <ul class="unlist-Style control-space">
+                    <li>
+                        <label class="fs-6">Từ ngày</label>
+                        <input class="form-control" type="date" name="" id="">
+                    </li>
+                    <li>
+                        <label class="fs-6">Đến ngày</label>
+                        <input class="form-control" type="date" name="" id="">
+                    </li>
+                    <li>
+                        <i class="fas fa-search fs-4" style="width: 30px;"></i>
+                    </li>
+                    <li class="d-block mt-3">
+                        <label class="fs-6">Tìm kiếm</label>
+                        <input class="form-control" type="text" name="" id="">
+                    </li>
+                </ul>
+
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Khách Hàng</th>
+                            <th scope="col">Ngày Nhận Phòng</th>
+                            <th scope="col">Ngày Trả Phòng</th>
+                            <th scope="col">Số điện thoại</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Ghi chú</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>item</td>
+                            <td>item</td>
+                            <td>item</td>
+                            <td>item</td>
+                            <td>item</td>
+                            <td>item</td>
+                            <td>item</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <div class="row row-cols-2">
-            <div class="col col-8">
-                <canvas id="myChart" width="100%" height="70"></canvas>
-                <script>
-                    const ctx = document.getElementById('myChart').getContext('2d');
-                    const myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: ['Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6'],
-                            datasets: [{
-                                label: 'Lượt Thuê Phòng',
-                                data: [12, 19, 3, 5, 2, 3],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            },
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    position: 'left',
-                                    text: 'LƯỢT  THUÊ  PHÒNG',
-                                    font: {
-                                        family: "Arial",
-                                        size: 18
-                                    }
-                                }
-                            }
-                        }
-                    });
-                </script>
-            </div>
-            <div class="col col-4">
-                <div class="border p-2" style="height:510px; position: relative; top: 30px;">
-                    <div class="his-header">
-                        <div class="row row-cols-2">
-                            <div class="col">
-                                <p class="p-0 m-0" style="color:green; position: relative; top: 4px; left: 5px;">Nhật Ký Hệ Thống</p>
-                            </div>
-                            <div class="col d-flex justify-content-end">
-                                <i class="fas fa-ellipsis-v menu-his" style="font-size: 20px; position: relative; top: 6px; right: 15px;"></i>
-                                <div id="menu-box-his" class="hide border" style=" position: absolute; top:40px; z-index: 999; background-color: rgb(255, 255, 255); width: 300px; height: 450px;">
-                                    <ul class="unlist-Style">
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                        <li>item 1</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+        <div id="formAddNew" class="col col-4 hide">
+            <form>
+                <div class="mb-3">
+                    <label for="hoTen" class="form-label">Họ Tên Khách Hàng</label>
+                    <input type="text" class="form-control" id="hoTen">
+                </div>
+                <div class="mb-3">
+                    <label for="hoTen" class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" id="hoTen">
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="fs-6">Từ ngày</label>
+                        <input class="form-control" type="date" name="" id="">
                     </div>
-                    <hr class="pt-0" />
-                    <div class="his-body ms-1">
-                        <!-- noi dung nhat ky -->
-                        <span></span>
+                    <div class="col">
+                        <label class="fs-6">Đến ngày</label>
+                        <input class="form-control" type="date" name="" id="">
                     </div>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label class="fs-6">Tiền Trả Trước</label>
+                    <input class="form-control" type="text" name="" id="">
+                </div>
+                <div class="mb-3">
+                    <label class="fs-6">Giá thoả thuận</label>
+                    <input class="form-control" type="text" name="" id="">
+                </div>
+                <div class="mb-3">
+                    <label class="fs-6">Ghi chú</label>
+                    <input class="form-control" type="text" name="" id="">
+                </div>
+                <div>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Phòng Đặt</th>
+                                <td>
+                                    <button id="btnThemMoi" style="padding: 4px 14px; border:none; color: rgb(0, 124, 0);">
+                                        <i class="fas fa-plus"></i> Thêm mới
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" colspan="2">Chưa chỉ định phòng</td>
+                            </tr>
+                            <tr>
+                                <td>Phòng đơn</td>
+                                <td class="text-center">0</td>
+                            </tr>
+                            <tr>
+                                <td>Phòng đôi</td>
+                                <td class="text-center">0</td>
+                            </tr>
+                            <tr>
+                                <td>Tổng số phòng</td>
+                                <td class="text-center">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="w-100 btn btn-success">Lưu</button>
+            </form>
         </div>
     </div>
 
+
+    <script>
+        const btnLichTheoPhong = document.getElementById("lichTheoPhong");
+        const btnLichTheoLoaiPhong = document.getElementById("lichTheoLoaiPhong")
+        const btnXemTheoNgay = document.getElementById("xemTheoNgay")
+        const btnTimKiem = document.getElementById("timKiem")
+
+        const box1 = document.getElementById("box1");
+        const box2 = document.getElementById("box2");
+        const box3 = document.getElementById("box3");
+        const box4 = document.getElementById("box4");
+
+        const btnThemMoi = document.getElementById("btnThemMoi")
+        const formAddNew = document.getElementById("formAddNew")
+
+        btnThemMoi.addEventListener("click", () => {
+            if (formAddNew.classList.contains("hide")) {
+                formAddNew.classList.remove("hide");
+                formAddNew.classList.add("show");
+            }
+            else {
+                formAddNew.classList.add("hide");
+                formAddNew.classList.remove("show");
+            }
+        })
+
+        btnLichTheoPhong.addEventListener("click", () => {
+            if (box1.classList.contains("hide") && !btnLichTheoPhong.classList.contains("active-tab")) {
+                box1.classList.add("show");
+                box2.classList.add("hide");
+                box3.classList.add("hide");
+                box4.classList.add("hide");
+
+                box1.classList.remove("hide");
+                box2.classList.remove("show");
+                box3.classList.remove("show");
+                box4.classList.remove("show");
+
+                btnLichTheoPhong.classList.add("active-tab")
+                btnLichTheoLoaiPhong.classList.remove("active-tab")
+                btnTimKiem.classList.remove("active-tab");
+                btnXemTheoNgay.classList.remove("active-tab");
+            }
+        });
+
+        btnLichTheoLoaiPhong.addEventListener("click", () => {
+            if (box2.classList.contains("hide") && !btnLichTheoLoaiPhong.classList.contains("active-tab")) {
+                box2.classList.add("show");
+                box1.classList.add("hide");
+                box3.classList.add("hide");
+                box4.classList.add("hide");
+
+                box2.classList.remove("hide");
+                box1.classList.remove("show");
+                box3.classList.remove("show");
+                box4.classList.remove("show");
+
+                btnLichTheoLoaiPhong.classList.add("active-tab");
+                btnLichTheoPhong.classList.remove("active-tab")
+                btnTimKiem.classList.remove("active-tab");
+                btnXemTheoNgay.classList.remove("active-tab");
+            }
+        });
+
+        btnXemTheoNgay.addEventListener("click", () => {
+            if (box3.classList.contains("hide") && !btnXemTheoNgay.classList.contains("active-tab")) {
+                box3.classList.add("show");
+                box1.classList.add("hide");
+                box2.classList.add("hide");
+                box4.classList.add("hide");
+
+                box3.classList.remove("hide");
+                box1.classList.remove("show");
+                box2.classList.remove("show");
+                box4.classList.remove("show");
+
+                btnXemTheoNgay.classList.add("active-tab");
+                btnLichTheoPhong.classList.remove("active-tab")
+                btnLichTheoLoaiPhong.classList.remove("active-tab")
+                btnTimKiem.classList.remove("active-tab");
+            }
+        });
+
+        btnTimKiem.addEventListener("click", () => {
+            if (box4.classList.contains("hide") && !btnTimKiem.classList.contains("active-tab")) {
+                box4.classList.add("show");
+                box1.classList.add("hide");
+                box2.classList.add("hide");
+                box3.classList.add("hide");
+
+                box4.classList.remove("hide");
+                box1.classList.remove("show");
+                box2.classList.remove("show");
+                box3.classList.remove("show");
+
+                btnTimKiem.classList.add("active-tab");
+                btnLichTheoPhong.classList.remove("active-tab")
+                btnLichTheoLoaiPhong.classList.remove("active-tab")
+                btnXemTheoNgay.classList.remove("active-tab");
+            }
+        });
+    </script>
+
 </body>
-
-<script>
-    document.querySelector(".menu-his").addEventListener("click", () => {
-        const menu = document.getElementById("menu-box-his");
-        if (menu.classList.contains("hide")) {
-            menu.classList.remove("hide");
-            menu.classList.add("show");
-        }
-        else {
-            menu.classList.add("hide");
-            menu.classList.remove("show");
-        }
-
-    })
-</script>
-
-
 </html>
