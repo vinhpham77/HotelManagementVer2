@@ -1,292 +1,282 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="../Views/Book/Book.css" />
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/styles/index.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <link rel="icon" href="./images/favicon.ico">
+    <title>Hotel</title>
 </head>
-<div class="d-flex flex-row">
-	<div class="border-end w-75">
-		<button type="button" class="btn btn-outline-success" id="showAddButton"><i class="fa-solid fa-note-medical"></i>Thêm mới</button>
-		<div>
-			<ul class="nav nav-tabs" id="myTab" role="tablist">
-				<li class="nav-item" role="presentation">
-					<button class="nav-link active" id="planRoom-tab" data-bs-toggle="tab" data-bs-target="#planRoom" type="button" role="tab" aria-controls="home" aria-selected="true">Lịch theo phòng</button>
-				</li>
-				<li class="nav-item" role="presentation">
-					<button class="nav-link" id="viewDate-tab" data-bs-toggle="tab" data-bs-target="#viewDate" type="button" role="tab" aria-controls="contact" aria-selected="false">Xem theo ngày</button>
-				</li>
-				<li class="nav-item" role="presentation">
-					<button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="contact" aria-selected="false">Tìm kiếm</button>
-				</li>
-			</ul>
-			<div class="tab-content" id="myTabContent">
-				<div class="tab-pane fade show active" id="planRoom" role="tabpanel" aria-labelledby="planRoom-tab">
-					<div class="d-flex flex-row">
-						<div class="row form-group">
-							<label for="date"></label>
-							<div class="col-sm-12">
-								<div class="d-flex">
-									<input type="text" class="form-control" id="datepicker" readonly>
-									<span class="input-group" id="icon_datepicker">
-										<span class="input-group-text bg-white">
-											<i class="fa fa-calendar"></i>
-										</span>
-									</span>
 
-								</div>
-							</div>
-						</div>
-						<div class="row form-group">
-							<label for="date"></label>
-							<div class="col-sm-12">
-								<div class="d-flex">
-									<input type="text" class="form-control" id="datepicker1" readonly>
-									<span class="input-group" id="icon_datepicker1">
-										<span class="input-group-text bg-white">
-											<i class="fa fa-calendar"></i>
-										</span>
-									</span>
 
-								</div>
-							</div>
-						</div>
-						<div class="row form-group">
-							<div class="col-sm-12">
-								<select class="form-select form-select-sm" aria-label=".form-select-sm example">
-									<option selected></option>
-									<option value="1">Phòng đơn</option>
-									<option value="2">Phòng đôi</option>
-								</select>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-							</div>
+    /* icon */
+    #icon_thueTrongNgay::before {
+        content: "\f079";
+        color: black;
+    }
 
-						</div>
-						<div class="row form-group">
-							<div class="col-sm-12"><input type="text" class="form-control" id="exampleInput" placeholder="Tìm kiếm"> </div>
-						</div>
-					</div>
+    p {
+        margin: 0;
+    }
 
-					<div class="d-flex">
-						<div>1</div> <div>Chưa nhận phòng</div>
-						<div>2</div> <div>Chưa trả phòng</div>
-					</div>
+    .menu-his:hover {
+        cursor: pointer;
+    }
 
-					<div>
-						<table class="table table-bordered">
-							<tr>
-								<td>Phòng</td>
-								<td>10/06</td>
-								<td>11/06</td>
-								<td>12/06</td>
-								<td>13/06</td>
-								<td>14/06</td>
-								<td>15/06</td>
+    .hide {
+        display: none;
+    }
 
-							</tr>
+    .show {
+        display: block;
+        ;
+    }
 
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
+    .unlist-Style {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
 
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>
-						</table>
-					</div>
+        .unlist-Style li {
+            padding-left: 4px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            cursor: pointer;
+        }
 
-				</div>
-				<div class="tab-pane fade" id="viewDate" role="tabpanel" aria-labelledby="viewDate-tab">
-					<div class="d-flex">
-						<div>
-							<i>left</i>
-							<i>right</i>
-						</div>
+            .unlist-Style li:hover {
+                background-color: antiquewhite;
+                padding-left: 8px;
+                padding-bottom: 6px;
+                padding-top: 6px;
+                cursor: pointer;
+            }
 
-						<div class="row form-group">
-							<label for="date"></label>
-							<div class="col-sm-12">
-								<div class="d-flex">
-									<input type="text" class="form-control" id="datepicker1" readonly>
-									<span class="input-group" id="icon_datepicker1">
-										<span class="input-group-text bg-white">
-											<i class="fa fa-calendar"></i>
-										</span>
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
+</style>
 
-					<div class="card" style="width: 18rem;">
-						<div class="card-head">
-							<span>1</span><i>:</i>
-						</div>
-						<div class="card-body">
-							<div>
-								<i class="fa-solid fa-user-tie"></i>
-								<span>Nguyễn Thành Quốc</span>
-							</div>
-							<div>
-								<i class="fa-solid fa-user-tie"></i>
-								<span>Chưa nhận phòng</span>
-							</div>
-							<div>
-								<i class="fa-solid fa-user-tie"></i>
-								<span>10/6/2023-11/6/2023</span>
-							</div>
+<body>
+    <nav class="d-block" style="float: left;">
+        <div class="d-flex flex-column flex-shrink-0 p-3 bg-light shadow" style="width: 280px; height: 100vh;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                <div style="width: 50px; height: 50px;">
+                    <img src="./images/logo.png" style="object-fit: cover;" class="w-100" />
+                </div>
+                <span class="fs-4">S-Hotel</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="./index.html" class="nav-link active" aria-current="page">
+                        <i class="fas fa-home" style="width: 30px;"></i> Trang Chủ
+                    </a>
+                </li>
+                <li>
+                    <a href="./order.html" class="nav-link link-dark">
+                        <i style="width: 30px;" class="far fa-calendar-alt"></i>
+                        Đặt Phòng
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <div class="">
+                <p> Copyright © by Text</p>
+            </div>
+        </div>
+    </nav>
 
-							<div class="d-flex">
-								<div>
-									<i class="fa-solid fa-user-tie"></i>
-									<span>1</span>
-								</div>
-								<div>
-									<i class="fa-solid fa-user-tie"></i>
-									<span>0394778003</span>
-								</div>
-							</div>
-							<div>
-								<i class="fa-solid fa-user-tie"></i>
-								<span>P01</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
-					<div class="d-flex">
-						<div class="row form-group">
-							<label for="date"></label>
-							<div class="col-sm-12">
-								<div class="d-flex">
-									<input type="text" class="form-control" id="datepicker" readonly>
-									<span class="input-group" id="icon_datepicker">
-										<span class="input-group-text bg-white">
-											<i class="fa fa-calendar"></i>
-										</span>
-									</span>
+    <div class="ms-5">
+        <div class="grid gap-0 column-gap-3 p-2">
+            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
+                <div>
+                    <div class="w-100 row col-2">
+                        <div class="col-4">
+                            <div class="w-100" style="height: 67px;">
+                                <img class="h-100" src="./images/iconThuePhong.jpg" style="object-fit: cover;" />
+                            </div>
+                        </div>
+                        <div class="col p-0" style="text-align: right;">
+                            <p>Thuê trong ngày</p>
+                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
+                        </div>
+                    </div>
+                    <hr style="width: 100%" />
+                    <div>
+                        <p><i _ngcontent-c5="" class="fas fa-sync text-muted"></i> Cập nhật</p>
+                    </div>
+                </div>
+            </div>
 
-								</div>
-							</div>
-						</div>
+            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
+                <div>
+                    <div class="w-100 row col-2">
+                        <div class="col-4">
+                            <div class="w-100" style="height: 67px;">
+                                <img class="h-100" src="./images/iconPhongCho.jpg" style="object-fit: cover;" />
+                            </div>
+                        </div>
+                        <div class="col p-0" style="text-align: right;">
+                            <p>Thuê trong ngày</p>
+                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
+                        </div>
+                    </div>
+                    <hr style="width: 100%" />
+                    <div>
+                        <p><i _ngcontent-c5="" class="fas fa-key text-muted"></i> Thuê phòng</p>
+                    </div>
+                </div>
+            </div>
 
-						<div class="row form-group">
-							<label for="date"></label>
-							<div class="col-sm-12">
-								<div class="d-flex">
-									<input type="text" class="form-control" id="datepicker1" readonly>
-									<span class="input-group" id="icon_datepicker1">
-										<span class="input-group-text bg-white">
-											<i class="fa fa-calendar"></i>
-										</span>
-									</span>
+            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
+                <div>
+                    <div class="w-100 row col-2">
+                        <div class="col-4">
+                            <div class="w-100" style="height: 67px;">
+                                <img class="h-100" src="./images/iconPhongDangThue.jpg" style="object-fit: cover;" />
+                            </div>
+                        </div>
+                        <div class="col p-0" style="text-align: right;">
+                            <p>Thuê trong ngày</p>
+                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
+                        </div>
+                    </div>
+                    <hr style="width: 100%" />
+                    <div>
+                        <p><i _ngcontent-c5="" class="fas fa-reply text-muted"></i> Thêm menu & trả phòng</p>
+                    </div>
+                </div>
+            </div>
 
-								</div>
-							</div>
-						</div>
+            <div class="p-3 g-col-3 rounded" style="box-shadow: 0px 1px 1px rgb(188, 188, 188);">
+                <div>
+                    <div class="w-100 row col-2">
+                        <div class="col-4">
+                            <div class="w-100" style="height: 67px;">
+                                <img class="h-100" src="./images/iconPhongCanDon.jpg" style="object-fit: cover;" />
+                            </div>
+                        </div>
+                        <div class="col p-0" style="text-align: right;">
+                            <p>Thuê trong ngày</p>
+                            <p style="font-size: 18px; font-weight: 600;"><span>0</span> lượt</p>
+                        </div>
+                    </div>
+                    <hr style="width: 100%" />
+                    <div>
+                        <p><i _ngcontent-c5="" class="fas fa-broom text-muted"></i> Dọn phòng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-					</div>
-					<div class="col-sm-12"><input type="text" class="form-control" id="exampleInput" placeholder="Tìm kiếm"> </div>
-					<table class="table caption-top">
-						<thead>
-							<tr>
-								<th scope="col">Khách hàng</th>
-								<th scope="col">Ngày nhận</th>
-								<th scope="col">Ngày trả</th>
-								<th scope="col">Số điện thoại</th>
-								<th s1cope="col">Trạng thái</th>
-								<th scope="col">Thao tác</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
+        <div class="row row-cols-2">
+            <div class="col col-8">
+                <canvas id="myChart" width="100%" height="70"></canvas>
+                <script>
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6'],
+                            datasets: [{
+                                label: 'Lượt Thuê Phòng',
+                                data: [12, 19, 3, 5, 2, 3],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    position: 'left',
+                                    text: 'LƯỢT  THUÊ  PHÒNG',
+                                    font: {
+                                        family: "Arial",
+                                        size: 18
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+            <div class="col col-4">
+                <div class="border p-2" style="height:510px; position: relative; top: 30px;">
+                    <div class="his-header">
+                        <div class="row row-cols-2">
+                            <div class="col">
+                                <p class="p-0 m-0" style="color:green; position: relative; top: 4px; left: 5px;">Nhật Ký Hệ Thống</p>
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <i class="fas fa-ellipsis-v menu-his" style="font-size: 20px; position: relative; top: 6px; right: 15px;"></i>
+                                <div id="menu-box-his" class="hide border" style=" position: absolute; top:40px; z-index: 999; background-color: rgb(255, 255, 255); width: 300px; height: 450px;">
+                                    <ul class="unlist-Style">
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                        <li>item 1</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="pt-0" />
+                    <div class="his-body ms-1">
+                        <!-- noi dung nhat ky -->
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-								<td>Thành Quốc</td>
-								<td>10/2/2023</td>
-								<td>10/6/2023</td>
-								<td>0394778003</td>
-								<td>Đã trả phòng</td>
-								<td>:</td>
-
-							</tr>
-							<tr>
-
-								<td>Thành Quốc A</td>
-								<td>10/2/2023</td>
-								<td>10/6/2023</td>
-								<td>0394778003</td>
-								<td>Đã trả phòng</td>
-								<td>:</td>
-
-							</tr>
-						</tbody>
-					</table>
-
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="parentAddView">
-
-	</div>
-
-</div>S
-
+</body>
 
 <script>
-	$(document).ready(function () {
+    document.querySelector(".menu-his").addEventListener("click", () => {
+        const menu = document.getElementById("menu-box-his");
+        if (menu.classList.contains("hide")) {
+            menu.classList.remove("hide");
+            menu.classList.add("show");
+        }
+        else {
+            menu.classList.add("hide");
+            menu.classList.remove("show");
+        }
 
-		// Xử lý sự kiện click của nút
-		$("#icon_datepicker").click(function () {
-			// Hiển thị DatePicker khi nhấp vào nút
-			$("#datepicker").datepicker("show");
-		});
-
-		// Khởi tạo DatePicker
-		$("#datepicker").datepicker();
-
-	});
-	$(document).ready(function () {
-		$("#icon_datepicker1").click(function () {
-			$("#datepicker1").datepicker("show");
-		});
-
-		$("#datepicker1").datepicker();
-	});
-	$(document).ready(function () {
-		$('#showAddButton').click(function () {
-			$.ajax({
-				url: '/Book/Add', // Đường dẫn đến Action trong Controller xử lý việc tải form đăng kí
-				type: 'GET',
-				success: function (result) {
-					$('#parentAddView').html(result);
-					console.log(result);// Chèn nội dung form đăng kí vào thẻ div
-				}
-			});
-		});
-	});
-
+    })
 </script>
 
 
-
+</html>
