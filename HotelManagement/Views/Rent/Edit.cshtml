@@ -108,7 +108,7 @@
         <span class="border-bottom">.000 ₫</span>
     </div>
     <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
-        <div>Menu sử dụng</div>
+        <div>Thêm menu</div>
         <button class="btn" id="showMenuBtn">
             <i class="fa-regular fa-square-plus"></i>
         </button>
@@ -129,7 +129,7 @@
     <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
         <div class="fs-5">Tổng tiền</div>
         <div class="fs-5">
-            <span id="totalPriceMenu"></span>
+            <span id="totalPriceMenu">0</span>
             <span> ₫</span>
         </div>
     </div>
@@ -167,20 +167,12 @@
 <script>
     var detail = @Html.Raw(detail);
     var order = @Html.Raw(order);
+    var newOrder = [];
     var menu = @Html.Raw(menu);
     detail.checkedInAt = new Date(detail.checkedInAt);
-    
-    var total = 0;
-    order.details.forEach(function (item, index) {
-        var m = getMenuItem(item.itemId);
-        total += item.quantity * item.price;
-        addHtmlDetail(createHtmlDetail(item, m.name))
-    });
 
     menu.forEach(function (item, index) {
-        if (!existItem(item.id)) {
-            addHtmlMenu(createHtmlMenu(item), item);
-        }
+        addHtmlMenu(createHtmlMenu(item), item);
     })
 
     function addHtmlDetail(t) {
@@ -206,7 +198,7 @@
     }
 
     function existItem(id) {
-        for (let item of order.details) {
+        for (let item of newOrder) {
             if (item.itemId == id)
                 return true;
         }
@@ -230,7 +222,7 @@
             price: t.exportPrice,
             orderedAt: new Date()
         }
-        order.details.push(detailItem);
+        newOrder.push(detailItem);
         addHtmlDetail(createHtmlDetail(detailItem, t.name));
     }
 
@@ -250,8 +242,8 @@
         var m = getMenuItem(id)
 
         $("#" + id + "int").parent().parent().remove();
-        updatePirceItem(order.details[t].quantity * order.details[t].price * -1);
-        order.details.splice(t, 1);
+        updatePirceItem(newOrder[t].quantity * newOrder[t].price * -1);
+        newOrder.splice(t, 1);
         addHtmlMenu(createHtmlMenu(m), m);
     }
 
@@ -276,16 +268,16 @@
         }
         else {
             var index = getDetailItem(id);
-            order.details[index].quantity = Number($("#" + id + "ip").val());
-            updatePirceItem((order.details[index].quantity * order.details[index].price) - (Number(v) * order.details[index].price));
-            $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+            newOrder[index].quantity = Number($("#" + id + "ip").val());
+            updatePirceItem((newOrder[index].quantity * newOrder[index].price) - (Number(v) * newOrder[index].price));
+            $("#" + id + 'to').html(newOrder[index].quantity * newOrder[index].price + " ₫");
         }
     }
 
     function getDetailItem(id) {
 
-        for (var index = 0; index < order.details.length; index++) {
-            if (order.details[index].itemId == id)
+        for (var index = 0; index < newOrder.length; index++) {
+            if (newOrder[index].itemId == id)
                 return index;
         }
         return -1;
@@ -296,9 +288,9 @@
         if (el.val() > 1) {
             el.val(Number(el.val()) - 1);
             var index = getDetailItem(id);
-            order.details[index].quantity = Number(el.val());
-            updatePirceItem(-order.details[index].price);
-            $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+            newOrder[index].quantity = Number(el.val());
+            updatePirceItem(-newOrder[index].price);
+            $("#" + id + 'to').html(newOrder[index].quantity * newOrder[index].price + " ₫");
         }
     }
 
@@ -306,9 +298,9 @@
         var el = $("#" + id + "ip");
         el.val(Number(el.val()) + 1);
         var index = getDetailItem(id);
-        order.details[index].quantity = Number(el.val());
-        updatePirceItem(order.details[index].price);
-        $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
+        newOrder[index].quantity = Number(el.val());
+        updatePirceItem(newOrder[index].price);
+        $("#" + id + 'to').html(newOrder[index].quantity * newOrder[index].price + " ₫");
     }
 
     function updatePirceItem(num) {
@@ -316,7 +308,6 @@
     }
 
     $(document).ready(function () {
-        $("#totalPriceMenu").html(total);
 
         let checkInDate = $("#checkInDate");
 
@@ -332,7 +323,7 @@
             }
         });
 
-        var errorDate = false;
+        var errorDate = false
 
         checkInDate.change(function(){
             detail.checkedInAt = new Date($(this).val() + ' ' + $("#checkInTime").val() + ':00');
@@ -386,15 +377,20 @@
         $("#saveEdit").click(function() {
             if(!errorDate && !errorDeposit)
             {
+                detail.checkedInAt.setHours(detail.checkedInAt.getHours() + 7);
+                detail.deposit = $("#inputDeposit").val()*1000;
+                order.details.push(...newOrder);
                 $.ajax({
-                    url: '/rent/EditPost',
-                    type: 'POST',
-                    data: JSON.stringify({ detail: detail, order: order }),
+                    url: '/rent/EditPut',
+                    type: 'PUT',
+                    data: JSON.stringify({ room: null, detail: detail, order: order }),
                     contentType: 'application/json',
                     success: function (result) {
-                        window.location.replace('/rent?tap=rented)
+                        if(result)
+                            window.location.replace('/rent?tap=rented');
                     },
                     error: function (xhr, status, error) {
+                        console.log("chay");
                         console.log(xhr.responseText);
                     }
 

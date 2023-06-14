@@ -67,17 +67,19 @@ namespace HotelManagement.Controllers
             return PartialView(data);
         }
 
-        public IActionResult BottomMenu()
+        public async Task<IActionResult> Order(string reservationDetailId)
         {
-            return View();
+            var order = await _orderService.GetAsync(reservationDetailId);
+            var menu = await _menuItemService.GetAsync();
+            var data = new MergeRRO
+            {
+                Order = order.FirstOrDefault(),
+                Menu = menu.Items
+            };
+            return PartialView(data);
         }
 
-        public IActionResult Order()
-        {
-            return View();
-        }
-
-        public IActionResult ChangeRoom()
+        public IActionResult ChangeRoom(string roomId)
         {
             return View();
         }
@@ -87,11 +89,42 @@ namespace HotelManagement.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult EditPost([FromBody] dynamic Edit)
+        [HttpPut]
+        public async Task<JsonResult> EditPut([FromBody] ReOrder Edit)
         {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Edit.Detail.CheckedInAt = Edit.Detail.CheckedInAt.ToUniversalTime();
+                    await _reservationDetailService.UpdateAsync(Edit.Detail);
+                    await _orderService.UpdateAsync(Edit.Order);
+                    return Json(Edit);
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
+        }
 
-            return Json(new { success = true });
+        [HttpPut]
+        public async Task<JsonResult> OrderPut([FromBody] Order order)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _orderService.UpdateAsync(order);
+                    return Json(new { success = true });
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
         }
     }
 }

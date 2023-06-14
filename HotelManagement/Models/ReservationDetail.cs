@@ -45,7 +45,7 @@ namespace HotelManagement.Models
             checkedIn.AddMinutes(-checkedIn.Minute);
             checkedOut.AddMinutes(-checkedOut.Minute);
             TimeSpan timeSpan = checkedOut.Subtract(checkedIn);
-            return (int)timeSpan.TotalDays;
+            return (int)(timeSpan.TotalDays + 1);
         }
 
         public double roomPiceDay(ReservationDetail reservationDetail, DateTime checkedIn, DateTime checkedOut)
