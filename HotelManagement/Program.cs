@@ -1,5 +1,7 @@
+using System.Globalization;
 using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,16 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Configure the CultureInfo for the entire application
+var supportedCultures = new[] { new CultureInfo("vi-VN") };
+supportedCultures[0].NumberFormat.CurrencySymbol = "₫";
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("vi-VN"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 app.MapControllerRoute(
     name: "default",

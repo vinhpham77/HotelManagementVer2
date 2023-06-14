@@ -3,47 +3,125 @@
     Layout = null;
 }
 
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@model ChangeRent
+
+@{
+    var roomSelect = JsonConvert.SerializeObject(Model.RoomSelect);
+    var detail = JsonConvert.SerializeObject(Model.Detail);
+}
+
 <div class="hearder border-end d-flex justify-content-between">
-    <p>Phòng VIP</p>
+    <p>@Model.RoomSelect.Name</p>
     <button type="button" class="btn btn-success">Lưu</button>
 </div>
 
 <div class="body">
     <div>
-        <div class="card">
-            <div class="card-header" id="headingOne">
-                <h5 class="mb-0">
-                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWatting1" aria-expanded="true" aria-controls="collapseWatting1">
-                        Phòng đơn
-                    </button>
-                </h5>
-            </div>
+        @if (Model.RentRooms != null)
+        {
+            @foreach (var rentRoom in Model.RentRooms)
+            {
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseC@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseC@(rentRoom.Id)">
+                                @rentRoom.Name
+                            </button>
+                        </h5>
+                    </div>
 
-            <div id="collapseWatting1" class="collapse show">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
-                        <div class="card">
-                            <div class="card-header d-flex align-items-center justify-content-between">
-                                <p>Phòng vip</p>
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownWatting1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownWatting1">
-                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
-                                        <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i>  Đổi phòng & và yêu cầu dọn phòng</button></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-x me-2"></i>
-                                    Chưa dọn
-                                </div>
+                    <div id="collapseC@(rentRoom.Id)" class="collapse show">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                @foreach (var room in rentRoom.rooms)
+                                {
+                                    if (room != null && room.IsEmpty)
+                                    {
+                                        <div class="card mt-3 me-3">
+                                            <div class="card-header d-flex align-items-center justify-content-between">
+                                                <p>@room.Name</p>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownC@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownC@(room.Id)">
+                                                        <li><button class="dropdown-item" onclick="change('@(JsonConvert.SerializeObject(@room))')" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
+                                                        <li><button class="dropdown-item" onclick="changeClear('@(JsonConvert.SerializeObject(@room))')" type="button"><i class="fa-regular fa-tag"></i>  Đổi phòng & và yêu cầu dọn phòng</button></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                @if (room.IsCleaned)
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa-solid fa-check me-2"></i>
+                                                        Đã dọn
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa-solid fa-x me-2"></i>
+                                                        Chưa dọn
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            }
+        }
     </div>
 </div>
+
+<script>
+    var roomSelect = @Html.Raw(roomSelect);
+    var detail = @Html.Raw(detail);
+
+    async function change(room)
+    {
+        room = JSON.parse(room);
+        roomSelect.isEmpty = true;
+        room.isEmpty = false;
+        detail.roomId = room.id;
+
+        update(roomSelect, room, detail);
+    }
+
+    async function changeClear(room)
+    {
+        room = JSON.parse(room);
+        roomSelect.isEmpty = true;
+        room.isEmpty = false
+        detail.roomId = room.id;
+        room.isCleaned = false;
+        room.lastCleanedAt = new Date();
+        room.lastCleanedAt.setHours(room.lastCleanedAt.getHours() + 7);
+        update(roomSelect, room, detail);
+    }
+
+    async function update(roomSelect, roomChange, detail)
+    {
+        $.ajax({
+            url: '/rent/ChangeRoomPut',
+            type: 'PUT',
+            data: JSON.stringify({ roomChange: roomChange, roomRent: roomSelect, reDetail: detail }),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result)
+                    window.location.replace('/rent?tap=rented');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
+    }
+</script>

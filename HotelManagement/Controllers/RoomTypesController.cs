@@ -1,7 +1,6 @@
 using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace HotelManagement.Controllers;
 
@@ -19,10 +18,16 @@ public class RoomTypesController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword, string? sort, string? order, int? page, int? size)
     {
+        ViewBag.Size = size ?? 10;
+        ViewBag.Page = page ?? 1;
+        ViewBag.Sort = sort ?? "";
+        ViewBag.Order = order ?? "";
+        ViewBag.Keyword = keyword ?? "";
+
         try
         {
             var roomTypes = await _roomTypeService.GetAsync(keyword, sort, order, page, size);
-            return View(roomTypes?.Items);
+            return View(roomTypes);
         }
         catch (HttpRequestException ex)
         {
@@ -39,59 +44,61 @@ public class RoomTypesController : Controller
     }
 
     [HttpPost]
-    public async Task<JsonResult> Create([FromBody] RoomType roomType)
+    public async Task<IActionResult> Create([FromBody] RoomType roomType)
     {
         if (ModelState.IsValid)
         {
             var createdRoomType = await _roomTypeService.CreateAsync(roomType);
-            return Json(new { success = createdRoomType != null, roomType = createdRoomType });
+            return CreatedAtAction(nameof(GetById), new { id = createdRoomType?.Id }, createdRoomType);
         }
-        return Json(new { success = false });
+        
+        return BadRequest();
     }
 
     [HttpPut]
-    public async Task<JsonResult> Update(string id, [FromBody] RoomType roomType)
+    public async Task<IActionResult> Update(string id, [FromBody] RoomType roomType)
     {
         if (ModelState.IsValid)
         {
             try
             {
                 await _roomTypeService.UpdateAsync(id, roomType);
-                return Json(new { success = true });
+                return NoContent();
             }
             catch (HttpRequestException)
             {
-                return Json(new { success = false });
+                return NotFound();
             }
         }
-        return Json(new { success = false });
+        
+        return BadRequest();
     }
 
     [HttpDelete]
-    public async Task<JsonResult> Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
         try
         {
             await _roomTypeService.DeleteAsync(id);
-            return Json(new { success = true });
+            return NoContent();
         }
         catch (HttpRequestException)
         {
-            return Json(new { success = false });
+            return NotFound();
         }
     }
         
     [HttpDelete]
-    public async Task<JsonResult> DeleteMany([FromBody] string[] roomTypeIds)
+    public async Task<IActionResult> DeleteMany([FromBody] string[] roomTypeIds)
     {
         try
         {
             await _roomTypeService.DeleteManyAsync(roomTypeIds);
-            return Json(new { success = true });
+            return NoContent();
         }
         catch (HttpRequestException)
         {
-            return Json(new { success = false });
+            return NotFound();
         }
     }
 }

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using HotelManagementAPI.Models;
 using HotelManagement.Models;
+using System.Text;
 
 namespace HotelManagement.Services
 {
@@ -27,6 +28,19 @@ namespace HotelManagement.Services
 
             throw new HttpRequestException(
                 $"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+        }
+
+        public async Task UpdateAsync(Room room)
+        {
+            StringContent content =
+                new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PutAsync($"{_roomApiUrl}/{room.Id}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Request to update RoomType with id {room.Id} failed with status code: {response.StatusCode}");
+            }
         }
     }
 }

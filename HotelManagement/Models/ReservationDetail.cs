@@ -92,5 +92,29 @@ namespace HotelManagement.Models
                 return reservationDetail.TotalChildren - room.MaxChild;
             return 0;
         }
+
+        public string hourseSurchargeCheckIn(DateTime checkIn)
+        {
+            if (checkIn.Hour > 12)
+                return "";
+            int hour = 12 - checkIn.Hour;
+            int minute = 60 - checkIn.Minute;
+
+            if (minute < 60)
+                hour--;
+            else
+                minute = 0;
+            return hour + "giờ" + minute + "phút";
+        }
+
+        public string hourseSurchargeCheckOut(DateTime checkOut)
+        {
+            if (checkOut.Hour < 12)
+                return "";
+            int hour = checkOut.Hour - 12;
+            int minute = checkOut.Minute;
+
+            return hour + "giờ" + minute + "phút";
+        }
     }
 }

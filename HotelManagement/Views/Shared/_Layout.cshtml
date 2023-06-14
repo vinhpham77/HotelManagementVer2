@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -10,12 +10,12 @@
         rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="css/site.css" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
+    
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    
+    <link href="css/site.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -75,6 +75,7 @@
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" asp-controller="RoomTypes" asp-action="Index">Loại phòng</a>
+                <a class="collapse-item" asp-controller="Menu" asp-action="Index">Menu</a>
                 <a class="collapse-item" href="utilities-border.html">Borders</a>
                 <a class="collapse-item" href="utilities-animation.html">Animations</a>
                 <a class="collapse-item" href="utilities-other.html">Other</a>
@@ -283,9 +284,11 @@
 
 <!-- Core plugin JavaScript-->
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 <!-- Custom scripts for all pages-->
 <script src="js/hotel.js"></script>
+<script src="js/utils.js"></script>
 
 <!-- Page level plugins -->
 <script src="vendor/datatables/jquery.dataTables.min.js"></script>
