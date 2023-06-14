@@ -175,9 +175,9 @@
                                                                     </button>
                                                                     <ul class="dropdown-menu" aria-labelledby="dropdownR@(room.Id)" roomid="@(room.Id)">
                                                                         <li><button class="dropdown-item viewEdit" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
-                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
+                                                                        <li><button class="dropdown-item" onclick="viewOrder('@(reOrder.Detail.Id)')" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
-                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
+                                                                        <li><button class="dropdown-item" onclick="viewRoomChange('@(room.Id)')" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
                                                                         <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
                                                                     </ul>
@@ -331,4 +331,28 @@
             })
         })
     })
+
+    async function viewOrder(id)
+    {
+        $.ajax({
+            url: '/rent/Order',
+            type: 'GET',
+            data: { reservationDetailId: id },
+            success: function (result) {
+                $("#rightLayout").html(result);
+            }
+        })
+    }
+
+    async function viewRoomChange(id)
+    {
+        $.ajax({
+            url: '/rent/Order',
+            type: 'GET',
+            data: { roomId: id },
+            success: function (result) {
+                $("#rightLayout").html(result);
+            }
+        })
+    }
 </script>

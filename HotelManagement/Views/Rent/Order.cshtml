@@ -3,6 +3,11 @@
     Layout = null;
 }
 
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@model MergeRRO
+
 <style>
     input[type="number"] {
         -webkit-appearance: textfield;
@@ -26,78 +31,133 @@
     }
 </style>
 
+@{
+    var order = JsonConvert.SerializeObject(Model.Order);
+    var menu = JsonConvert.SerializeObject(Model.Menu);
+    int[] ArrayQuantity = new int[Model.Menu.Count];
+}
+
 <div class="hearder border-end d-flex justify-content-between">
     <p>Phòng VIP</p>
-    <button type="button" class="btn btn-success">Lưu</button>
+    <button type="button" class="btn btn-success" onclick="saveOrder()">Lưu</button>
 </div>
 
 <div class="body">
-    <input class="form-control p-2 mb-2 border-bottom w-100 fs-6" placeholder="Tìm kiếm" />
     <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
-        <div>Menu sử dụng</div>
-        <button class="btn" id="showMenuBtn">
-            <i class="fa-regular fa-square-plus"></i>
-        </button>
+        <div class="fs-5">Tổng tiền</div>
+        <div class="fs-5">
+            <span id="totalPriceMenu">0</span>
+            <span> ₫</span>
+        </div>
     </div>
+    <input class="form-control p-2 mb-2 border-bottom w-100 fs-6" onkeyup="keyup(event)" placeholder="Tìm kiếm" />
     <table class="table mt-3">
         <thead>
             <tr>
                 <th scope="col">Tên menu</th>
                 <th scope="col">Số lượng </th>
-                <th scope="col">Thành tiền</th>
-                <th scope="col">Thao tác</th>
+                <th scope="col">Giá</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row" class="align-middle">7 up</th>
-                <td class="d-fex align-items-center">
-                    <button class="btn btn-minus">
-                        <i class="fa-regular fa-minus"></i>
-                    </button>
-                    <input type="number" class="inputQuantity quantity-input text-center border" value="1" min="1">
-                    <button class="btn btn-add">
-                        <i class="fa-regular fa-plus"></i>
-                    </button>
-                </td>
-                <td class="align-middle"> 15.000 ₫ </td>
-                <td class="text-center align-middle"><i class="fa-solid fa-x"></i></td>
-            </tr>
+            @for (int i = 0; i < Model.Menu.Count; i++)
+            {
+                ArrayQuantity[i] = 0;
+                <tr id="viewtr@(i)">
+                    <th scope="row" class="align-middle">@Model.Menu[i].Name</th>
+                    <td class="d-fex align-items-center">
+                        <button class="btn btn-minus" onclick="clickMinus('@(i)')">
+                            <i class="fa-regular fa-minus"></i>
+                        </button>
+                        <input type="number" id="item@(i)" onfocusout="focousOutInput('@(i)')" class="inputQuantity quantity-input text-center border" value="0" min="1">
+                        <button class="btn btn-add" onclick="clickAdd('@(i)')">
+                            <i class="fa-regular fa-plus"></i>
+                        </button>
+                    </td>
+                    <td class="align-middle"> @Model.Menu[i].ExportPrice </td>
+                </tr>
+            }
+            
         </tbody>
     </table>
 </div>
 
+@{
+    var arrayQuantity = JsonConvert.SerializeObject(ArrayQuantity);
+}
+
 <script>
-    $(document).ready(function () {
-        var v = 0;
+    var order = @Html.Raw(order);
+    var menu = @Html.Raw(menu);
+    var arrayQuantity = @Html.Raw(arrayQuantity);
 
-        $(".inputQuantity").each(function (index, item) {
-            $(item).focus(function () {
-                v = $(this).val();
-            });
+    function clickMinus(i)
+    {
+        if (Number($("#item"+i).val()) > 0)
+        {
+            arrayQuantity[i]--;
+            $("#item" + i).val(arrayQuantity[i]);
+            $("#totalPriceMenu").html(Number($("#totalPriceMenu").html()) - menu[i].exportPrice);
+        }
+    }
 
-            $(item).focusout(function () {
-                if ($(this).val() < 1) {
-                    $(this).val(v);
-                }
-            });
-        });
+    async function focousOutInput(i) {
+        if ($("#item" + i).val() < 0) {
+            $("#item" + i).val(arrayQuantity[i]);
+        }
+        else {
+            var t = $("#item" + i).val() - arrayQuantity[i];
+            arrayQuantity[i] = $("#item" + i).val();
+            $("#totalPriceMenu").html(Number($("#totalPriceMenu").html()) + (t * menu[i].exportPrice));
+        }
+    }
 
-        $(".btn-minus").each(function (index, item) {
-            $(item).click(function () {
-                var next = $(this).next();
-                if (next.val() > 1) {
-                    next.val(Number(next.val()) - 1);
-                }
-            })
+    async function clickAdd(i)
+    {
+        arrayQuantity[i]++;
+        $("#item" + i).val(arrayQuantity[i]);
+        $("#totalPriceMenu").html(Number($("#totalPriceMenu").html()) + menu[i].exportPrice);
+    }
+
+    async function keyup(event)
+    {
+        var value = $(event.target).val().toLowerCase();
+        for (var i = 0; i < menu.length; i++) {
+            if (menu[i].name.toLowerCase().includes(value)) {
+                $("#viewtr" + i).removeClass("d-none");
+            } else {
+                $("#viewtr" + i).addClass("d-none");
+            }
+        }
+    }
+
+    async function saveOrder()
+    {
+        for (var i = 0; i < menu.length; i++) {
+            if (arrayQuantity[i] > 0) {
+                order.details.push({
+                    itemId: menu[i].id,
+                    quantity: arrayQuantity[i],
+                    price: menu[i].exportPrice,
+                    orderedAt: new Date()
+                })
+            }
+        }
+        $.ajax({
+            url: '/rent/OrderPut',
+            type: 'PUT',
+            data: JSON.stringify(order),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result)
+                    window.location.replace('/rent?tap=rented');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
         })
+    }
 
-        $(".btn-add").each(function (index, item) {
-            $(item).click(function () {
-                var inp = $(this).parent().children().eq(1);
-                inp.val(Number(inp.val()) + 1);
-            })
-        })
-    })
 </script>
 
