@@ -82,7 +82,7 @@
 }
 <div class="hearder border-end d-flex justify-content-between">
     <p>@Model.Room.Name</p>
-    <button type="button" class="btn btn-success">Lưu</button>
+    <button type="button" class="btn btn-success" id="saveEdit">Lưu</button>
 </div>
 
 <div class="body">
@@ -126,6 +126,13 @@
             
         </tbody>
     </table>
+    <div class="d-flex justify-content-between align-items-center border-top border-bottoom mt-3">
+        <div class="fs-5">Tổng tiền</div>
+        <div class="fs-5">
+            <span id="totalPriceMenu"></span>
+            <span> ₫</span>
+        </div>
+    </div>
 </div>
 <div class="container-bottom-menu" id="bottomMenuView">
     <div class="content-menu" id="contentMenu">
@@ -140,7 +147,6 @@
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
                 <div class="d-flex flex-wrap p-2" id="bodyMenuItem">
-                    
                 </div>
             </div>
             <div class="tab-pane fade" id="nav-fastfoot" role="tabpanel" aria-labelledby="nav-fastfoot-tab">
@@ -163,10 +169,11 @@
     var order = @Html.Raw(order);
     var menu = @Html.Raw(menu);
     detail.checkedInAt = new Date(detail.checkedInAt);
-    let checkInDate = $("#checkInDate");
-
+    
+    var total = 0;
     order.details.forEach(function (item, index) {
         var m = getMenuItem(item.itemId);
+        total += item.quantity * item.price;
         addHtmlDetail(createHtmlDetail(item, m.name))
     });
 
@@ -243,55 +250,10 @@
         var m = getMenuItem(id)
 
         $("#" + id + "int").parent().parent().remove();
+        updatePirceItem(order.details[t].quantity * order.details[t].price * -1);
         order.details.splice(t, 1);
         addHtmlMenu(createHtmlMenu(m), m);
     }
-
-
-    $("#icon_checkInDate").click(function () {
-        checkInDate.datepicker("show");
-    });
-
-    checkInDate.datepicker({
-        beforeShowDay: function (date) {
-            var currentDate = new Date();
-            currentDate.setDate(currentDate.getDate());
-            return [date < currentDate];
-        }
-    });
-
-    var errorDate = false;
-
-    $("#checkInTime").change(function () {
-        var kt = forMatTime($(this).val())
-
-        if (kt) {
-
-            var chooceDate = new Date(checkInDate.val() + ' ' + $(this).val() + ':00');
-            var toDay = new Date();
-            if (chooceDate.getTime() < toDay.getTime());
-            {
-                $(this).addClass("is-valid");
-                errorDate = false;
-                return;
-            }
-        }
-        $(this).removeClass("is-invalid");
-        errorDate = true;
-    });
-
-    var errorDeposit = false;
-
-    $("#inputDeposit").change(function () {
-        if (Number($(this).val()) >= 0) {
-            $(this).removeClass("error");
-            errorDeposit = false;
-        }
-        else {
-            $(this).addClass("error");
-            errorDeposit = true;
-        }
-    })
 
     function forMatTime(s) {
         let subS = s.split(":");
@@ -315,6 +277,7 @@
         else {
             var index = getDetailItem(id);
             order.details[index].quantity = Number($("#" + id + "ip").val());
+            updatePirceItem((order.details[index].quantity * order.details[index].price) - (Number(v) * order.details[index].price));
             $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
         }
     }
@@ -334,6 +297,7 @@
             el.val(Number(el.val()) - 1);
             var index = getDetailItem(id);
             order.details[index].quantity = Number(el.val());
+            updatePirceItem(-order.details[index].price);
             $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
         }
     }
@@ -343,19 +307,99 @@
         el.val(Number(el.val()) + 1);
         var index = getDetailItem(id);
         order.details[index].quantity = Number(el.val());
+        updatePirceItem(order.details[index].price);
         $("#" + id + 'to').html(order.details[index].quantity * order.details[index].price + " ₫");
     }
 
-    var viewBottomMenu = $("#bottomMenuView");
+    function updatePirceItem(num) {
+        $("#totalPriceMenu").html(Number($("#totalPriceMenu").html()) + num);
+    }
 
-    $("#showMenuBtn").click(function () {
-        viewBottomMenu.css('display', 'flex');
-    })
-    $("#bottomMenuView").click(function () {
-        viewBottomMenu.hide();
-    })
+    $(document).ready(function () {
+        $("#totalPriceMenu").html(total);
 
-    $("#contentMenu").click(function (event) {
-        event.stopPropagation();
-    })
+        let checkInDate = $("#checkInDate");
+
+        $("#icon_checkInDate").click(function () {
+            checkInDate.datepicker("show");
+        });
+
+        checkInDate.datepicker({
+            beforeShowDay: function (date) {
+                var currentDate = new Date();
+                currentDate.setDate(currentDate.getDate());
+                return [date < currentDate];
+            }
+        });
+
+        var errorDate = false;
+
+        checkInDate.change(function(){
+            detail.checkedInAt = new Date($(this).val() + ' ' + $("#checkInTime").val() + ':00');
+        })
+
+        $("#checkInTime").change(function () {
+            var kt = forMatTime($(this).val())
+
+            if (kt) {
+
+                var chooceDate = new Date(checkInDate.val() + ' ' + $(this).val() + ':00');
+                var toDay = new Date();
+                if (chooceDate.getTime() < toDay.getTime());
+                {
+                    detail.checkedInAt = chooceDate;
+                    $(this).removeClass("is-invalid");
+                    errorDate = false;
+                    return;
+                }
+            }
+            $(this).addClass("is-invalid");
+            errorDate = true;
+        });
+
+        var errorDeposit = false;
+
+        $("#inputDeposit").change(function () {
+            if ($(this).val() != "" && Number($(this).val()) >= 0) {
+                $(this).removeClass("error");
+                errorDeposit = false;
+            }
+            else {
+                $(this).addClass("error");
+                errorDeposit = true;
+            }
+        })
+
+        var viewBottomMenu = $("#bottomMenuView");
+
+        $("#showMenuBtn").click(function () {
+            viewBottomMenu.css('display', 'flex');
+        })
+        $("#bottomMenuView").click(function () {
+            viewBottomMenu.hide();
+        })
+
+        $("#contentMenu").click(function (event) {
+            event.stopPropagation();
+        })
+
+        $("#saveEdit").click(function() {
+            if(!errorDate && !errorDeposit)
+            {
+                $.ajax({
+                    url: '/rent/EditPost',
+                    type: 'POST',
+                    data: JSON.stringify({ detail: detail, order: order }),
+                    contentType: 'application/json',
+                    success: function (result) {
+                        window.location.replace('/rent?tap=rented)
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+
+                })
+            }
+        })
+    });
 </script>

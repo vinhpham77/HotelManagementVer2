@@ -6,5 +6,7 @@ namespace HotelManagement.Models
     {
         public List<RentRoom>? RentRooms { get; set; }
         public List<ReOrder>? ReOrders { get; set; }
+        public string? Tap { get; set; } = null;
+
     }
 }
