@@ -36,6 +36,20 @@ public class RoomTypesController : Controller
         }
     }
     
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            var roomTypes = await _roomTypeService.GetAllAsync();
+            return Json(roomTypes);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error retrieving room types");
+            return Json(new LCount<RoomType>());
+        }
+    }
+    
     [HttpGet]
     public async Task<JsonResult> GetById(string id)
     {

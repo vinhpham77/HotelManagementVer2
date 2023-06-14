@@ -59,3 +59,11 @@ function showConfirmDialog(message, onConfirm) {
         confirmDialog.modal('hide');
     });
 }
+
+function getNumberValue(inputId) {
+    // Lấy giá trị từ input
+    const inputValue = $(inputId).val();
+
+    // Loại bỏ dấu phẩy và chuyển đổi thành số
+    return Number(inputValue.replace(/,/g, ''));
+}

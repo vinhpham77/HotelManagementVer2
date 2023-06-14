@@ -1,4 +1,5 @@
 using System.Globalization;
+using HotelManagement;
 using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Localization;
@@ -6,7 +7,14 @@ using Microsoft.AspNetCore.Localization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+
+
+builder.Services.AddControllers(options =>
+{
+    options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+});
+
 
 // Read appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json");

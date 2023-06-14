@@ -37,6 +37,19 @@ public class RoomTypeService
 
         throw new HttpRequestException($"Request to {requestUrl} failed with status code: {response.StatusCode}");
     }
+    
+    public async Task<LCount<RoomType>?> GetAllAsync()
+    {
+        HttpResponseMessage response = await _httpClient.GetAsync(_roomTypeApiUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<LCount<RoomType>>(jsonResponse);
+        }
+
+        throw new HttpRequestException($"Request to get all RoomTypes failed with status code: {response.StatusCode}");
+    }
 
     public async Task<RoomType?> GetByIdAsync(string id)
     {
