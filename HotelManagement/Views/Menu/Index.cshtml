@@ -1,0 +1,364 @@
+@model LCount<MenuItem>
+@using HotelManagement.Utils
+
+@{
+    ViewBag.Title = "Menu";
+    Layout = "_Layout";
+    
+    var options = new TableOptions
+    {
+        Sort = ViewBag.Sort,
+        Order = ViewBag.Order,
+        ActionName = "Index",
+        ControllerName = "Menu",
+        Page = ViewBag.Page,
+        Size = ViewBag.Size,
+        Keyword = ViewBag.Keyword
+    };
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex">
+        <div>
+            <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
+            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
+        </div>
+        <form class="form-inline ml-auto">
+            <div class="form-group">
+                <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" value="@ViewBag.Keyword" id="search-input">
+            </div>
+            <button type="submit" class="btn btn-primary" id="search-btn">Tìm kiếm</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="selectAll" class=""/>
+                    </th>
+                    <th>Tên 
+                        @{
+                            options.Column = "name";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Loại
+                        @{
+                            options.Column = "type";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Giá nhập
+                        @{
+                            options.Column = "importPrice";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Giá bán
+                        @{
+                            options.Column = "exportPrice";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <td>Thao tác</td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var menuItem in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="rowCheckbox " name="selectedMenuItems" value="@menuItem.Id"/>
+                        </td>
+                        <td>@menuItem.Name</td>
+                        <td>
+
+                            @{
+                                if (menuItem.Type.HasValue)
+                                {
+                                    if (menuItem.Type is true)
+                                    {
+                                        @("Đồ ăn")
+                                    }
+                                    else
+                                    {
+                                        @("mónc uống")
+                                    }
+                                }
+                                else
+                                {
+                                    @("Khác")
+                                }
+
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(_ => menuItem.ImportPrice)</td>
+                        <td>@Html.DisplayFor(_ => menuItem.ExportPrice)</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="edit('@menuItem.Id')">Sửa</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteMenuItem('@menuItem.Id')">Xóa</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPage = (int)Math.Ceiling((double)Model.Total / ViewBag.Size);
+                    }
+                    <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Đầu</a>
+                    </li>
+                    @for (int i = 1; i <= totalPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = i, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.Page == totalPage ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = totalPage, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Cuối</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- MenuItem Modal -->
+<div class="modal fade" id="menuItemModal" tabindex="-1" aria-labelledby="menuItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="menuItemModalLabel">Thêm/Sửa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="menuItemForm">
+                    <input type="hidden" id="menuItemId" name="menuItemId"/>
+                    <input type="hidden" id="menuItemImportPriceNumber">
+                    <input type="hidden" id="menuItemExportPriceNumber">
+                    
+                    <div class="form-group">
+                        <label for="menuItemName">Tên</label>
+                        <input type="text" class="form-control" id="menuItemName" name="menuItemName" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="menuItemType" class="d-block">Mô tả</label>
+                        <select name="menuItemType" class="custom-select" id="menuItemType">
+                            <option value="true" selected>Đồ ăn</option>
+                            <option value="false">mónc uống</option>
+                            <option value="null">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="menuItemImportPrice">Giá nhập (Chi phí)</label>
+                        <input type="text" class="form-control" id="menuItemImportPrice" name="menuItemImportPrice" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="menuItemExportPrice">Giá bán</label>
+                        <input type="text" class="form-control" id="menuItemExportPrice" name="menuItemExportPrice" required/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveMenuItem()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#search-btn').click(function(e) {
+            e.preventDefault();
+            var keyword = $('#search-input').val();
+            var url = '@Url.Action("Index", new { page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })';
+            url = url + '&keyword=' + encodeURIComponent(keyword);
+            
+            // Thay thế ký tự "&amp;" bằng ký tự "&"
+            url = url.replace(/&amp;/g, '&');
+            
+            window.location.href = url;
+        });
+    
+        $('#menuItemImportPrice, #menuItemExportPrice').mask('000,000,000,000,000', {reverse: true})
+            .on('input change', function() {
+            // Lấy giá trị số sau khi loại bỏ dấu phẩy
+            const numberValue = getNumberValue(this);
+            
+            // Cập nhật giá trị cho trường input ẩn tương ứng
+            const hiddenInputId = '#' + this.id + 'Number';
+            $(hiddenInputId).val(numberValue);
+        });
+             
+        function getNumberValue(inputId) {
+            // Lấy giá trị từ input
+            const inputValue = $(inputId).val();
+            
+            // Loại bỏ dấu phẩy và chuyển đổi thành số
+            return Number(inputValue.replace(/,/g, ''));
+        }
+    
+        // Xử lý sự kiện click cho checkbox chọn tất cả
+        $('#selectAll').on('click', function () {
+            let isChecked = $(this).is(':checked');
+            $('.rowCheckbox').prop('checked', isChecked);
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        // Xử lý sự kiện click cho checkbox của từng dòng
+        $('.rowCheckbox').on('click', function () {
+            let totalCheckboxes = $('.rowCheckbox').length;
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+            // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+            // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        async function getMenuItemById(menuItemId) {
+            let response = await fetch(`/Menu/GetById/${menuItemId}`);
+            
+            return await response.json();
+        }
+
+        async function createMenuItem(menuItem) {
+            let response = await fetch('/Menu/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(menuItem)
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi thêm 1 món', 'danger');
+            }
+        }
+
+        async function updateMenuItem(id, menuItem) {
+            let response = await fetch(`/Menu/Update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(menuItem)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật 1 món', 'danger');
+            }
+        }
+
+        async function deleteMenuItem(menuItemId) {
+            showConfirmDialog('Bạn có chắc chắn muốn xóa món này không?',
+            async () => {
+                let response = await fetch(`/Menu/Delete/${menuItemId}`, {
+                    method: 'DELETE'
+                });
+    
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showAlert('Đã xảy ra lỗi khi xóa 1 món', 'danger');
+                }
+            });
+        }
+
+        async function deleteManyMenuItems(menuItemIds) {
+            let response = await fetch('/Menu/DeleteMany', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(menuItemIds)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi xóa các món', 'danger');
+            }
+        }
+            
+        function add() {
+            $('#menuItemId').val('');
+            $('#menuItemName').val('');
+            $('#menuItemType').val('true');
+            $('#menuItemImportPrice').val('');
+            $('#menuItemExportPrice').val('');
+            $('#menuItemImportPriceNumber').val('');
+            $('#menuItemExportPriceNumber').val('');
+            $('#menuItemModalLabel').text('Thêm');
+            $('#menuItemModal').modal('show');
+        }
+        
+        async function edit(menuItemId) {
+            let menuItem = await getMenuItemById(menuItemId);
+            // Điền thông tin vào các trường trong modal
+            $('#menuItemId').val(menuItem.id);
+            $('#menuItemName').val(menuItem.name);
+            $('#menuItemType').val(menuItem.type.toString());
+            $('#menuItemImportPrice').val(menuItem.importPrice.toLocaleString('vi-VN'));
+            $('#menuItemExportPrice').val(menuItem.exportPrice.toLocaleString('vi-VN'));
+            $('#menuItemImportPriceNumber').val(menuItem.importPrice);
+            $('#menuItemExportPriceNumber').val(menuItem.exportPrice);
+            $('#menuItemModalLabel').text('Sửa'); // Cập nhật tên của modal
+            $('#menuItemModal').modal('show');
+        }
+
+        function saveMenuItem() {
+            let menuItemId = $('#menuItemId').val();
+            let menuItemName = $('#menuItemName').val();
+            let menuItemType = $('#menuItemType').val();
+            let menuItemImportPrice = $('#menuItemImportPriceNumber').val();
+            let menuItemExportPrice = $('#menuItemExportPriceNumber').val();
+            
+            let menuItem = {
+                id: menuItemId,
+                name: menuItemName,
+                type: JSON.parse(menuItemType),
+                importPrice: menuItemImportPrice,
+                exportPrice: menuItemExportPrice
+            };
+            
+            if (menuItemId) {
+                updateMenuItem(menuItemId, menuItem);
+            } else {
+                createMenuItem(menuItem);
+            }
+
+            // Đóng modal
+            $('#menuItemModal').modal('hide');
+        }
+
+        function updateDeleteButton() {
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+        }
+
+        function deleteSelected() {
+            // Lấy danh sách menuItemId của các món được chọn
+            let selectedMenuItemIds = $('input[name="selectedMenuItems"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            showConfirmDialog('Bạn có chắc chắn muốn xóa các món đã chọn không?', () => {
+                // Xóa các món được chọn
+                deleteManyMenuItems(selectedMenuItemIds);
+            });
+        }
+    </script>
+}

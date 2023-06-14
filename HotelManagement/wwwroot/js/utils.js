@@ -1,22 +1,33 @@
-﻿function showAlert(message, type, timeout = 3000) {
-    var alertHtml = '<div class="alert alert-' + type + ' fixed-top" role="alert" style="display:none;">' +
+﻿function showAlert(message, type, timeout = 2000) {
+    // Create the alert HTML using Bootstrap 4 classes
+    var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; width: 300px; z-index: 9999; box-shadow: 0px 0px 5px rgba(0,0,0,0.3); margin-bottom: 10px;" role="alert">' +
         message +
         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
         '<span aria-hidden="true">×</span>' +
         '</button>' +
         '</div>';
 
-    $('body').prepend(alertHtml); // Add the new alert to the top of the body
+    // Add the new alert to the top of the body
+    var newAlert = $(alertHtml).prependTo('body');
 
-    // Show the alert with a slide-down animation
-    $('.alert').first().slideDown();
+    // Adjust the position of the new alert
+    adjustAlertsPosition();
 
     // Hide the alert after the given timeout
     setTimeout(() => {
-        $(".alert").first().slideUp(function() {
-            $(this).remove();
-        });
+        newAlert.alert('close');
     }, timeout);
+
+    // Adjust the position of the alerts when an alert is closed
+    newAlert.on('closed.bs.alert', function () {
+        adjustAlertsPosition();
+    });
+}
+
+function adjustAlertsPosition() {
+    $('.alert').each(function (index) {
+        $(this).css('top', (20 + index * 50) + 'px');
+    });
 }
 
 

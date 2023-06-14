@@ -1,17 +1,17 @@
-using HotelManagement.Models;
+﻿using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.Controllers;
 
-public class RoomTypesController : Controller
+public class MenuController : Controller
 {
-    private readonly RoomTypeService _roomTypeService;
-    private readonly ILogger<RoomTypesController> _logger;
+    private readonly MenuService _menuService;
+    private readonly ILogger<MenuController> _logger;
 
-    public RoomTypesController(RoomTypeService roomTypeService, ILogger<RoomTypesController> logger)
+    public MenuController(MenuService menuService, ILogger<MenuController> logger)
     {
-        _roomTypeService = roomTypeService;
+        _menuService = menuService;
         _logger = logger;
     }
 
@@ -23,15 +23,15 @@ public class RoomTypesController : Controller
         ViewBag.Sort = sort ?? "";
         ViewBag.Order = order ?? "";
         ViewBag.Keyword = keyword ?? "";
-
+        
         try
         {
-            var roomTypes = await _roomTypeService.GetAsync(keyword, sort, order, page, size);
-            return View(roomTypes);
+            var menu = await _menuService.GetAsync(keyword, sort, order, page, size);
+            return View(menu);
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Error retrieving room types");
+            _logger.LogError(ex, "Error retrieving menu");
             return View("Error");
         }
     }
@@ -39,30 +39,30 @@ public class RoomTypesController : Controller
     [HttpGet]
     public async Task<JsonResult> GetById(string id)
     {
-        var roomType = await _roomTypeService.GetByIdAsync(id);
-        return Json(roomType);
+        var menuItem = await _menuService.GetByIdAsync(id);
+        return Json(menuItem);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] RoomType roomType)
+    public async Task<IActionResult> Create([FromBody] MenuItem menuItem)
     {
         if (ModelState.IsValid)
         {
-            var createdRoomType = await _roomTypeService.CreateAsync(roomType);
-            return CreatedAtAction(nameof(GetById), new { id = createdRoomType?.Id }, createdRoomType);
+            var createdMenuItem = await _menuService.CreateAsync(menuItem);
+            return CreatedAtAction(nameof(GetById), new { id = createdMenuItem?.Id }, createdMenuItem);
         }
         
         return BadRequest();
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(string id, [FromBody] RoomType roomType)
+    public async Task<IActionResult> Update(string id, [FromBody] MenuItem menuItem)
     {
         if (ModelState.IsValid)
         {
             try
             {
-                await _roomTypeService.UpdateAsync(id, roomType);
+                await _menuService.UpdateAsync(id, menuItem);
                 return NoContent();
             }
             catch (HttpRequestException)
@@ -79,7 +79,7 @@ public class RoomTypesController : Controller
     {
         try
         {
-            await _roomTypeService.DeleteAsync(id);
+            await _menuService.DeleteAsync(id);
             return NoContent();
         }
         catch (HttpRequestException)
@@ -89,11 +89,11 @@ public class RoomTypesController : Controller
     }
         
     [HttpDelete]
-    public async Task<IActionResult> DeleteMany([FromBody] string[] roomTypeIds)
+    public async Task<IActionResult> DeleteMany([FromBody] string[] menuItemIds)
     {
         try
         {
-            await _roomTypeService.DeleteManyAsync(roomTypeIds);
+            await _menuService.DeleteManyAsync(menuItemIds);
             return NoContent();
         }
         catch (HttpRequestException)
