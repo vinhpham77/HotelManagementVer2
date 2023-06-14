@@ -34,5 +34,11 @@ namespace HotelManagement.Models
 
         [JsonProperty("maxChild")]
         public int MaxChild { get; set; }
+
+        public int daysIn(DateTime start, DateTime end)
+        {
+            TimeSpan timeSpan = end.Subtract(start);
+            return (int)(timeSpan.TotalDays);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace HotelManagement.Controllers
 {
@@ -67,26 +68,58 @@ namespace HotelManagement.Controllers
             return PartialView(data);
         }
 
-        public async Task<IActionResult> Order(string reservationDetailId)
+        public async Task<IActionResult> Order(string roomId)
         {
-            var order = await _orderService.GetAsync(reservationDetailId);
+            var room = await _roomService.GetByIdAsync(roomId);
+            var reservationDetail = await _reservationDetailService.GetAsync(roomId, false);
+            var detail = reservationDetail.Items.FirstOrDefault();
+            var order = await _orderService.GetAsync(detail.Id);
             var menu = await _menuItemService.GetAsync();
             var data = new MergeRRO
             {
+                Room = room,
+                Detail = detail,
                 Order = order.FirstOrDefault(),
                 Menu = menu.Items
             };
             return PartialView(data);
         }
 
-        public IActionResult ChangeRoom(string roomId)
+        public async Task<IActionResult> ChangeRoom(string roomId)
         {
-            return View();
+            try
+            {
+                var rentRooms = await _rentRoomService.GetAsync(null, null, null);
+                var room = await _roomService.GetByIdAsync(roomId);
+                var reservationDetail = await _reservationDetailService.GetAsync(roomId, false);
+                var data = new ChangeRent
+                {
+                    RentRooms = rentRooms,
+                    RoomSelect = room,
+                    Detail = reservationDetail.Items.FirstOrDefault()
+            };
+                return PartialView(data);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error retrieving room types");
+                return View("Error");
+            }
         }
 
-        public IActionResult Check()
+        public async Task<IActionResult> Check(string roomId)
         {
-            return View();
+            var room = await _roomService.GetByIdAsync(roomId);
+            var reservationDetail = await _reservationDetailService.GetAsync(roomId, false);
+            var detail = reservationDetail.Items.FirstOrDefault();
+            var order = await _orderService.GetAsync(detail.Id);
+            var data = new MergeRRO
+            {
+                Room = room,
+                Detail = detail,
+                Order = order.FirstOrDefault()
+            };
+            return PartialView(data);
         }
 
         [HttpPut]
@@ -117,6 +150,45 @@ namespace HotelManagement.Controllers
                 try
                 {
                     await _orderService.UpdateAsync(order);
+                    return Json(new { success = true });
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> ChangeRoomPut([FromBody] ChangeRentPut data)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    data.RoomChange.LastCleanedAt = data.RoomChange.LastCleanedAt.ToUniversalTime();
+                    await _roomService.UpdateAsync(data.RoomChange);
+                    await _roomService.UpdateAsync(data.RoomRent);
+                    await _reservationDetailService.UpdateAsync(data.ReDetail);
+                    return Json(new { success = true });
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> UpdateRoom([FromBody] Room room)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _roomService.UpdateAsync(room);
                     return Json(new { success = true });
                 }
                 catch (HttpRequestException)
