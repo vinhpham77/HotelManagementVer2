@@ -1,7 +1,6 @@
 using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace HotelManagement.Controllers;
 
@@ -19,10 +18,16 @@ public class RoomTypesController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword, string? sort, string? order, int? page, int? size)
     {
+        ViewBag.Size = size ?? 10;
+        ViewBag.Page = page ?? 1;
+        ViewBag.Sort = sort ?? "";
+        ViewBag.Order = order ?? "";
+        ViewBag.Keyword = keyword ?? "";
+
         try
         {
             var roomTypes = await _roomTypeService.GetAsync(keyword, sort, order, page, size);
-            return View(roomTypes?.Items);
+            return View(roomTypes);
         }
         catch (HttpRequestException ex)
         {

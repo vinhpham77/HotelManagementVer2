@@ -1,40 +1,63 @@
-@model IEnumerable<RoomType>
+@model LCount<RoomType>
+@using HotelManagement.Utils;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewBag.Title = "Loại phòng";
     Layout = "_Layout";
+
+    var options = new TableOptions
+    {
+        Sort = ViewBag.Sort,
+        Order = ViewBag.Order,
+        ActionName = "Index",
+        ControllerName = "RoomTypes",
+        Page = ViewBag.Page ?? 1,
+        Size = ViewBag.Size,
+        Keyword = ViewBag.Keyword
+    };
 }
 
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
+    <div class="card-header py-3 d-flex">
         <div>
             <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
             <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
         </div>
+        <form class="form-inline ml-auto">
+            <div class="form-group">
+                <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" value="@ViewBag.Keyword" id="search-input">
+            </div>
+            <button type="submit" class="btn btn-primary" id="search-btn">Tìm kiếm</button>
+        </form>
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" width="100%" cellspacing="0">
                 <thead>
                 <tr>
                     <th>
                         <input type="checkbox" id="selectAll" class=""/>
                     </th>
-                    <th>Tên</th>
-                    <th>Mô tả</th>
+                    <th>
+                        Tên
+                        @{
+                            options.Column = "name";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Mô tả
+                        @{
+                            options.Column = "description";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
                     <td>Thao tác</td>
                 </tr>
                 </thead>
-                <tfoot>
-                <tr>
-                    <th></th>
-                    <th>Tên</th>
-                    <th>Mô tả</th>
-                    <td>Thao tác</td>
-                </tr>
-                </tfoot>
                 <tbody>
-                @foreach (var roomType in Model)
+                @foreach (var roomType in Model.Items)
                 {
                     <tr>
                         <td>
@@ -50,6 +73,25 @@
                 }
                 </tbody>
             </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPage = (int)Math.Ceiling((double)Model.Total / ViewBag.Size);
+                    }
+                    <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Đầu</a>
+                    </li>
+                    @for (int i = 1; i <= totalPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = i, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.Page == totalPage ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = totalPage, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Cuối</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -87,137 +129,160 @@
 
 @section Scripts {
     <script>
-            let table = $('#dataTable').DataTable();
+        $('#search-btn').click(function(e) {
+            e.preventDefault();
+            var keyword = $('#search-input').val();
+            var url = '@Url.Action("Index", new { page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })';
+            url = url + '&keyword=' + encodeURIComponent(keyword);
+            
+            // Thay thế ký tự "&amp;" bằng ký tự "&"
+            url = url.replace(/&amp;/g, '&');
+            
+            window.location.href = url;
+        });
+    
+        // Xử lý sự kiện click cho checkbox chọn tất cả
+        $('#selectAll').on('click', function () {
+            let isChecked = $(this).is(':checked');
+            $('.rowCheckbox').prop('checked', isChecked);
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
 
-            // Xử lý sự kiện click cho checkbox chọn tất cả
-            $('#selectAll').on('click', function () {
-                let isChecked = $(this).is(':checked');
-                $('.rowCheckbox').prop('checked', isChecked);
-                updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        // Xử lý sự kiện click cho checkbox của từng dòng
+        $('.rowCheckbox').on('click', function () {
+            let totalCheckboxes = $('.rowCheckbox').length;
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+            // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+            // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        async function getRoomTypeById(roomTypeId) {
+            let response = await fetch(`/RoomTypes/GetById/${roomTypeId}`);
+            let roomType = await response.json();
+            return roomType;
+        }
+
+        async function createRoomType(roomType) {
+            let response = await fetch('/RoomTypes/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roomType)
             });
 
-            // Xử lý sự kiện click cho checkbox của từng dòng
-            $('.rowCheckbox').on('click', function () {
-                let totalCheckboxes = $('.rowCheckbox').length;
-                let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi thêm loại phòng', 'danger');
+            }
+        }
 
-                // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
-                // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
-                $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
-
-                updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        async function updateRoomType(id, roomType) {
+            let response = await fetch(`/RoomTypes/Update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roomType)
             });
 
-            async function getRoomTypeById(roomTypeId) {
-                let response = await fetch(`/RoomTypes/GetById/${roomTypeId}`);
-                let roomType = await response.json();
-                return roomType;
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật loại phòng', 'danger');
             }
+        }
 
-            async function createRoomType(roomType) {
-                let response = await fetch('/RoomTypes/Create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(roomType)
-                });
-
-                if (response.ok) {
-                    location.reload();
-                }
-            }
-
-            async function updateRoomType(id, roomType) {
-                let response = await fetch(`/RoomTypes/Update/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(roomType)
-                });
-
-                if (response.ok) {
-                    location.reload();
-                }
-            }
-
-            async function deleteRoomType(roomTypeId) {
+        async function deleteRoomType(roomTypeId) {
+            showConfirmDialog('Bạn có chắc chắn muốn xóa loại phòng này không?',
+             async () => {
                 let response = await fetch(`/RoomTypes/Delete/${roomTypeId}`, {
                     method: 'DELETE'
                 });
-
+                
                 if (response.ok) {
                     location.reload();
-                }
-            }
-
-            async function deleteManyRoomTypes(roomTypeIds) {
-                let response = await fetch('/RoomTypes/DeleteMany', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(roomTypeIds)
-                });
-
-                if (response.ok) {
-                    location.reload();
-                }
-            }
-            
-            function add() {
-                $('#roomTypeId').val('');
-                $('#roomTypeName').val('');
-                $('#roomTypeDescription').val('');
-                $('#roomTypeModalLabel').text('Thêm loại phòng');
-                $('#roomTypeModal').modal('show');
-            }
-            
-            async function edit(roomTypeId) {
-                let roomType = await getRoomTypeById(roomTypeId);
-                // Điền thông tin loại phòng vào các trường trong modal
-                $('#roomTypeId').val(roomType.id);
-                $('#roomTypeName').val(roomType.name);
-                $('#roomTypeDescription').val(roomType.description);
-                $('#roomTypeModalLabel').text('Sửa loại phòng'); // Cập nhật tên của modal
-                $('#roomTypeModal').modal('show');
-            }
-
-            function saveRoomType() {
-                let roomTypeId = $('#roomTypeId').val();
-                let roomTypeName = $('#roomTypeName').val();
-                let roomTypeDescription = $('#roomTypeDescription').val();
-
-                let roomType = {
-                    id: roomTypeId,
-                    name: roomTypeName,
-                    description: roomTypeDescription
-                };
-
-                if (roomTypeId) {
-                    updateRoomType(roomTypeId, roomType);
                 } else {
-                    createRoomType(roomType);
+                    showAlert('Đã xảy ra lỗi khi xoá loại phòng', 'danger');
                 }
+            });
+        }
 
-                // Đóng modal
-                $('#roomTypeModal').modal('hide');
+        async function deleteManyRoomTypes(roomTypeIds) {
+            let response = await fetch('/RoomTypes/DeleteMany', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roomTypeIds)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi xoá loại phòng', 'danger');
+            }
+        }
+        
+        function add() {
+            $('#roomTypeId').val('');
+            $('#roomTypeName').val('');
+            $('#roomTypeDescription').val('');
+            $('#roomTypeModalLabel').text('Thêm loại phòng');
+            $('#roomTypeModal').modal('show');
+        }
+        
+        async function edit(roomTypeId) {
+            let roomType = await getRoomTypeById(roomTypeId);
+            // Điền thông tin loại phòng vào các trường trong modal
+            $('#roomTypeId').val(roomType.id);
+            $('#roomTypeName').val(roomType.name);
+            $('#roomTypeDescription').val(roomType.description);
+            $('#roomTypeModalLabel').text('Sửa loại phòng'); // Cập nhật tên của modal
+            $('#roomTypeModal').modal('show');
+        }
+
+        function saveRoomType() {
+            let roomTypeId = $('#roomTypeId').val();
+            let roomTypeName = $('#roomTypeName').val();
+            let roomTypeDescription = $('#roomTypeDescription').val();
+
+            let roomType = {
+                id: roomTypeId,
+                name: roomTypeName,
+                description: roomTypeDescription
+            };
+
+            if (roomTypeId) {
+                updateRoomType(roomTypeId, roomType);
+            } else {
+                createRoomType(roomType);
             }
 
-            function updateDeleteButton() {
-                let checkedCheckboxes = $('.rowCheckbox:checked').length;
-                $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
-            }
+            // Đóng modal
+            $('#roomTypeModal').modal('hide');
+        }
 
-            function deleteSelected() {
-                // Lấy danh sách roomTypeId của các loại phòng được chọn
-                let selectedRoomTypeIds = $('input[name="selectedRoomTypes"]:checked').map(function () {
-                    return $(this).val();
-                }).get();
+        function updateDeleteButton() {
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+        }
 
+        function deleteSelected() {
+            // Lấy danh sách roomTypeId của các loại phòng được chọn
+            let selectedRoomTypeIds = $('input[name="selectedRoomTypes"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            showConfirmDialog('Bạn có chắc chắn muốn xóa các loại phòng đã chọn không?', () => {
                 // Xóa các loại phòng được chọn
                 deleteManyRoomTypes(selectedRoomTypeIds);
-            }
+            });
+        }
     </script>
 }
