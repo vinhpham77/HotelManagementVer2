@@ -30,7 +30,7 @@ namespace HotelManagement.Controllers
             _menuItemService = menuItemService;
             _logger = logger;
         }
-        public async Task<IActionResult> Index(string? keyword, string? sort, string? order)
+        public async Task<IActionResult> Index(string? keyword, string? sort, string? order, string? tap)
         {
             try
             {
@@ -38,7 +38,8 @@ namespace HotelManagement.Controllers
                 var reOrder = await _reOrderService.GetAsync(false);
                 var data = new Rent {
                     RentRooms = rentRooms,
-                    ReOrders = reOrder
+                    ReOrders = reOrder,
+                    Tap = tap
                 };
                 return View(data);
             }
@@ -63,7 +64,7 @@ namespace HotelManagement.Controllers
                 Order = order.FirstOrDefault(),
                 Menu = menu.Items
             };
-            return View(data);
+            return PartialView(data);
         }
 
         public IActionResult BottomMenu()
@@ -84,6 +85,13 @@ namespace HotelManagement.Controllers
         public IActionResult Check()
         {
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult EditPost([FromBody] dynamic Edit)
+        {
+
+            return Json(new { success = true });
         }
     }
 }

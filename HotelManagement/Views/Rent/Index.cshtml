@@ -3,19 +3,18 @@
     ViewData["Title"] = "Index";
     Layout = null;
 }
-<<<<<<< HEAD
-git p
-=======
 
 @model HotelManagement.Models.Rent
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
->>>>>>> 0dfed4b90534a1630db12b868fc82a42dbe2680b
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<style>
+</style>
 
 <div class="d-flex fex-row py-4">
     <div class="border-end">
@@ -37,23 +36,23 @@ git p
         
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="watting-tab" data-bs-toggle="tab" data-bs-target="#watting" type="button" role="tab" aria-controls="watting" aria-selected="true"><i class="fa-solid fa-door-open me-2"></i> Phòng chờ</button>
+                <button class="nav-link @(Model.Tap == null ? "active" : "")" id="watting-tab" data-bs-toggle="tab" data-bs-target="#watting" type="button" role="tab" aria-controls="watting" aria-selected="true"><i class="fa-solid fa-door-open me-2"></i> Phòng chờ</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="false"><i class="fa-solid fa-door-closed me-2"></i> Phòng đang thuê</button>
+                <button class="nav-link @(Model.Tap == "rented" ? "active" : "")" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="false"><i class="fa-solid fa-door-closed me-2"></i> Phòng đang thuê</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="clear-tab" data-bs-toggle="tab" data-bs-target="#clear" type="button" role="tab" aria-controls="clear" aria-selected="false"><i class="fa-sharp fa-solid fa-broom-wide me-2"></i> Phòng cần dọn</button>
+                <button class="nav-link @(Model.Tap == "clear" ? "active" : "")" id="clear-tab" data-bs-toggle="tab" data-bs-target="#clear" type="button" role="tab" aria-controls="clear" aria-selected="false"><i class="fa-sharp fa-solid fa-broom-wide me-2"></i> Phòng cần dọn</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sữ</button>
+                <button class="nav-link @(Model.Tap == "history" ? "active" : "")" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sữ</button>
             </li>
         </ul>
         @{
             var today = DateTime.Now;
         }
         <div class="tab-content" id="myTabContent" date="@(today.ToString("yyyy-MM-dd HH:mm:ss"))">
-            <div class="tab-pane fade show active" id="watting" role="tabpanel" aria-labelledby="watting-tab">
+            <div class="tab-pane fade @(Model.Tap == null ? "show active" : "")" id="watting" role="tabpanel" aria-labelledby="watting-tab">
                 <div>
                     @if (Model.RentRooms != null)
                     {
@@ -128,7 +127,7 @@ git p
                     
                 </div>
             </div>
-            <div class="tab-pane fade" id="rented" role="tabpanel" aria-labelledby="rented-tab">
+            <div class="tab-pane fade @(Model.Tap == "rented" ? "show active" : "")" id="rented" role="tabpanel" aria-labelledby="rented-tab">
                 <div>
                     @if (Model.RentRooms != null)
                     {
@@ -224,7 +223,7 @@ git p
                     }
                 </div>
             </div>
-            <div class="tab-pane fade" id="clear" role="tabpanel" aria-labelledby="clear-tab">
+            <div class="tab-pane fade @(Model.Tap == "clear" ? "show active" : "")" id="clear" role="tabpanel" aria-labelledby="clear-tab">
                 <div>
                     <div class="card">
                         <div class="card-header" id="headingClearOne">
@@ -266,7 +265,7 @@ git p
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            <div class="tab-pane fade @(Model.Tap == "history" ? "show active" : "")" id="history" role="tabpanel" aria-labelledby="history-tab">
                 <div>
                     <div class="card">
                         <div class="card-header" id="headingHistoryOne">
