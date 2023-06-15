@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AdditionalFiles Include="Views\Accounts\Index.cshtml" />
       <AdditionalFiles Include="Views\Customers\Index.cshtml" />
     </ItemGroup>
 

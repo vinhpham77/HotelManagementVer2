@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace HotelManagement.Models;
 
@@ -23,5 +24,7 @@ public class Personnel
 
     [JsonProperty("sex")] public bool Sex { get; set; }
 
-    [JsonProperty("birthdate")] public DateTime Birthdate { get; set; }
+    [JsonProperty("birthdate")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+    public DateTime Birthdate { get; set; }
 }

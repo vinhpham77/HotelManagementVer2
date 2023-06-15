@@ -1,0 +1,392 @@
+@model LCount<Account>
+@using HotelManagement.Utils;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewBag.Title = "Tài khoản";
+    Layout = "_Layout";
+
+    var options = new TableOptions
+    {
+        Sort = ViewBag.Sort,
+        Order = ViewBag.Order,
+        ActionName = "Index",
+        ControllerName = "Accounts",
+        Page = ViewBag.Page,
+        Size = ViewBag.Size,
+        Keyword = ViewBag.Keyword
+    };
+
+    var count = 0;
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex">
+        <div>
+            <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
+            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
+        </div>
+        <form class="form-inline ml-auto">
+            <div class="form-group">
+                <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" value="@ViewBag.Keyword" id="search-input">
+            </div>
+            <button type="submit" class="btn btn-primary" id="search-btn">Tìm kiếm</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th class="text-center">
+                        <input type="checkbox" id="selectAll" class=""/>
+                    </th>
+                    <th>
+                        Tên đăng nhập
+                        @{
+                            options.Column = "username";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Trạng thái
+                        @{
+                            options.Column = "status";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Vai trò
+                        @{
+                            options.Column = "role";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var account in Model.Items)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" class="rowCheckbox " name="selectedAccounts" value="@account.Username"/>
+                        </td>
+                        <td>@account.Username</td>
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="status @count" name="status" checked="@account.Status" onclick="toggleStatus('@account.Username', event)">
+                                <label class="custom-control-label" for="status @count">
+                                    @if (account.Status)
+                                    {
+                                        @("Hoạt động")
+                                    }
+                                    else
+                                    {
+                                        @("Bị khoá")
+                                    }
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            @switch (account.Role)
+                            {
+                                case "admin":
+                                    @("Quản trị viên")
+                                    break;
+                                case "personnel":
+                                    @("Nhân viên")
+                                    break;
+                                default:
+                                    @("Khác")
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="edit('@account.Username')">Sửa</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteAccount('@account.Username')">Xóa</button>
+                        </td>
+                    </tr>
+                    count++;
+                }
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPage = (int)Math.Ceiling((double)Model.Total / ViewBag.Size);
+                    }
+                    <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Đầu</a>
+                    </li>
+                    @for (int i = 1; i <= totalPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = i, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.Page == totalPage ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = totalPage, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Cuối</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Account Modal -->
+<div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountModalLabel">Thêm/Sửa tài khoản</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="accountForm">
+                    <input type="hidden" id="id" name="id"/>
+                
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text" class="form-control" id="username" name="username" required/>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="status" name="status">
+                            <label class="custom-control-label" for="status">Trạng thái</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="d-block">Vai trò</label>
+                        <select name="role" class="custom-select" id="role">
+                            <option value="admin">Quản trị viên</option>
+                            <option value="personnel">Nhân viên</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" name="password" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="re-password">Nhập lại mật khẩu</label>
+                        <input type="password" class="form-control" id="re-password" name="re-password" required/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveAccount()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#search-btn').click(function(e) {
+            e.preventDefault();
+            var keyword = $('#search-input').val();
+            var url = '@Url.Action("Index", new { page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })';
+            url = url + '&keyword=' + encodeURIComponent(keyword);
+            
+            // Thay thế ký tự "&amp;" bằng ký tự "&"
+            url = url.replace(/&amp;/g, '&');
+            
+            window.location.href = url;
+        });
+    
+        // Xử lý sự kiện click cho checkbox chọn tất cả
+        $('#selectAll').on('click', function () {
+            let isChecked = $(this).is(':checked');
+            $('.rowCheckbox').prop('checked', isChecked);
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        // Xử lý sự kiện click cho checkbox của từng dòng
+        $('.rowCheckbox').on('click', function () {
+            let totalCheckboxes = $('.rowCheckbox').length;
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+            // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+            // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        async function getAccountByUsername(username) {
+            let response = await fetch(`/Accounts/GetByUsername/${username}`);
+            
+            return await response.json();
+        }
+
+        async function createAccount(account) {
+            let response = await fetch('/Accounts/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(account)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi thêm tài khoản', 'danger');
+            }
+        }
+
+        async function updateAccount(username, account) {
+            const patchDoc = [
+                { "op": "replace", "path": "/status", "value": account.status },
+                { "op": "replace", "path": "/role", "value": account.role },
+                { "op": "replace", "path": "/password", "value": account.password }
+            ];
+            
+            let response = await fetch(`/Accounts/Update/${username}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(patchDoc)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật tài khoản', 'danger');
+            }
+        }
+
+        async function deleteAccount(username) {
+            showConfirmDialog('Bạn có chắc chắn muốn xóa tài khoản này không?',
+             async () => {
+                let response = await fetch(`/Accounts/Delete/${username}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showAlert('Đã xảy ra lỗi khi xoá tài khoản', 'danger');
+                }
+            });
+        }
+
+        async function deleteManyAccounts(usernames) {
+            let response = await fetch('/Accounts/DeleteMany', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(usernames)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi xoá tài khoản', 'danger');
+            }
+        }
+        
+        function add() {
+            $('#id').val('');
+            $('#username').val('');
+            $('#username').readOnly = false;
+            $('#status').prop('checked', true);
+            $('#role').val('personnel');
+            $('#password').val('');
+            $('#re-password').val('');
+            $('#accountModalLabel').text('Thêm tài khoản');
+            $('#accountModal').modal('show');
+        }
+        
+        async function edit(username) {
+            let account = await getAccountByUsername(username);
+            // Điền thông tin tài khoản vào các trường trong modal
+            $('#id').val(account.id);
+            $('#username').val(account.username);
+            $('#username').readOnly = true;
+            $('#status').prop('checked', account.status);
+            $('#role').val(account.role);
+            $('#password').val('');
+            $('#re-password').val('');
+            $('#accountModalLabel').text('Sửa tài khoản'); // Cập nhật tên của modal
+            $('#accountModal').modal('show');
+        }
+
+        function saveAccount() {
+            let id = $('#id').val();
+            let username = $('#username').val();
+            let status = $('#status').is(':checked');
+            let role = $('#role').val();
+            let password = $('#password').val();
+            let rePassword = $('#re-password').val();
+            
+            // Kiểm tra các trường bắt buộc
+            if (password !== rePassword) {
+                return;
+            }
+
+            let account = {
+                id,
+                username,
+                status,
+                role,
+                password
+            };
+
+            if (id) {
+                updateAccount(username, account);
+            } else {
+                createAccount(account);
+            }
+
+            // Đóng modal
+            $('#accountModal').modal('hide');
+        }
+
+        function updateDeleteButton() {
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+        }
+
+        function deleteSelected() {
+            // Lấy danh sách username của các tài khoản được chọn
+            let selectedUsernames = $('input[name="selectedAccounts"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            showConfirmDialog('Bạn có chắc chắn muốn xóa các tài khoản đã chọn không?', () => {
+                // Xóa các tài khoản được chọn
+                deleteManyAccounts(selectedUsernames);
+            });
+        }
+        
+        async function toggleStatus(username, event) {
+            let status = event.target.checked;
+            
+            const patchDoc = [{
+                'op': 'replace',
+                'path': '/status',
+                'value': status
+            }];
+            
+            let response = await fetch(`/Accounts/Update/${username}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(patchDoc),
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật trạng thái tài khoản', 'danger');
+            }
+        }
+    </script>
+}
