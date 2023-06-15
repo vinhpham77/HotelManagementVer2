@@ -1,6 +1,7 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Dependency;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace HotelManagement.Controllers
@@ -189,6 +190,40 @@ namespace HotelManagement.Controllers
                 try
                 {
                     await _roomService.UpdateAsync(room);
+                    return Json(new { success = true });
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> CheckOut([FromBody] MergeRRO merge)
+        {
+            if (ModelState.IsValid && merge.Detail.CheckedOutAt != null)
+            {
+                try
+                {
+                    var orderPrice = merge.Order.TotalPrice(merge.Order);
+                    var priceRoom = merge.Detail.roomPiceDay(merge.Detail, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
+                    var roomSurcharge = merge.Detail.roomSurcharge(merge.Detail, merge.Room, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
+                    Receipt receipt = new Receipt
+                    {
+                        PersonnelId = merge.Detail.CustomerId,
+                        ReservationDetailId = merge.Detail.Id,
+                        CreatedAt = DateTime.Now,
+                        OrderPrice = orderPrice,
+                        TotalPrice = orderPrice + priceRoom + roomSurcharge
+                    };
+                    merge.Detail.CheckedInAt = merge.Detail.CheckedInAt.ToUniversalTime();
+                    merge.Detail.CheckedOutAt = merge.Detail.CheckedOutAt.Value.ToUniversalTime();
+
+                    await _roomService.UpdateAsync(merge.Room);
+                    await _reservationDetailService.UpdateAsync(merge.Detail);
+
                     return Json(new { success = true });
                 }
                 catch (HttpRequestException)
