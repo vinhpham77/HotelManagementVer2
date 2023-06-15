@@ -13,6 +13,13 @@ public static class ServiceCollectionExtensions
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
+        
+        services.AddHttpClient<CustomerService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
 
         services.AddHttpClient<MenuService>(client =>
         {

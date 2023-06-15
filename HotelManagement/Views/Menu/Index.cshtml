@@ -35,7 +35,7 @@
             <table class="table table-bordered" width="100%" cellspacing="0">
                 <thead>
                 <tr>
-                    <th>
+                    <th class="text-center">
                         <input type="checkbox" id="selectAll" class=""/>
                     </th>
                     <th>Tên 
@@ -62,36 +62,32 @@
                             @TableHelpers.GetSortArrow(options, Url)
                         }
                     </th>
-                    <td>Thao tác</td>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach (var menuItem in Model.Items)
                 {
                     <tr>
-                        <td>
+                        <td class="text-center">
                             <input type="checkbox" class="rowCheckbox " name="selectedMenuItems" value="@menuItem.Id"/>
                         </td>
                         <td>@menuItem.Name</td>
                         <td>
-
-                            @{
-                                if (menuItem.Type.HasValue)
+                            @if (!menuItem.Type.HasValue)
+                            {
+                                @("Khác")
+                            }
+                            else
+                            {
+                                if (menuItem.Type is true)
                                 {
-                                    if (menuItem.Type is true)
-                                    {
-                                        @("Thức ăn")
-                                    }
-                                    else
-                                    {
-                                        @("Đồ uống")
-                                    }
+                                    @("Thức ăn")
                                 }
                                 else
                                 {
-                                    @("Khác")
+                                    @("Đồ uống")
                                 }
-
                             }
                         </td>
                         <td>@Html.DisplayFor(_ => menuItem.ImportPrice)</td>

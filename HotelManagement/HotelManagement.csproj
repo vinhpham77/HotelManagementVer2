@@ -24,4 +24,8 @@
 
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Customers\Index.cshtml" />
+    </ItemGroup>
+
 </Project>
