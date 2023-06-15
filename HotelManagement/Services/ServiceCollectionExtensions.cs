@@ -84,6 +84,20 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
 
+        services.AddHttpClient<ReceiptService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<HistoryRentService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
         return services;
     }
 
