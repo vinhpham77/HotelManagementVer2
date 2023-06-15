@@ -31,11 +31,40 @@
     }
 </style>
 
+<style>
+    .container-mess {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-mess {
+        padding: 8px 16px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+</style>
+
 <div class="hearder border-end d-flex justify-content-between">
     <p>@Model.Room.Name</p>
-    <button type="button" class="btn btn-success">Lưu</button>
+    <button type="button" class="btn btn-success" onclick="saveCheck()">Trả phòng</button>
 </div>
 @{
+    var room = JsonConvert.SerializeObject(Model.Room);
+    var detail = JsonConvert.SerializeObject(Model.Detail);
+    var order = JsonConvert.SerializeObject(Model.Order);
     DateTime today = DateTime.Now;
     var orderPrice = Model.Order.TotalPrice(Model.Order);
     var roomPiceDay = Model.Detail.roomPiceDay(Model.Detail, Model.Detail.CheckedInAt, today);
@@ -140,14 +169,14 @@
         <div class="me-3">
             <label>Tiền menu</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="@(orderPrice)" min="0" />
+                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="@(orderPrice/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
         <div>
             <label>Tổng tiền</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="@(roomPiceDay + orderPrice + roomSurcharge)" min="0" />
+                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="@((roomPiceDay + orderPrice + roomSurcharge)/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
@@ -157,13 +186,67 @@
         <div>
             <label>Tiền cần thanh toán</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="@(roomPiceDay + orderPrice + roomSurcharge - Model.Detail.Deposit)" min="0" />
+                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="@((roomPiceDay + orderPrice + roomSurcharge - Model.Detail.Deposit)/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
     </div>
 
 </div>
+
+<div class="container-mess" onclick="exitMess()" id="containerMess">
+    <div class="content-mess" id="contentMess">
+        <h2 class="my-4">Xác nhận</h2>
+        <div class="m-3">
+            Thực hiện trả phòng @Model.Room.Name
+        </div>
+        <div class="my-2 d-flex justify-content-end">
+            <button class="btn" onclick="exitMess()">Hủy bỏ</button>
+            <button class="btn" onclick="confirm()">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    var room = @Html.Raw(room);
+    var detail = @Html.Raw(detail);
+    var today = new Date();
+    var order = @Html.Raw(order);
+
+    async function saveCheck()
+    {
+        $("#containerMess").css('display', 'flex');
+    }
     
+    async function confirm() {
+        detail.checkedInAt = new Date(detail.checkedInAt);
+        
+        detail.checkedOutAt = today;
+        detail.checkedOutAt.setHours(detail.checkedOutAt.getHours() + 7);
+        room.isEmpty = true
+        $.ajax({
+            url: '/rent/CheckOut',
+            type: 'PUT',
+            data: JSON.stringify({ room: room, detail: detail, order: order }),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result)
+                    window.location.replace('/rent?tap=rented');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
+    }
+
+    async function exitMess()
+    {
+        $("#containerMess").hide();
+    }
+    $("#contentMess").click(function (event) {
+        event.stopPropagation();
+    })
+
+
 </script>

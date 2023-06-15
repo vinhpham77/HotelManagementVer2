@@ -1,0 +1,369 @@
+﻿
+@{
+    Layout = null;
+}
+
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@model HistoryRent
+
+<style>
+    input[type="number"] {
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+
+    .quantity-input {
+        width: 36px;
+        padding: 5px 0;
+        outline: none;
+    }
+
+    .out-none {
+        outline: none;
+    }
+</style>
+
+<style>
+    .container-mess {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-mess {
+        padding: 8px 16px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+</style>
+
+<div class="hearder border-end d-flex justify-content-between">
+    <p>@Model.NameRoom</p>
+    <button type="button" onclick="saveClick()" class="btn btn-success">Lưu</button>
+</div>
+@{
+    var reciept = JsonConvert.SerializeObject(Model.Receipt);
+    var detail = JsonConvert.SerializeObject(Model.Detail);
+    var roomPiceDay = Model.Detail.roomPiceDay(Model.Detail, Model.Detail.CheckedInAt, Model.Detail.CheckedOutAt.Value);
+}
+<div class="body">
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <label>Ngày nhận phòng</label>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" onchange="changeCheckIn()" id="checkInDate" readonly value="@(Model.Detail.CheckedInAt.ToString("MM-dd-yyyy"))">
+                <span class="input-group" id="icon_checkInDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <lable>Giờ nhận phòng</lable>
+            <input type="text" class="form-control" onchange="changeInTime()" id="checkInTime" value="@(Model.Detail.CheckedInAt.ToString("HH:mm"))">
+        </div>
+    </div>
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <lable>Ngày trả phòng</lable>
+            <div class="d-flex me-3">
+                <input type="text" class="form-control" onchange="changeCheckOut()" id="checkOutDate" readonly value="@(Model.Detail.CheckedOutAt.Value.ToString("MM-dd-yyyy"))">
+                <span class="input-group" id="icon_checkOutDate">
+                    <span class="input-group-text bg-white">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div>
+            <label>Giờ trả phòng</label>
+            <input type="text" class="form-control" onchange="changeOutTime()" id="checkOutTime" value="@(Model.Detail.CheckedOutAt.Value.ToString("HH:mm"))">
+        </div>
+    </div>
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <lable>Số người lớn @Model.Detail.TotalAdults</lable>
+        </div>
+        <div>
+            <lable>Số trẻ nhỏ @Model.Detail.TotalChildren</lable>
+        </div>
+    </div>
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <label>Tiền phòng</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceRoom" class="text-end out-none p-0 border-0 border-bottom" readonly value="@(roomPiceDay/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>Tiền phòng <span id="totalDay">@Model.Detail.daysIn(Model.Detail.CheckedInAt, Model.Detail.CheckedOutAt.Value)</span> ngày</div>
+    </div>
+
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <label>Phụ thu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputCollectionFee" class="text-end out-none p-0 border-0 border-bottom" readonly value="@((Model.Receipt.TotalPrice - Model.Receipt.OrderPrice - roomPiceDay)/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tiền trả trước</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputDeposit" class="text-end out-none p-0 border-0 border-bottom" readonly value="@(Model.Detail.Deposit/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mt-2">
+        <div class="me-3">
+            <label>Tiền menu</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" readonly value="@(Model.Receipt.OrderPrice/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+        <div>
+            <label>Tổng tiền</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" readonly value="@(Model.Receipt.TotalPrice/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mt-2">
+        <div>
+            <label>Tiền cần thanh toán</label>
+            <div class="d-flex mt-3">
+                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" readonly value="@((Model.Receipt.TotalPrice - Model.Detail.Deposit)/1000)" min="0" />
+                <span class="border-bottom">.000 ₫</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container-mess" onclick="exitMess()" id="containerMess">
+    <div class="content-mess" id="contentMess">
+        <h2 class="my-4">Xác nhận</h2>
+        <div class="m-3">
+            Chỉnh sửa lịch sử đặt phòng
+        </div>
+        <div class="my-2 d-flex justify-content-end">
+            <button class="btn" onclick="exitMess()">Hủy bỏ</button>
+            <button class="btn" onclick="confirm()">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var detail = @Html.Raw(detail);
+    var reciept = @Html.Raw(reciept);
+
+    detail.checkedInAt = new Date(detail.checkedInAt);
+    detail.checkedInAt.setHours(detail.checkedInAt.getHours() - 7);
+    detail.checkedOutAt = new Date(detail.checkedOutAt);
+    detail.checkedOutAt.setHours(detail.checkedOutAt.getHours() - 7);
+
+    $(document).ready(function () {
+
+        let checkInDate = $("#checkInDate");
+
+        $("#icon_checkInDate").click(function () {
+            checkInDate.datepicker("show");
+        });
+
+        checkInDate.datepicker({
+            beforeShowDay: function (date) {
+                var currentDate = new Date();
+                currentDate.setDate(currentDate.getDate());
+                return [date < currentDate];
+            }
+        });
+
+        let checkOutDate = $("#checkOutDate");
+
+        $("#icon_checkOutDate").click(function () {
+            checkOutDate.datepicker("show");
+        });
+
+        checkOutDate.datepicker({
+            beforeShowDay: function (date) {
+                var currentDate = new Date();
+                currentDate.setDate(currentDate.getDate());
+                return [date < currentDate];
+            }
+        });
+    });
+
+    var errorInDate = false;
+    var errorOutDate = false;
+
+    async function changeCheckIn() {
+        var d = new Date($("#checkInDate").val() + ' ' + $("#checkInTime").val() + ':00');
+        if (d.getTime() < detail.checkedOutAt.getTime())
+        {
+            detail.checkedInAt = d;
+            setError(true);
+            setPrice();
+        }
+        else
+        {
+            setError(false);
+        }
+    }
+
+    async function changeInTime() {
+        var kt = forMatTime($("#checkInTime").val())
+
+        if (kt) {
+
+            var chooceDate = new Date($("#checkInDate").val() + ' ' + $("#checkInTime").val() + ':00');
+            if (chooceDate.getTime() < detail.checkedOutAt.getTime());
+            {
+                detail.checkedInAt = chooceDate;
+                $("#checkInTime").removeClass("is-invalid");
+                errorInDate = false;
+                setPrice();
+                return;
+            }
+        }
+            $("#checkInTime").addClass("is-invalid");
+        errorInDate = true;
+    }
+
+    async function changeCheckOut() {
+        var d = new Date($("#checkOutDate").val() + ' ' + $("#checkOutTime").val() + ':00');
+        if (d.getTime() > detail.checkedInAt.getTime()) {
+            detail.checkedOutAt = d;
+            setError(true);
+            setPrice();
+        }
+        else {
+            setError(false);
+        }
+    }
+
+    async function changeOutTime() {
+        var kt = forMatTime($("#checkOutTime").val())
+
+        if (kt) {
+
+            var chooceDate = new Date($("#checkOutDate").val() + ' ' + $("#checkOutTime").val() + ':00');
+            if (chooceDate.getTime() > detail.checkedInAt.getTime());
+            {
+                detail.checkedOutAt = chooceDate;
+                $("#checkOutTime").removeClass("is-invalid");
+                errorInDate = false;
+                setPrice();
+                return;
+            }
+        }
+        $("#checkOutTime").addClass("is-invalid");
+        errorInDate = true;
+    }
+
+    function forMatTime(s) {
+        let subS = s.split(":");
+        let isAllDigitsHourse = /^\d+$/.test(subS[0]);
+        let isAllDigitsMinute = /^\d+$/.test(subS[1]);
+        if (isAllDigitsHourse && parseInt(subS[0]) < 24 && isAllDigitsMinute && parseInt(subS[1]) < 60)
+            return true;
+        return false;
+    }
+
+    function setError(t)
+    {
+        if(t)
+        {
+            errorInDate = false;
+            errorOutDate = false;
+            $("#checkInTime").removeClass("is-invalid");
+            $("#checkOutTime").removeClass("is-invalid");
+        }
+        else
+        {
+            errorInDate = true;
+            errorOutDate = true;
+            $("#checkInTime").addClass("is-invalid");
+            $("#checkOutTime").addClass("is-invalid");
+        }
+    }
+
+    function setPrice()
+    {
+        var t = daysIn(detail.checkedInAt, detail.checkedOutAt);
+        $("#totalDay").html(t);
+        var price = t * detail.roomPricePerDay;
+        reciept.totalPrice = reciept.totalPrice - $("#inputPriceRoom").val()*1000 + price;
+        $("#inputTotalMoney").val(reciept.totalPrice/1000);
+        $("#inputPriceRoom").val(price/1000)
+        $("#inputIntoMoney").val((reciept.totalPrice - detail.deposit)/1000);
+    }
+
+    function daysIn(checkIn, checkOut) {
+        t1 = new Date(checkIn);
+        t2 = new Date(checkOut);
+
+        t1.setHours(12);
+        t1.setMinutes(0);
+        t2.setHours(12);
+        t2.setMinutes(0);
+        return Math.floor((t2.getTime() - t1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+    }
+
+    async function saveClick() {
+        if (!errorInDate && !errorOutDate)
+            $("#containerMess").css('display', 'flex');
+    }
+
+    async function confirm() {
+        detail.checkedInAt.setHours(detail.checkedInAt.getHours() + 7);
+        detail.checkedOutAt.setHours(detail.checkedOutAt.getHours() + 7);
+        $.ajax({
+            url: '/rent/UpdateHistory',
+            type: 'PUT',
+            data: JSON.stringify({ detail: detail, receipt: reciept }),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result)
+                    window.location.replace('/rent?tap=history');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
+    }
+
+    async function exitMess() {
+        $("#containerMess").hide();
+    }
+    $("#contentMess").click(function (event) {
+        event.stopPropagation();
+    })
+</script>

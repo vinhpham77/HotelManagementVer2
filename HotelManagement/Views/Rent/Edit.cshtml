@@ -170,6 +170,7 @@
     var newOrder = [];
     var menu = @Html.Raw(menu);
     detail.checkedInAt = new Date(detail.checkedInAt);
+    detail.checkedInAt.setHours(detail.checkedInAt.getHours() - 7);
 
     menu.forEach(function (item, index) {
         addHtmlMenu(createHtmlMenu(item), item);

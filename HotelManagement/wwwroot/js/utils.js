@@ -54,7 +54,6 @@ function showConfirmDialog(message, onConfirm) {
 
     confirmDialog.modal('show');
     confirmDialog.find('#confirmButton').on('click', () => {
-        console.log("ok");
         onConfirm();
         confirmDialog.modal('hide');
     });

@@ -22,5 +22,11 @@ namespace HotelManagement.Models
 
         [JsonProperty("totalPrice")]
         public double TotalPrice { get; set; }
+
+        public int daysIn(DateTime start, DateTime end)
+        {
+            TimeSpan timeSpan = end.Subtract(start);
+            return (int)(timeSpan.TotalDays);
+        }
     }
 }

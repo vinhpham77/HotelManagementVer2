@@ -8,5 +8,8 @@ namespace HotelManagement.Models
         public List<ReOrder>? ReOrders { get; set; }
         public string? Tap { get; set; } = null;
 
+        public List<HistoryRent>? History { get; set; }
+
+        public string Order { get; set; }
     }
 }

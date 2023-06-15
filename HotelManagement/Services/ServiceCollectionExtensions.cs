@@ -69,7 +69,33 @@ public static class ServiceCollectionExtensions
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
+<<<<<<< HEAD
         services.AddHttpClient<BookRoomService>(client =>
+=======
+        
+        services.AddHttpClient<AccountService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<StaffService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<ReceiptService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<HistoryRentService>(client =>
+>>>>>>> 8ce1927141cde22b17d43b1f8763f6d0c0aba35e
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;

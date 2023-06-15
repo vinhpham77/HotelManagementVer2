@@ -1,0 +1,444 @@
+@model LCount<Personnel>
+@using HotelManagement.Utils
+
+@{
+    ViewBag.Title = "Nhân sự";
+    Layout = "_Layout";
+
+    var options = new TableOptions
+    {
+        Sort = ViewBag.Sort,
+        Order = ViewBag.Order,
+        ActionName = "Index",
+        ControllerName = "Staff",
+        Page = ViewBag.Page,
+        Size = ViewBag.Size,
+        Keyword = ViewBag.Keyword
+    };
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex">
+        <div>
+            <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
+            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
+        </div>
+        <form class="form-inline ml-auto">
+            <div class="form-group">
+                <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" value="@ViewBag.Keyword" id="search-input">
+            </div>
+            <button type="submit" class="btn btn-primary" id="search-btn">Tìm kiếm</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th class="text-center">
+                        <input type="checkbox" id="selectAll" class=""/>
+                    </th>
+                    <th>
+                        Họ tên
+                        @{
+                            options.Column = "fullName";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Tên đăng nhập
+                        @{
+                            options.Column = "username";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Giới tính
+                        @{
+                            options.Column = "sex";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Ngày sinh
+                        @{
+                            options.Column = "birthdate";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Số điện thoại
+                        @{
+                            options.Column = "phoneNumber";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        CMT/Hộ chiếu
+                        @{
+                            options.Column = "idNo";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>
+                        Quốc tịch
+                        @{
+                            options.Column = "nationality";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var personnel in Model.Items)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" class="rowCheckbox " name="selectedStaff" value="@personnel.Id"/>
+                        </td>
+                        <td>@personnel.FullName</td>
+                        <td>@personnel.Username</td>
+                        <td>
+                            @if (!personnel.Sex)
+                            {
+                                @("Nữ")
+                            }
+                            else
+                            {
+                                @("Nam")
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(_ => personnel.Birthdate)</td>
+                        <td>@personnel.PhoneNumber</td>
+                        <td>@personnel.IdNo</td>
+                        <td>@personnel.Nationality</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="edit('@personnel.Id')">Sửa</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deletePersonnel('@personnel.Id')">Xóa</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPage = (int)Math.Ceiling((double)Model.Total / ViewBag.Size);
+                    }
+                    <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Đầu</a>
+                    </li>
+                    @for (int i = 1; i <= totalPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = i, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.Page == totalPage ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = totalPage, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Cuối</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Personnel Modal -->
+<div class="modal fade" id="personnelModal" tabindex="-1" aria-labelledby="personnelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="personnelModalLabel">Thêm/Sửa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="personnelForm">
+                    <input type="hidden" id="personnelId" name="personnelId"/>
+                    <input type="hidden" id="fullName" name="fullName" />
+
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="lastName">Họ</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required/>
+                        </div>
+                        <div class="form-group col">
+                            <label for="firstName">Tên</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="d-block">Tên đăng nhập</label>
+                        <select name="username" class="custom-select" id="username">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sex" class="d-block">Giới tính</label>
+                        <div class="form-check form-check-inline" id="sex">
+                            <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
+                            <label class="form-check-label" for="male">
+                                Nam
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sex" id="female" value="female">
+                            <label class="form-check-label" for="female">
+                                Nữ
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="birthdate">Ngày sinh</label>
+                            <input type="date" class="form-control" id="birthdate" required placeholder="MM/dd/yyyy">
+                        </div>
+                        <div class="form-group col">
+                            <label for="phoneNumber">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phoneNumber">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="idNo">CMT/Hộ chiếu</label>
+                            <input type="text" class="form-control" id="idNo" required>
+                        </div>
+                        <div class="form-group col">
+                            <label for="nationality">Quốc tịch</label>
+                            <input type="text" class="form-control" id="nationality" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="savePersonnel()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function getUsernames() {
+            let response = await fetch(`/Accounts/GetUsernames`);
+            return await response.json();
+        }
+                
+        async function loadUsernames() {
+            let usernames = await getUsernames();
+            let usernameSelect = $('#username');
+            
+            usernames.forEach(username => {
+                let option = `<option value="${username}">${username}</option>`;
+                usernameSelect.append(option);
+            });
+        }
+                
+        $('#search-btn').click(function(e) {
+            e.preventDefault();
+            var keyword = $('#search-input').val();
+            var url = '@Url.Action("Index", new { page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })';
+            url = url + '&keyword=' + encodeURIComponent(keyword);
+            
+            // Thay thế ký tự "&amp;" bằng ký tự "&"
+            url = url.replace(/&amp;/g, '&');
+            
+            window.location.href = url;
+        });
+    
+        // Xử lý sự kiện click cho checkbox chọn tất cả
+        $('#selectAll').on('click', function () {
+            let isChecked = $(this).is(':checked');
+            $('.rowCheckbox').prop('checked', isChecked);
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        // Xử lý sự kiện click cho checkbox của từng dòng
+        $('.rowCheckbox').on('click', function () {
+            let totalCheckboxes = $('.rowCheckbox').length;
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+            // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+            // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        async function getPersonnelById(personnelId) {
+            let response = await fetch(`/Staff/GetById/${personnelId}`);
+            
+            return await response.json();
+        }
+
+        async function createPersonnel(personnel) {
+            let response = await fetch('/Staff/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(personnel)
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi thêm nhân sự', 'danger');
+            }
+        }
+
+        async function updatePersonnel(id, personnel) {
+            let response = await fetch(`/Staff/Update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(personnel)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật nhân sự', 'danger');
+            }
+        }
+
+        async function deletePersonnel(personnelId) {
+            showConfirmDialog('Bạn có chắc chắn muốn xóa nhân sự này không?',
+            async () => {
+                let response = await fetch(`/Staff/Delete/${personnelId}`, {
+                    method: 'DELETE'
+                });
+    
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showAlert('Đã xảy ra lỗi khi xóa nhân sự', 'danger');
+                }
+            });
+        }
+
+        async function deleteManyStaff(personnelIds) {
+            let response = await fetch('/Staff/DeleteMany', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(personnelIds)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi xóa nhiều nhân sự', 'danger');
+            }
+        }
+            
+        function add() {
+            $('#personnelId').val('');
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $('#fullName').val('');
+            $('#male').prop('checked', true);
+            loadUsernames();
+            $('#phoneNumber').val('');
+            $('#birthdate').val('');
+            $('#idNo').val('');
+            $('#nationality').val('Việt Nam');
+            $('#personnelModalLabel').text('Thêm');
+            $('#personnelModal').modal('show');
+        }
+        
+        async function edit(personnelId) {
+            let personnel = await getPersonnelById(personnelId);
+            // Điền thông tin vào các trường trong modal
+            $('#personnelId').val(personnel.id);
+            $('#firstName').val(personnel.firstName);
+            $('#lastName').val(personnel.lastName);
+            $('#fullName').val(personnel.fullName);
+            
+            if (personnel.sex) {
+                $('#male').prop('checked', true);    
+            } else {
+                $('#female').prop('checked', true);
+            }
+            
+            await loadUsernames();
+            $('#username').val(personnel.username);
+            
+            $('#phoneNumber').val(personnel.phoneNumber);
+            
+            let birthdate = new Date(personnel.birthdate);
+                
+            // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
+            let day = birthdate.getDate().toString().padStart(2, '0');
+            let month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
+            let year = birthdate.getFullYear();
+            let formattedBirthdate = `${year}-${month}-${day}`;
+        
+            // Gán giá trị đã định dạng vào trường birthdate
+            $('#birthdate').val(formattedBirthdate);
+            
+            $('#idNo').val(personnel.idNo);
+            $('#nationality').val(personnel.nationality);
+            $('#personnelModalLabel').text('Sửa'); // Cập nhật tên của modal
+            $('#personnelModal').modal('show');
+        }
+
+        function savePersonnel() {
+            let id = $('#personnelId').val();
+            let firstName = $('#firstName').val();
+            let lastName = $('#lastName').val();
+            let fullName = $('#fullName').val();
+            let sex = $('#male').is(':checked');
+            let phoneNumber = $('#phoneNumber').val();
+            let username = $('#username').val();
+            let idNo = $('#idNo').val();
+            let birthdateInput = $('#birthdate').val();
+            let birthdateObject = new Date(birthdateInput);
+            let birthdate = birthdateObject.toISOString();
+            let nationality = $('#nationality').val();
+            
+           let personnel = {
+               id,
+               firstName,
+               lastName,
+               fullName,
+               sex,
+               username,
+               phoneNumber,
+               birthdate,
+               idNo,
+               nationality    
+           }
+            
+            if (id) {
+                updatePersonnel(id, personnel);
+            } else {
+                createPersonnel(personnel);
+            }
+
+            // Đóng modal
+            $('#personnelModal').modal('hide');
+        }
+
+        function updateDeleteButton() {
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+        }
+
+        function deleteSelected() {
+            // Lấy danh sách personnelIds của các nhân sự được chọn
+            let selectedPersonnelIds = $('input[name="selectedStaff"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            showConfirmDialog('Bạn có chắc chắn muốn xóa các nhân sự đã chọn không?', () => {
+                // Xóa các nhân sự được chọn
+                deleteManyStaff(selectedPersonnelIds);
+            });
+        }
+    </script>
+}
