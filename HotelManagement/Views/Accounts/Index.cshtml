@@ -294,7 +294,7 @@
         function add() {
             $('#id').val('');
             $('#username').val('');
-            $('#username').readOnly = false;
+            $('#username').prop('readOnly', false);
             $('#status').prop('checked', true);
             $('#role').val('personnel');
             $('#password').val('');
@@ -308,7 +308,7 @@
             // Điền thông tin tài khoản vào các trường trong modal
             $('#id').val(account.id);
             $('#username').val(account.username);
-            $('#username').readOnly = true;
+            $('#username').prop('readOnly', true); // Không cho phép chỉnh sửa username
             $('#status').prop('checked', account.status);
             $('#role').val(account.role);
             $('#password').val('');
