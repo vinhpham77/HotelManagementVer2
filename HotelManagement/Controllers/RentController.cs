@@ -1,5 +1,6 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Dependency;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
@@ -14,14 +15,18 @@ namespace HotelManagement.Controllers
         private readonly ReservationDetailService _reservationDetailService;
         private readonly OrderService _orderService;
         private readonly MenuItemService _menuItemService;
+        private readonly ReceiptService _receiptService;
+        private readonly HistoryRentService _historyRentService;
         private readonly ILogger<RentController> _logger;
 
-        public RentController(RentRoomService rentRoomService, 
+        public RentController(RentRoomService rentRoomService,
             ReOrderService reOrderService,
             RoomService roomService,
             ReservationDetailService reservationDetailService,
             OrderService orderService,
             MenuItemService menuItemService,
+            ReceiptService receiptService,
+            HistoryRentService historyRentService,
             ILogger<RentController> logger)
         {
             _rentRoomService = rentRoomService;
@@ -30,18 +35,27 @@ namespace HotelManagement.Controllers
             _reservationDetailService = reservationDetailService;
             _orderService = orderService;
             _menuItemService = menuItemService;
+            _receiptService = receiptService;
+            _historyRentService = historyRentService;
             _logger = logger;
         }
         public async Task<IActionResult> Index(string? keyword, string? sort, string? order, string? tap)
         {
             try
             {
+                if (string.IsNullOrEmpty(sort))
+                    sort = "name";
+                if (string.IsNullOrEmpty(order))
+                    order = "asc";
                 var rentRooms = await _rentRoomService.GetAsync(keyword, sort, order);
                 var reOrder = await _reOrderService.GetAsync(false);
+                var history = await _historyRentService.GetAsync();
                 var data = new Rent {
                     RentRooms = rentRooms,
                     ReOrders = reOrder,
-                    Tap = tap
+                    Tap = tap,
+                    History = history,
+                    Order = order
                 };
                 return View(data);
             }
@@ -123,6 +137,12 @@ namespace HotelManagement.Controllers
             return PartialView(data);
         }
 
+        public async Task<IActionResult> UpdateHistory(string receiptId)
+        {
+            HistoryRent history = await _historyRentService.GetByIdAsync(receiptId);
+            return PartialView(history);
+        }
+
         [HttpPut]
         public async Task<JsonResult> EditPut([FromBody] ReOrder Edit)
         {
@@ -200,30 +220,54 @@ namespace HotelManagement.Controllers
             return Json(new { success = false });
         }
 
-        [HttpPut]
-        public async Task<JsonResult> CheckOut([FromBody] MergeRRO merge)
+        [HttpGet]
+        public async Task<JsonResult> GetById(string id)
         {
-            if (ModelState.IsValid && merge.Detail.CheckedOutAt != null)
+            var receipt = await _receiptService.GetByIdAsync(id);
+            return Json(receipt);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> CheckOut([FromBody] MergeRRO merge)
+        {
+            try
+            {
+                var orderPrice = merge.Order.TotalPrice(merge.Order);
+                var priceRoom = merge.Detail.roomPiceDay(merge.Detail, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
+                var roomSurcharge = merge.Detail.roomSurcharge(merge.Detail, merge.Room, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
+                Receipt receipt = new Receipt
+                {
+                    PersonnelId = merge.Detail.CustomerId,
+                    ReservationDetailId = merge.Detail.Id,
+                    CreatedAt = DateTime.Now,
+                    OrderPrice = orderPrice,
+                    TotalPrice = orderPrice + priceRoom + roomSurcharge
+                };
+                merge.Detail.CheckedInAt = merge.Detail.CheckedInAt.ToUniversalTime();
+                merge.Detail.CheckedOutAt = merge.Detail.CheckedOutAt.Value.ToUniversalTime();
+
+                await _roomService.UpdateAsync(merge.Room);
+                await _reservationDetailService.UpdateAsync(merge.Detail);
+                await _receiptService.CreateAsync(receipt);
+                return Json(new { success = true });
+            }
+            catch (HttpRequestException)
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> UpdateHistory([FromBody] HistoryRent history)
+        {
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    var orderPrice = merge.Order.TotalPrice(merge.Order);
-                    var priceRoom = merge.Detail.roomPiceDay(merge.Detail, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
-                    var roomSurcharge = merge.Detail.roomSurcharge(merge.Detail, merge.Room, merge.Detail.CheckedInAt, merge.Detail.CheckedOutAt.Value);
-                    Receipt receipt = new Receipt
-                    {
-                        PersonnelId = merge.Detail.CustomerId,
-                        ReservationDetailId = merge.Detail.Id,
-                        CreatedAt = DateTime.Now,
-                        OrderPrice = orderPrice,
-                        TotalPrice = orderPrice + priceRoom + roomSurcharge
-                    };
-                    merge.Detail.CheckedInAt = merge.Detail.CheckedInAt.ToUniversalTime();
-                    merge.Detail.CheckedOutAt = merge.Detail.CheckedOutAt.Value.ToUniversalTime();
-
-                    await _roomService.UpdateAsync(merge.Room);
-                    await _reservationDetailService.UpdateAsync(merge.Detail);
-
+                    history.Detail.CheckedInAt = history.Detail.CheckedInAt.ToUniversalTime();
+                    history.Detail.CheckedOutAt = history.Detail.CheckedOutAt.Value.ToUniversalTime();
+                    await _receiptService.UpdateAsync(history.Receipt);
+                    await _reservationDetailService.UpdateAsync(history.Detail);
                     return Json(new { success = true });
                 }
                 catch (HttpRequestException)

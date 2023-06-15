@@ -64,6 +64,7 @@
 @{
     var room = JsonConvert.SerializeObject(Model.Room);
     var detail = JsonConvert.SerializeObject(Model.Detail);
+    var order = JsonConvert.SerializeObject(Model.Order);
     DateTime today = DateTime.Now;
     var orderPrice = Model.Order.TotalPrice(Model.Order);
     var roomPiceDay = Model.Detail.roomPiceDay(Model.Detail, Model.Detail.CheckedInAt, today);
@@ -168,14 +169,14 @@
         <div class="me-3">
             <label>Tiền menu</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="@(orderPrice)" min="0" />
+                <input type="number" id="inputPriceMenu" class="text-end out-none p-0 border-0 border-bottom" value="@(orderPrice/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
         <div>
             <label>Tổng tiền</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="@(roomPiceDay + orderPrice + roomSurcharge)" min="0" />
+                <input type="number" id="inputTotalMoney" class="text-end out-none p-0 border-0 border-bottom" value="@((roomPiceDay + orderPrice + roomSurcharge)/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
@@ -185,7 +186,7 @@
         <div>
             <label>Tiền cần thanh toán</label>
             <div class="d-flex mt-3">
-                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="@(roomPiceDay + orderPrice + roomSurcharge - Model.Detail.Deposit)" min="0" />
+                <input type="number" id="inputIntoMoney" class="text-end out-none p-0 border-0 border-bottom" value="@((roomPiceDay + orderPrice + roomSurcharge - Model.Detail.Deposit)/1000)" min="0" />
                 <span class="border-bottom">.000 ₫</span>
             </div>
         </div>
@@ -197,7 +198,7 @@
     <div class="content-mess" id="contentMess">
         <h2 class="my-4">Xác nhận</h2>
         <div class="m-3">
-            Thực hiện trả phòng 203
+            Thực hiện trả phòng @Model.Room.Name
         </div>
         <div class="my-2 d-flex justify-content-end">
             <button class="btn" onclick="exitMess()">Hủy bỏ</button>
@@ -210,6 +211,7 @@
     var room = @Html.Raw(room);
     var detail = @Html.Raw(detail);
     var today = new Date();
+    var order = @Html.Raw(order);
 
     async function saveCheck()
     {
@@ -218,11 +220,24 @@
     
     async function confirm() {
         detail.checkedInAt = new Date(detail.checkedInAt);
-        detail.checkedInAt.setHours(detail.checkedInAt.getHours() + 7);
+        
         detail.checkedOutAt = today;
-
+        detail.checkedOutAt.setHours(detail.checkedOutAt.getHours() + 7);
         room.isEmpty = true
-        console.log(detail, room)
+        $.ajax({
+            url: '/rent/CheckOut',
+            type: 'PUT',
+            data: JSON.stringify({ room: room, detail: detail, order: order }),
+            contentType: 'application/json',
+            success: function (result) {
+                if (result)
+                    window.location.replace('/rent?tap=rented');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
     }
 
     async function exitMess()

@@ -1,0 +1,392 @@
+﻿@model LCount<RoomDto>
+@using HotelManagement.Utils
+
+@{
+    ViewBag.Title = "Phòng";
+    Layout = "_Layout";
+    
+    var options = new TableOptions
+    {
+        Sort = ViewBag.Sort,
+        Order = ViewBag.Order,
+        ActionName = "Index",
+        ControllerName = "Rooms",
+        Page = ViewBag.Page,
+        Size = ViewBag.Size,
+        Keyword = ViewBag.Keyword
+    };
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex">
+        <div>
+            <button type="button" class="btn btn-success" onclick="add()">Thêm</button>
+            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSelected()" disabled>Xóa</button>
+        </div>
+        <form class="form-inline ml-auto">
+            <div class="form-group">
+                <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" value="@ViewBag.Keyword" id="search-input">
+            </div>
+            <button type="submit" class="btn btn-primary" id="search-btn">Tìm kiếm</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th class="text-center">
+                        <input type="checkbox" id="selectAll" class=""/>
+                    </th>
+                    <th>Tên 
+                        @{
+                            options.Column = "name";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Loại phòng
+                        @{
+                            options.Column = "roomType.name";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Giá phòng
+                        @{
+                            options.Column = "pricePerDay";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Mô tả
+                        @{
+                            options.Column = "description";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Người lớn
+                        @{
+                            options.Column = "maxAdult";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Trẻ em
+                        @{
+                            options.Column = "maxChild";
+                            @TableHelpers.GetSortArrow(options, Url)
+                        }
+                    </th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var roomDto in Model.Items)
+                {
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" class="rowCheckbox " name="selectedRooms" value="@roomDto.Id"/>
+                        </td>
+                        <td>@roomDto.Name</td>
+                        <td>@roomDto.RoomType.Name</td>
+                        <td>@Html.DisplayFor(_ => roomDto.PricePerDay)</td>
+                        <td>@roomDto.Description</td>
+                        <td>@roomDto.MaxAdult</td>
+                        <td>@roomDto.MaxChild</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="edit('@roomDto.Id')">Sửa</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRoom('@roomDto.Id')">Xóa</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPage = (int)Math.Ceiling((double)Model.Total / ViewBag.Size);
+                    }
+                    <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Đầu</a>
+                    </li>
+                    @for (int i = 1; i <= totalPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = i, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.Page == totalPage ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { ViewBag.keyword, page = totalPage, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })">Cuối</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Room Modal -->
+<div class="modal fade" id="room" tabindex="-1" aria-labelledby="roomLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roomLabel">Thêm/Sửa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="roomForm">
+                    <input type="hidden" id="roomId" name="roomId"/>
+                    <input type="hidden" id="pricePerDayNumber">
+
+                    <div class="form-group">
+                        <label for="roomName">Tên phòng</label>
+                        <input type="text" class="form-control" id="roomName" name="roomName" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomType" class="d-block">Loại phòng</label>
+                        <select name="roomType" class="custom-select" id="roomType">
+                            
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pricePerDay">Giá ngày</label>
+                        <input type="text" class="form-control" id="pricePerDay" name="pricePerDay" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxAdult">Số người lớn tối đa</label>
+                        <input type="number" class="form-control" id="maxAdult" name="maxAdult" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxChild">Số trẻ em tối đa</label>
+                        <input type="number" class="form-control" id="maxChild" name="maxChild" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea type="number" class="form-control" id="description" name="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveRoom()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function getRoomTypes() {
+            let response = await fetch(`/RoomTypes/GetAll`);
+            return await response.json();
+        }
+        
+        async function loadRoomTypes() {
+            let roomTypes = await getRoomTypes();
+            let roomTypeSelect = $('#roomType');
+            
+            roomTypes.items.forEach(roomType => {
+                let option = `<option value="${roomType.id}">${roomType.name}</option>`;
+                roomTypeSelect.append(option);
+            });
+        }
+    
+    
+        $('#search-btn').click(function(e) {
+            e.preventDefault();
+            var keyword = $('#search-input').val();
+            var url = '@Url.Action("Index", new { page = 1, size = ViewBag.Size, sort = ViewBag.Sort, order = ViewBag.Order })';
+            url = url + '&keyword=' + encodeURIComponent(keyword);
+            
+            // Thay thế ký tự "&amp;" bằng ký tự "&"
+            url = url.replace(/&amp;/g, '&');
+            
+            window.location.href = url;
+        });
+    
+        $('#pricePerDay').mask('000,000,000,000,000', {reverse: true})
+            .on('input change', function() {
+            // Lấy giá trị số sau khi loại bỏ dấu phẩy
+            const numberValue = getNumberValue(this);
+            
+            // Cập nhật giá trị cho trường input ẩn tương ứng
+            const hiddenInputId = '#' + this.id + 'Number';
+            $(hiddenInputId).val(numberValue);
+        });
+                 
+        // Xử lý sự kiện click cho checkbox chọn tất cả
+        $('#selectAll').on('click', function () {
+            let isChecked = $(this).is(':checked');
+            $('.rowCheckbox').prop('checked', isChecked);
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+
+        // Xử lý sự kiện click cho checkbox của từng dòng
+        $('.rowCheckbox').on('click', function () {
+            let totalCheckboxes = $('.rowCheckbox').length;
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+
+            // Nếu tất cả các checkbox đều được chọn, đánh dấu checkbox chọn tất cả
+            // Ngược lại, bỏ đánh dấu checkbox chọn tất cả
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+
+            updateDeleteButton(); // Cập nhật trạng thái nút Xóa
+        });
+        
+        async function getRoomById(roomId) {
+            let response = await fetch(`/Rooms/GetById/${roomId}`);
+            
+            return await response.json();
+        }
+
+        async function createRoom(room) {
+            room.isCleaned = true;
+            room.isEmpty = true;
+            room.lastCleaned = new Date().toISOString();
+            
+            let response = await fetch('/Rooms/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(room)
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi thêm 1 phòng', 'danger');
+            }
+        }
+
+        async function updateRoom(id, room) {
+            const patchDoc = [
+                { "op": "replace", "path": "/name", "value": room.name },
+                { "op": "replace", "path": "/roomTypeId", "value": room.roomTypeId },
+                { "op": "replace", "path": "/pricePerDay", "value": room.pricePerDay },
+                { "op": "replace", "path": "/maxAdult", "value": room.maxAdult },
+                { "op": "replace", "path": "/maxChild", "value": room.maxChild },
+                { "op": "replace", "path": "/description", "value": room.description }
+            ];
+            
+            let response = await fetch(`/Rooms/Update/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(patchDoc),
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi cập nhật 1 phòng', 'danger');
+            }
+        }
+
+        async function deleteRoom(roomId) {
+            showConfirmDialog('Bạn có chắc chắn muốn xóa phòng này không?',
+            async () => {
+                let response = await fetch(`/Rooms/Delete/${roomId}`, {
+                    method: 'DELETE'
+                });
+    
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showAlert('Đã xảy ra lỗi khi xóa 1 phòng', 'danger');
+                }
+            });
+        }
+
+        async function deleteManyRooms(roomIds) {
+            let response = await fetch('/Rooms/DeleteMany', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roomIds)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                showAlert('Đã xảy ra lỗi khi xóa các phòng', 'danger');
+            }
+        }
+            
+        function add() {
+            $('#roomId').val('');
+            $('#roomName').val('');
+            loadRoomTypes();
+            $('#roomType option:first').prop('selected', true);
+            $('#pricePerDay').val('');
+            $('#pricePerDayNumber').val('');
+            $('#maxAdult').val('');
+            $('#maxChild').val('');
+            $('#description').val('');
+            $('#roomLabel').text('Thêm');
+            $('#room').modal('show');
+        }
+        
+        async function edit(roomId) {
+            let room = await getRoomById(roomId);
+            // Điền thông tin vào các trường trong modal
+            $('#roomId').val(room.id);
+            $('#roomName').val(room.name);
+            await loadRoomTypes();
+            $('#roomType').val(room.roomTypeId);
+            $('#pricePerDay').val(room.pricePerDay.toLocaleString('vi-VN'));
+            $('#roomExportPriceNumber').val(room.pricePerDay);
+            $('#maxAdult').val(room.maxAdult);
+            $('#maxChild').val(room.maxChild);
+            $('#description').val(room.description);
+            $('#roomLabel').text('Sửa'); // Cập nhật tên của modal
+            $('#room').modal('show');
+        }
+
+        function saveRoom() {
+            let id = $('#roomId').val();
+            let name = $('#roomName').val();
+            let roomTypeId = $('#roomType').val();
+            let pricePerDay = $('#pricePerDayNumber').val();
+            let maxAdult = $('#maxAdult').val();
+            let maxChild = $('#maxChild').val();
+            let description = $('#description').val();
+            
+            let room = {
+                id,
+                name,
+                roomTypeId,
+                pricePerDay,
+                maxAdult,
+                maxChild,
+                description
+            };
+            
+            if (id) {
+                updateRoom(id, room);
+            } else {
+                createRoom(room);
+            }
+
+            // Đóng modal
+            $('#room').modal('hide');
+        }
+
+        function updateDeleteButton() {
+            let checkedCheckboxes = $('.rowCheckbox:checked').length;
+            $('#deleteButton').prop('disabled', checkedCheckboxes === 0);
+        }
+
+        function deleteSelected() {
+            // Lấy danh sách roomId của các phòng được chọn
+            let selectedRoomIds = $('input[name="selectedRooms"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            showConfirmDialog('Bạn có chắc chắn muốn xóa các phòng đã chọn không?', () => {
+                // Xóa các phòng được chọn
+                deleteManyRooms(selectedRoomIds);
+            });
+        }
+    </script>
+}

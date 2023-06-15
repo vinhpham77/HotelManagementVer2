@@ -1,10 +1,20 @@
+using System.Globalization;
+using HotelManagement;
 using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+
+
+builder.Services.AddControllers(options =>
+{
+    options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+});
+
 
 // Read appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json");
@@ -41,6 +51,16 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Configure the CultureInfo for the entire application
+var supportedCultures = new[] { new CultureInfo("vi-VN") };
+supportedCultures[0].NumberFormat.CurrencySymbol = "₫";
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("vi-VN"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 app.MapControllerRoute(
     name: "default",

@@ -13,45 +13,71 @@ public static class ServiceCollectionExtensions
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
+        
+        services.AddHttpClient<CustomerService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
 
-        // Register other services...
-
+        services.AddHttpClient<MenuService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+        
         services.AddHttpClient<RentRoomService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-
+        
         services.AddHttpClient<ReOrderService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-
+        
         services.AddHttpClient<RoomService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-
+        
         services.AddHttpClient<ReservationDetailService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-
+        
         services.AddHttpClient<OrderService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
-
+        
         services.AddHttpClient<MenuItemService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<ReceiptService>(client =>
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl);
+        });
+
+        services.AddHttpClient<HistoryRentService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace HotelManagement.Models;
 
@@ -14,6 +15,7 @@ public class RoomDto
     public string RoomTypeId { get; set; } = null!;
     
     [JsonProperty("pricePerDay")]
+    [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
     public double PricePerDay { get; set; }
     
     [JsonProperty("isEmpty")]
