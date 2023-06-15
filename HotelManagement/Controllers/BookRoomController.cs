@@ -32,7 +32,7 @@ namespace HotelManagement.Controllers
         }
         public async Task<IActionResult> Index(string? key, DateTime? startDate, bool? temp, int? page, int? size)
         {
-            if (startDate == DateTime.MinValue)
+            if (startDate != DateTime.MinValue)
             {
                 startDate = DateTime.Now;
             }

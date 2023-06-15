@@ -2,13 +2,14 @@
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Web;
+using System.Text.Json;
 
 namespace HotelManagement.Services
 {
     public class BookRoomService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _bookApiUrl = "Book";
+        private readonly string _bookApiUrl = "BookRoomDtos";
 
         public BookRoomService(HttpClient httpClient)
         {
@@ -20,9 +21,9 @@ namespace HotelManagement.Services
             queryBuilder["keyword"] = keyword;
             if (page.HasValue) queryBuilder["page"] = page.Value.ToString();
             if (size.HasValue) queryBuilder["size"] = size.Value.ToString();
-            if(startDate!=DateTime.MinValue) queryBuilder["startDate"]=startDate.ToString();
-            if(endDate!=DateTime.MinValue) queryBuilder["endDate"]=endDate.ToString();
-            if(temp.HasValue) queryBuilder["temp"]=temp.Value.ToString();   
+            queryBuilder["startDate"]= startDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+            queryBuilder["endDate"]= endDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+            if (temp.HasValue) queryBuilder["temp"]=temp.Value.ToString();   
 
             string? queryString = queryBuilder.ToString();
             string requestUrl = string.IsNullOrEmpty(queryString) ? _bookApiUrl : $"{_bookApiUrl}?{queryString}";

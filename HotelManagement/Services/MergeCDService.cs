@@ -18,9 +18,9 @@ namespace HotelManagement.Services
             var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
             
            
-            if (startDate != DateTime.MinValue) queryBuilder["startDate"] = startDate.ToString();
-            if (endDate != DateTime.MinValue) queryBuilder["endDate"] = endDate.ToString();
-      
+            if (startDate != DateTime.MinValue) queryBuilder["startDate"] = startDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+            if (endDate != DateTime.MinValue) queryBuilder["endDate"] = endDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+
             string? queryString = queryBuilder.ToString();
             string requestUrl = string.IsNullOrEmpty(queryString) ? _mergeCDApiUrl : $"{_mergeCDApiUrl}?{queryString}";
 
