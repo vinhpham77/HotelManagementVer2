@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <title>Hotel</title>
+</head>
+
+<style>
+    .card-body ul li {
+        padding: 2px 0;
+    }
+
+    .menuBoxThaoTac1 {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        left: 80px;
+        z-index: 1;
+        background-color: white;
+    }
+
+        .menuBoxThaoTac1 li {
+            padding: 8px 0;
+        }
+
+            .menuBoxThaoTac1 li:hover {
+                padding-left: 4px;
+            }
+
+
+            .menuBoxThaoTac1 li a {
+                text-decoration: none;
+                color: black;
+            }
+
+    .hide {
+        display: none;
+    }
+
+    .show {
+        display: block;
+    }
+
+</style>
+
+<body>
+    <div style="width: 200px; height: 200px;" class="shadow">
+        <div class="card-head row">
+            <div class="col">
+                <span class="text-danger fw-bold ps-2">#1</span>
+            </div>
+            <div class="col text-end position-relative">
+                <i class="fas fa-ellipsis-v menu-his btnThaoTac1" style="cursor: pointer; position: relative; right: 10px;"></i>
+                <div class="menuBoxThaoTac1 shadow hide" style="z-index: 1;">
+                    <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
+                        <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
+                        <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Chỉnh sửa</a></li>
+                        <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
+                        <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <hr class="p-0 m-0" />
+        <div class="card-body">
+            <ul style="list-style: none;" class="p-0 ps-2">
+                <li><i class="fas fa-user-circle" style="width: 24px;"></i> quoc</li>
+                <li><i class="fas fa-exchange-alt" style="width: 24px;"></i> Đã nhận phòng</li>
+                <li><i class="fas fa-clock" style="width: 24px;"></i> 10/06 - 11/06</li>
+                <li><i class="fas fa-door-open" style="width: 24px;"></i> 1</li>
+                <li><i class="fas fa-bed" style="width: 24px;"></i> ok</li>
+                <li><i class="fas fa-phone" style="width: 24px;"></i> 0111 111 111</li>
+            </ul>
+        </div>
+
+    </div>
+
+
+    <script>
+        var list = document.querySelectorAll(".menuBoxThaoTac1");
+        document.querySelectorAll(".btnThaoTac1").forEach((val, index) => {
+            val.addEventListener("click", () => {
+                if (list[index].classList.contains("hide")) {
+                    list[index].classList.add("show");
+                    list[index].classList.remove("hide");
+                }
+                else {
+                    list[index].classList.add("hide");
+                    list[index].classList.remove("show");
+                }
+            })
+        });
+    </script>
+
+</body>
+</html>
