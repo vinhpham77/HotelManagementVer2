@@ -1,8 +1,10 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace HotelManagement.Controllers
@@ -15,13 +17,14 @@ namespace HotelManagement.Controllers
         private readonly ReservationService _reservationService;
         private readonly BookRoomService _bookRoomService;
         private readonly MergeCDService _mergeService;
+        private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
         public BookRoomController(
             RoomService roomService,
           ReservationDetailService reservationDetailService,
           ILogger<BookRoomController> logger,
           BookRoomService bookRoomService,
-          MergeCDService mergeService)
+          MergeCDService mergeService, CustomerService customerService)
           
         {
                    
@@ -30,6 +33,8 @@ namespace HotelManagement.Controllers
             _logger = logger;
             _bookRoomService = bookRoomService;
             _mergeService = mergeService;
+            _customerService = customerService;
+               
         }
         public async Task<IActionResult> Index(string? key, DateTime? startDate, bool? temp, int? page, int? size)
         {
@@ -43,15 +48,19 @@ namespace HotelManagement.Controllers
             }
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
                 var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp);
-                LCount<Room>? room = await _roomService.GetAllAsync();
-                 var mergeCD = await _mergeService.GetAsync(startDate, endDay);
+            LCount<Room>? room = await _roomService.GetAllAsync();
+            var mergeCD = await _mergeService.GetAsync(startDate, endDay);
+            
+                 
             var data = new Book
-                {
-                    Rooms = room.Items,
-                    BookRooms = bookRoom,
-                    MergeCDs=mergeCD,
-                    Day = startDate.Value,
-                    EndDay = endDay
+            {
+                Rooms = room.Items,
+                BookRooms = bookRoom,
+                MergeCDs = mergeCD,
+                Day = startDate.Value,
+                EndDay = endDay
+
+                   
             };
 
             return View(data);
@@ -64,5 +73,10 @@ namespace HotelManagement.Controllers
 
             return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
         }
+        public async Task<JsonResult> GetCustomerById(string idNo)
+        {
+            LCount<Customer>? customer = await _customerService.GetAsync(null, null, null, null, null, idNo);
+            return Json(customer.Items.FirstOrDefault());
+        } 
     }
 }

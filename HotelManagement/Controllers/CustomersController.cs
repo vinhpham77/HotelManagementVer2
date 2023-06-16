@@ -16,7 +16,7 @@ public class CustomersController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string? keyword, string? sort, string? order, int? page, int? size)
+    public async Task<IActionResult> Index(string? keyword, string? sort, string? order, int? page, int? size,string? idNo)
     {
         ViewBag.Size = size ?? 10;
         ViewBag.Page = page ?? 1;
@@ -26,7 +26,7 @@ public class CustomersController : Controller
 
         try
         {
-            var customers = await _customerService.GetAsync(keyword, sort, order, page, size);
+            var customers = await _customerService.GetAsync(keyword, sort, order, page, size,idNo);
             return View(customers);
         }
         catch (HttpRequestException ex)

@@ -15,12 +15,13 @@ public class CustomerService
         _httpClient = httpClient;
     }
 
-    public async Task<LCount<Customer>?> GetAsync(string? keyword, string? sort, string? order, int? page, int? size)
+    public async Task<LCount<Customer>?> GetAsync(string? keyword, string? sort, string? order, int? page, int? size,string ? idNo)
     {
         var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
         queryBuilder["keyword"] = keyword;
         queryBuilder["sort"] = sort;
         queryBuilder["order"] = order;
+        queryBuilder["idNo"] = idNo;
         if (page.HasValue) queryBuilder["page"] = page.Value.ToString();
         if (size.HasValue) queryBuilder["size"] = size.Value.ToString();
 
