@@ -184,35 +184,19 @@
 				<li class="active-tab" id="tab1">
 					Tất cả
 				</li>
-				<li id="tab2">
-					Phòng đơn
-				</li>
-				<li id="tab3">
-					Phòng đôi
-				</li>
 			</ul>
 		</div>
 		<div id="box-tab1" class="show">
 			<ul>
-				<li>1</li>
-				<li>1</li>
-				<li>1</li>
+				<li>
+					<div class="text-white text-center d-inline-block" style="width: 100px; height: 28px; border-radius: 40px; background-color: #0000d0;">
+						<p>Phòng 1</p>
+					</div>
+				</li>
+
 			</ul>
 		</div>
-		<div id="box-tab2" class="hide">
-			<ul>
-				<li>2</li>
-				<li>2</li>
-				<li>2</li>
-			</ul>
-		</div>
-		<div id="box-tab3" class="hide">
-			<ul>
-				<li>3</li>
-				<li>3</li>
-				<li>3</li>
-			</ul>
-		</div>
+
 	</div>
 
 </body>
@@ -237,51 +221,43 @@
 
 	document.getElementById("tab1").addEventListener("click", () => {
 		if (document.getElementById("box-tab1").classList.contains("hide") && !document.getElementById("tab1").classList.contains("active-tab")) {
-			document.getElementById("box-tab1").classList.add("show");
-			document.getElementById("box-tab2").classList.add("hide");
-			document.getElementById("box-tab3").classList.add("hide");
-
+			document.getElementById("box-tab1").classList.add("show");			
 			document.getElementById("box-tab1").classList.remove("hide");
-			document.getElementById("box-tab2").classList.remove("show");
-			document.getElementById("box-tab3").classList.remove("show");
-
 			document.getElementById("tab1").classList.add("active-tab");
-			document.getElementById("tab2").classList.remove("active-tab")
-			document.getElementById("tab3").classList.remove("active-tab")
 		}
 	});
 
-	document.getElementById("tab2").addEventListener("click", () => {
-		if (document.getElementById("box-tab2").classList.contains("hide") && !document.getElementById("tab2").classList.contains("active-tab")) {
-			document.getElementById("box-tab2").classList.add("show");
-			document.getElementById("box-tab1").classList.add("hide");
-			document.getElementById("box-tab3").classList.add("hide");
+	//document.getElementById("tab2").addEventListener("click", () => {
+	//	if (document.getElementById("box-tab2").classList.contains("hide") && !document.getElementById("tab2").classList.contains("active-tab")) {
+	//		document.getElementById("box-tab2").classList.add("show");
+	//		document.getElementById("box-tab1").classList.add("hide");
+	//		document.getElementById("box-tab3").classList.add("hide");
 
-			document.getElementById("box-tab2").classList.remove("hide");
-			document.getElementById("box-tab1").classList.remove("show");
-			document.getElementById("box-tab3").classList.remove("show");
+	//		document.getElementById("box-tab2").classList.remove("hide");
+	//		document.getElementById("box-tab1").classList.remove("show");
+	//		document.getElementById("box-tab3").classList.remove("show");
 
-			document.getElementById("tab2").classList.add("active-tab");
-			document.getElementById("tab1").classList.remove("active-tab")
-			document.getElementById("tab3").classList.remove("active-tab")
-		}
-	});
+	//		document.getElementById("tab2").classList.add("active-tab");
+	//		document.getElementById("tab1").classList.remove("active-tab")
+	//		document.getElementById("tab3").classList.remove("active-tab")
+	//	}
+	//});
 
-	document.getElementById("tab3").addEventListener("click", () => {
-		if (document.getElementById("box-tab3").classList.contains("hide") && !document.getElementById("tab3").classList.contains("active-tab")) {
-			document.getElementById("box-tab3").classList.add("show");
-			document.getElementById("box-tab1").classList.add("hide");
-			document.getElementById("box-tab2").classList.add("hide");
+	//document.getElementById("tab3").addEventListener("click", () => {
+	//	if (document.getElementById("box-tab3").classList.contains("hide") && !document.getElementById("tab3").classList.contains("active-tab")) {
+	//		document.getElementById("box-tab3").classList.add("show");
+	//		document.getElementById("box-tab1").classList.add("hide");
+	//		document.getElementById("box-tab2").classList.add("hide");
 
-			document.getElementById("box-tab3").classList.remove("hide");
-			document.getElementById("box-tab1").classList.remove("show");
-			document.getElementById("box-tab2").classList.remove("show");
+	//		document.getElementById("box-tab3").classList.remove("hide");
+	//		document.getElementById("box-tab1").classList.remove("show");
+	//		document.getElementById("box-tab2").classList.remove("show");
 
-			document.getElementById("tab3").classList.add("active-tab");
-			document.getElementById("tab1").classList.remove("active-tab")
-			document.getElementById("tab2").classList.remove("active-tab")
-		}
-	});
+	//		document.getElementById("tab3").classList.add("active-tab");
+	//		document.getElementById("tab1").classList.remove("active-tab")
+	//		document.getElementById("tab2").classList.remove("active-tab")
+	//	}
+	//});
 </script>
 <script>
 	var addButton = $("#addCustomerButton");
@@ -329,17 +305,17 @@
 	var errorFirstname = true;
 	async function errorFirstName() {
 		var hoInput = $("#firstName");
-		if (hoInput.val()!="") {
+		if (hoInput.val() != "") {
 			errorFirstname = false;
 			hoInput.removeClass("is-invalid");
 		}
-		else{
+		else {
 			errorFirstname = true;
 			hoInput.addClass("is-invalid");
-			
+
 		}
 	};
-	
+
 
 	var errorLastname = true;
 	async function errorLastName() {
@@ -348,7 +324,7 @@
 			errorLastname = true;
 			tenInput.addClass("is-invalid");
 		}
-		else{
+		else {
 			errorLastname = false;
 			tenInput.removeClass("is-invalid");
 		}
@@ -360,7 +336,7 @@
 			errorFullname = true;
 			fullNameInput.addClass("is-invalid");
 		}
-		else{
+		else {
 			errorFullname = false;
 			fullNameInput.removeClass("is-invalid");
 		}
@@ -378,7 +354,7 @@
 			phoneNumberInput.addClass("is-invalid");
 		}
 
-		else{
+		else {
 			errorPhonenumber = false;
 			phoneNumberInput.removeClass("is-invalid")
 		}
@@ -395,7 +371,7 @@
 			idNoInput.addClass("is-invalid");
 		}
 
-		else{
+		else {
 			errorIdno = false;
 			idNoInput.removeClass("is-invalid")
 		}
@@ -415,7 +391,7 @@
 			countryInput.addClass("is-invalid");
 		}
 
-		else{
+		else {
 			errorCountry = false;
 			countryInput.removeClass("is-invalid");
 		}
@@ -437,7 +413,7 @@
 			errorBirthdate = true;
 			dateOfBirthInput.addClass("is-invalid");
 		}
-		else{
+		else {
 			errorBirthdate = false;
 			dateOfBirthInput.removeClass("is-invalid");
 		}
@@ -448,16 +424,15 @@
 
 	var hoTen = $("#hoTen")
 	btnCreateCustomer.click(function () {
-		if (!errorFirstname && !errorLastname && !errorFullname && !errorPhonenumber && !errorIdno  && !errorCountry && !errorBirthdate){
+		if (!errorFirstname && !errorLastname && !errorFullname && !errorPhonenumber && !errorIdno && !errorCountry && !errorBirthdate) {
 			hoTen.val($("#fullName").val());
 			idCustomer = "";
 		}
-		else
-		{
+		else {
 			hoTen.val("");
 		}
-		
-	
+
+
 	})
 </script>
 

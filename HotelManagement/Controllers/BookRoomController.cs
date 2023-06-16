@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-<<<<<<< HEAD
+
 using System.Drawing;
-=======
+
 using Microsoft.CodeAnalysis.Differencing;
->>>>>>> c31088013ce9d6b3bba3f11bf225f82477f5acce
+
 using System.Runtime.InteropServices;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
