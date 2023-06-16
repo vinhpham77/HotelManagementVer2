@@ -5,6 +5,7 @@ using System.Web;
 
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using HotelManagement.ViewModels;
 
 namespace HotelManagement.Services;
 

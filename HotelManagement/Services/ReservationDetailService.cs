@@ -48,5 +48,21 @@ namespace HotelManagement.Services
                     $"Request to update RoomType with id {reservationDetail.Id} failed with status code: {response.StatusCode}");
             }
         }
+
+        public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
+        {
+            StringContent content =
+                new StringContent(JsonConvert.SerializeObject(reservationDetail), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync(_reservationDetailApiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ReservationDetail>(jsonResponse);
+            }
+
+            throw new HttpRequestException(
+                $"Request to create RoomType failed with status code: {response.StatusCode}");
+        }
     }
 }

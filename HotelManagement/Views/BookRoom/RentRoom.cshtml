@@ -1,0 +1,199 @@
+﻿
+@{
+    Layout = null;
+}
+
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@model RentBook
+
+@{
+    var reservation = JsonConvert.SerializeObject(Model.reservation);
+}
+
+<style>
+    .container-mess {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-mess {
+        padding: 8px 16px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+</style>
+
+<div class="hearder border-end d-flex">
+    <p>Nhận phòng</p>
+</div>
+
+<div class="body">
+    <div>
+        @if (Model.RentRooms != null)
+        {
+            @foreach (var rentRoom in Model.RentRooms)
+            {
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseC@(rentRoom.Id)" aria-expanded="true" aria-controls="collapseC@(rentRoom.Id)">
+                                @rentRoom.Name
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseC@(rentRoom.Id)" class="collapse show">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap room-list-panel ng-star-inserted">
+                                @foreach (var room in rentRoom.rooms)
+                                {
+                                    if (room != null && room.IsEmpty)
+                                    {
+                                        <div class="card mt-3 me-3" id="card@(room.Id)">
+                                            <div class="card-header d-flex align-items-center justify-content-between">
+                                                <p>@room.Name</p>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownN@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownN@(room.Id)">
+                                                        <li><button class="dropdown-item" onclick="rent('@(JsonConvert.SerializeObject(@room))')" type="button"><i class="fa-solid fa-rotate"></i> Nhận phòng</button></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                @if (room.IsCleaned)
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa-solid fa-check me-2"></i>
+                                                        Đã dọn
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa-solid fa-x me-2"></i>
+                                                        Chưa dọn
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+<div class="container-mess" onclick="exitMess()" id="containerMess">
+    <div class="content-mess" id="contentMess">
+        <h2 class="my-4">Nhập thông tin</h2>
+        <div class="m-3">
+            <label>Số lượng người lớn</label>
+            <input id="totalAdults" onchange="changeAdults()" class="form-control is-invalid" />
+            <label>Số lượng trẻ em</label>
+            <input id="totalChildren" onchange="changeChildren()" class="form-control is-invalid" />
+        </div>
+        <div class="my-2 d-flex justify-content-end">
+            <button class="btn" onclick="exitMess()">Hủy bỏ</button>
+            <button class="btn" onclick="confirm()">Đồng ý</button>
+        </div>
+    </div>
+</div>
+<script>
+    var reservation = @Html.Raw(reservation);
+    var detail = {
+        reservationId: reservation.id,
+        checkedInAt: new Date(),
+        checkedOutAt: null,
+        customerId: reservation.customerId,
+        deposit: reservation.deposit
+    }
+    var roomSelect;
+    reservation.deposit = 0;
+    async function rent(room) {
+        
+        roomSelect = JSON.parse(room);
+        detail.roomId = roomSelect.id;
+        detail.roomPricePerDay = roomSelect.pricePerDay;
+        $("#containerMess").css('display', 'flex');
+    }
+
+    var errorAdults = true;
+    var errorChidlren = true;
+
+    async function changeAdults()
+    {
+        if ($("#totalAdults").val().length > 0 )
+        {
+            errorAdults = false;
+            $("#totalAdults").removeClass("is-invalid");
+        }
+        else{
+            errorAdults = true;
+            $("#totalAdults").addClass("is-invalid");
+        }
+    }
+
+    async function changeChildren() {
+        if ($("#totalChildren").val().length > 0) {
+            errorChidlren = false;
+            $("#totalChildren").removeClass("is-invalid");
+        }
+        else {
+            errorChidlren = true;
+            $("#totalChildren").addClass("is-invalid");
+        }
+    }
+
+    async function confirm() {
+        if (!errorAdults && !errorChidlren)
+        {
+            roomSelect.isEmpty = false;
+            detail.totalAdults = $("#totalAdults").val();
+            detail.totalChildren = $("#totalChildren").val();
+            detail.checkedInAt.setHours(detail.checkedInAt.getHours() + 7);
+            $.ajax({
+                url: '/bookRoom/RentBookRoom',
+                type: 'PUT',
+                data: JSON.stringify({ reservation: reservation, reservationDetail: detail, room: roomSelect }),
+                contentType: 'application/json',
+                success: function (result) {
+                    $("#card" + roomSelect.id).addClass('d-none');
+                    $("#containerMess").hide();
+                },
+                error: function (xhr, status, error) {
+                    
+                    console.log(xhr.responseText);
+                }
+
+            })
+        }
+        
+    }
+
+    async function exitMess() {
+        $("#containerMess").hide();
+    }
+    $("#contentMess").click(function (event) {
+        event.stopPropagation();
+    })
+</script>
