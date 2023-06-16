@@ -49,7 +49,20 @@ namespace HotelManagement.Services
             }
         }
 
-        public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
+		public async Task<ReservationDetail?> GetByIdAsync(string id)
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync($"{_reservationDetailApiUrl}/{id}");
+
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<ReservationDetail>(jsonResponse);
+			}
+
+			throw new HttpRequestException(
+				$"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+		}
+		public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
         {
             StringContent content =
                 new StringContent(JsonConvert.SerializeObject(reservationDetail), Encoding.UTF8, "application/json");
@@ -62,7 +75,18 @@ namespace HotelManagement.Services
             }
 
             throw new HttpRequestException(
-                $"Request to create RoomType failed with status code: {response.StatusCode}");
+                $"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"{_reservationDetailApiUrl}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Request to delete RoomType with id {id} failed with status code: {response.StatusCode}");
+            }
         }
     }
 }

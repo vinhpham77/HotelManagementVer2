@@ -17,6 +17,7 @@ namespace HotelManagement.Controllers
         private readonly MenuItemService _menuItemService;
         private readonly ReceiptService _receiptService;
         private readonly HistoryRentService _historyRentService;
+        private readonly ReservationService _reservationService;
         private readonly ILogger<RentController> _logger;
 
         public RentController(RentRoomService rentRoomService,
@@ -27,6 +28,7 @@ namespace HotelManagement.Controllers
             MenuItemService menuItemService,
             ReceiptService receiptService,
             HistoryRentService historyRentService,
+            ReservationService reservationService,
             ILogger<RentController> logger)
         {
             _rentRoomService = rentRoomService;
@@ -37,6 +39,7 @@ namespace HotelManagement.Controllers
             _menuItemService = menuItemService;
             _receiptService = receiptService;
             _historyRentService = historyRentService;
+            _reservationService = reservationService;
             _logger = logger;
         }
         public async Task<IActionResult> Index(string? keyword, string? sort, string? order, string? tap)
@@ -276,6 +279,44 @@ namespace HotelManagement.Controllers
                 }
             }
             return Json(new { success = false });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDetail(string id)
+        {
+            try
+            {
+                ReservationDetail detai = await _reservationDetailService.GetByIdAsync(id);
+                var orders = await _orderService.GetAsync(id);
+                var order = orders.FirstOrDefault();
+                await _reservationDetailService.DeleteAsync(id);
+                await _orderService.DeleteAsync(order.Id);
+                return NoContent();
+            }
+            catch (HttpRequestException)
+            {
+                return NoContent();
+            }
+        }
+
+        [HttpDelete]
+        public async Task<JsonResult> DeleteReceipt(string id)
+        {
+            try
+            {
+                Receipt recrip = await _receiptService.GetByIdAsync(id);
+                ReservationDetail detai = await _reservationDetailService.GetByIdAsync(recrip.ReservationDetailId);
+                var orders = await _orderService.GetAsync(recrip.ReservationDetailId);
+                var order = orders.FirstOrDefault();
+                await _receiptService.DeleteAsync(id);
+                await _reservationDetailService.DeleteAsync(detai.Id);
+                await _orderService.DeleteAsync(order.Id);
+                return Json(new {id = id});
+            }
+            catch (HttpRequestException)
+            {
+                return Json(new { id = id });
+            }
         }
     }
 }

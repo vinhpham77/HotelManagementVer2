@@ -1,30 +1,66 @@
 ﻿
-@{
-    ViewData["Title"] = "Index";
-    Layout = null;
-}
 
 @using Newtonsoft.Json;
 
 @model HotelManagement.Models.Rent
-
+@{
+    var order = JsonConvert.SerializeObject(Model.Order);
+}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<style>
+    .leftLayout {
+        flex: 1;
+    }
+    .container-form {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-form {
+        padding: 8px 16px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+
+    .iconR{
+            font-size: 1.5em;
+    }
+
+    #rightLayout {
+        width: 450px;
+    }
+</style>
 
 <style>
 
 </style>
 
 <div class="d-flex fex-row py-4">
-    <div class="border-end">
+    <div class="border-end leftLayout">
         <div class="d-flex flex-row mb-3">
-            <div class="d-flex flex-row align-items-center me-2">
-                <i onclick="sortDesc(event)" id="iconAsc" class="fa-regular fa-arrow-up me-2 @(Model.Order == "desc" ? "d-none" : "")"></i>
-                <i onclick="sortAsc(event)" id="iconDesc" class="fa-regular fa-arrow-down me-2 @(Model.Order == "asc" ? "d-none" : "")"></i>
+            <div class="d-flex flex-row align-items-center me-4">
+                <ion-icon onclick="sortDesc(event)" id="iconAsc" name="arrow-up-outline" class="iconR @(Model.Order == "desc" ? "d-none" : "")"></ion-icon>
+                <ion-icon onclick="sortAsc(event)" id="iconDesc" name="arrow-down-outline" class="iconR @(Model.Order == "asc" ? "d-none" : "")"></ion-icon>
                 <select class="form-select" aria-label="Default select example">
                     <option selected value="name">Sắp xếp theo tên</option>
                 </select>
@@ -32,7 +68,7 @@
             
             <div class="d-flex flex-row align-items-center">
                 <i class="fa-solid fa-magnifying-glass me-2"></i>
-                <input type="text" onchange="changeKey()" id="keyword" class="form-control mb-1 ng-valid ng-dirty ng-touched" placeholder="name@example.com">
+                <input type="text" onchange="changeKey()" id="keyword" class="form-control mb-1 ng-valid ng-dirty ng-touched" placeholder="Tìm kiếm">
             </div>
         </div>
         
@@ -83,10 +119,7 @@
                                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownW@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 </button>
                                                                 <ul class="dropdown-menu" aria-labelledby="dropdownW@(room.Id)">
-                                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
-                                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
-
-                                                                    <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
+                                                                    <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><ion-icon name="pricetag-outline"></ion-icon> Yêu cầu dọn phòng</button></li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -173,8 +206,8 @@
                                                                         <li><button class="dropdown-item" onclick="viewOrder('@(room.Id)')" type="button"><i class="fa-solid fa-burger-soda"></i> Thêm menu</button></li>
                                                                         <li><button class="dropdown-item" onclick="viewCheck('@(room.Id)')" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
                                                                         <li><button class="dropdown-item" onclick="viewRoomChange('@(room.Id)')" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
-                                                                        <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
-                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                                        <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><ion-icon name="pricetag-outline"></ion-icon> Yêu cầu dọn phòng</button></li>
+                                                                        
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -248,7 +281,7 @@
                                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownCl@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 </button>
                                                                 <ul class="dropdown-menu" aria-labelledby="dropdownCl@(room.Id)">
-                                                                    <li><button class="dropdown-item" onclick="isCleaned('@(JsonConvert.SerializeObject(@room))')" type="button"><i class="fa-regular fa-check"></i> Đã dọn</button></li>
+                                                                    <li><button class="dropdown-item" onclick="isCleaned('@(JsonConvert.SerializeObject(@room))')" type="button"><ion-icon name="checkmark-outline"></ion-icon> Đã dọn</button></li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -309,7 +342,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownH@(item.Id)">
                                                         <li><button class="dropdown-item" onclick="viewEditHistory('@(item.Id)')" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
-                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                        
                                                     </ul>
                                                 </div>
                                             </div>
@@ -337,10 +370,25 @@
     <div id="rightLayout" class="p-3"></div>
 </div>
 
+<div class="container-form" onclick="exitform()" id="containerform">
+    <div class="content-form" val="" id="contentform">
+        <h2 class="my-4">Xác nhận</h2>
+        <div class="m-3">
+            Xác nhận xóa dữ liệu
+        </div>
+        <div class="my-2 d-flex justify-content-end">
+            <button class="btn" onclick="exitform()">Hủy bỏ</button>
+            <button class="btn" onclick="confirmform()">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
 
     var sort = "name";
-    var order = "asc";
+    var order = @Html.Raw(order);
     var keyword = "";
     var tap="";
 
@@ -474,4 +522,60 @@
             }
         })
     }
+
+    var deleteT = true;
+
+    async function deleteDetail(id)
+    {
+        $("#containerform").css('display', 'flex');
+        deleteT = true;
+        $("#contentform").attr("val", id);
+    }
+
+    async function deleteReceipt(id)
+    {
+        $("#containerform").css('display', 'flex');
+        deleteT = false;
+        $("#contentform").attr("val", id);
+    }
+
+    async function confirmform() {
+     var id = $("#contentform").attr("val");
+        console.log(deleteT, id);
+        if (deleteT) {
+            $.ajax({
+                url: '/rent/DeleteDetail',
+                    type: 'DELETE',
+                    data: { id: id },
+                    success: function (result) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+
+                })
+        }
+        else
+        {
+            $.ajax({
+                url: '/rent/DeleteReceipt',
+                type: 'DELETE',
+                data: { id: id },
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        
+    }
+
+    async function exitform() {
+        $("#containerform").hide();
+    }
+    $("#contentform").click(function (event) {
+        event.stopPropagation();
+    })
 </script>
