@@ -49,17 +49,24 @@ namespace HotelManagement.Services
             }
         }
 
-<<<<<<< HEAD
-        public async Task<ReservationDetail?> GetByIdAsync(string id)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_reservationDetailApiUrl}/{id}");
-=======
-        public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
+		public async Task<ReservationDetail?> GetByIdAsync(string id)
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync($"{_reservationDetailApiUrl}/{id}");
+
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<ReservationDetail>(jsonResponse);
+			}
+
+			throw new HttpRequestException(
+				$"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+		}
+		public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
         {
             StringContent content =
                 new StringContent(JsonConvert.SerializeObject(reservationDetail), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PostAsync(_reservationDetailApiUrl, content);
->>>>>>> acd7620074cb5e2381e62ec89690cfc0fe1b2178
 
             if (response.IsSuccessStatusCode)
             {
@@ -68,9 +75,8 @@ namespace HotelManagement.Services
             }
 
             throw new HttpRequestException(
-<<<<<<< HEAD
-                $"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
-        }
+				$"Request to create RoomType failed with status code: {response.StatusCode}");
+		}
 
         public async Task DeleteAsync(string id)
         {
@@ -81,9 +87,6 @@ namespace HotelManagement.Services
                 throw new HttpRequestException(
                     $"Request to delete RoomType with id {id} failed with status code: {response.StatusCode}");
             }
-=======
-                $"Request to create RoomType failed with status code: {response.StatusCode}");
->>>>>>> acd7620074cb5e2381e62ec89690cfc0fe1b2178
         }
     }
 }

@@ -28,7 +28,7 @@ namespace HotelManagement.Controllers
             MenuItemService menuItemService,
             ReceiptService receiptService,
             HistoryRentService historyRentService,
-            ReservationService reservationService
+            ReservationService reservationService,
             ILogger<RentController> logger)
         {
             _rentRoomService = rentRoomService;
