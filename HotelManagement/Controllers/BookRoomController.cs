@@ -25,23 +25,21 @@ namespace HotelManagement.Controllers
         private readonly MergeCDService _mergeService;
         private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
-<<<<<<< HEAD
+
 		
-		public BookRoomController(
-=======
+	
         public BookRoomController(RentRoomService rentRoomService,
->>>>>>> 4f096e43d58bcbc1c6fce36c8d8fff9f1affe922
+
             RoomService roomService,
           ReservationDetailService reservationDetailService,
           ILogger<BookRoomController> logger,
           BookRoomService bookRoomService,
-<<<<<<< HEAD
-          ReservationService reservationService,
-          MergeCDService mergeService, CustomerService customerService)
-=======
+          
+       
+
           MergeCDService mergeService, CustomerService customerService,
           ReservationService reservationService)
->>>>>>> daf9e9158da008edf24b62a1501214d8cafb9e81
+
           
         {
             _rentRoomService = rentRoomService;
@@ -132,7 +130,7 @@ namespace HotelManagement.Controllers
 			}
 			return Json(new { success = false });
 		}
-<<<<<<< HEAD
+
 		public async Task<IActionResult> Update(string? id)
 		{
 			var roomItems = await _roomService.GetAllAsync();
@@ -149,7 +147,7 @@ namespace HotelManagement.Controllers
 			return PartialView(viewModel);
 		}
 
-=======
+
 
         public async Task<IActionResult> RentRoom(string id)
         {
@@ -170,7 +168,7 @@ namespace HotelManagement.Controllers
                 return View("Error");
             }
         }
-<<<<<<< HEAD
+
 
         [HttpPut]
         public async Task<JsonResult> RentBookRoom([FromBody] RentBookRoom data)
@@ -196,14 +194,14 @@ namespace HotelManagement.Controllers
         //	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
         //	var mergeCD = await _mergeService.GetAsync(startDate, endDate);
         //	return Json(new { bookRoom, mergeCD });
-=======
->>>>>>> 4f096e43d58bcbc1c6fce36c8d8fff9f1affe922
+
+
 		//public async Task<JsonResult> GetVal(DateTime? startDate, DateTime? endDate)
 		//{
 		//	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
 		//	var mergeCD = await _mergeService.GetAsync(startDate, endDate);
 		//	return Json(new { bookRoom, mergeCD });
->>>>>>> daf9e9158da008edf24b62a1501214d8cafb9e81
+
 
 
 
