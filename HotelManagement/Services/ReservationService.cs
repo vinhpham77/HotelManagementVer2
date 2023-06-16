@@ -35,8 +35,21 @@ namespace HotelManagement.Services
 
             throw new HttpRequestException($"Request to {requestUrl} failed with status code: {response.StatusCode}");
         }
+		public async Task<Reservation> GetByIdAsync(string id)
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync($"{_reservationApiUrl}/{id}");
 
-        public async Task UpdateAsync(Reservation reservation)
+			if (response.IsSuccessStatusCode)
+			{
+				string jsonResponse = await response.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<Reservation>(jsonResponse);
+			}
+
+			throw new HttpRequestException(
+				$"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+		}
+
+		public async Task UpdateAsync(Reservation reservation)
         {
             StringContent content =
                 new StringContent(JsonConvert.SerializeObject(reservation), Encoding.UTF8, "application/json");

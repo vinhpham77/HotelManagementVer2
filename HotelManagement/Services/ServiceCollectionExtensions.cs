@@ -111,7 +111,14 @@ public static class ServiceCollectionExtensions
             var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl);
         });
+		services.AddHttpClient<ReservationService>(client =>
+		{
+			var serviceProvider = services.BuildServiceProvider();
+			var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettings>>().Value;
+			client.BaseAddress = new Uri(apiSettings.BaseUrl);
+		});
 
+<<<<<<< HEAD
         services.AddHttpClient<ReservationService>(client =>
         {
             var serviceProvider = services.BuildServiceProvider();
@@ -120,6 +127,9 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
+=======
+		return services;
+>>>>>>> daf9e9158da008edf24b62a1501214d8cafb9e81
     }
 
 }

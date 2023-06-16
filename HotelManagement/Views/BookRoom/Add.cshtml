@@ -94,7 +94,7 @@
 		</div>
 		<div class="mb-3">
 			<label class="fs-6">Tiền Trả Trước</label>
-			<input class="form-control" type="text" name="" id="">
+			<input class="form-control" type="text" name="" id="deposits" onchange="errorDepositsValue()">
 		</div>
 		<div>
 			<table class="table">
@@ -108,7 +108,8 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="text-center" colspan="2">Chưa chỉ định phòng</td>
+						<div id="viewAddLayOut" class="d-flex flex-wrap room-list-panel ng-star-inserted">
+						</div>
 					</tr>
 				</tbody>
 			</table>
@@ -190,7 +191,7 @@
 			{
 				if(room.IsEmpty)
 				{
-					<div class="text-white text-center d-inline-block" style="width: 100px; height: 28px; border-radius: 40px; background-color: #0000d0;">
+					<div id="roomadd@(room.Id)" onclick="addRoom('@room.Id', '@room.Name')" class="text-white text-center d-inline-block" style="width: 100px; height: 28px; border-radius: 40px; background-color: #0000d0;">
 						<p>@room.Name</p>
 					</div>
 				}
@@ -201,7 +202,9 @@
 
 </body>
 </html>
+
 <script>
+	
 
 
 	const btnThemMoi = document.getElementById("btnThemMoi")
@@ -342,6 +345,20 @@
 		}
 	};
 
+	var errorDeposits = true;
+	async function errorDepositsValue() {
+		var depositsInput = $("#deposits");
+		var depositsValue = depositsInput.val().trim();
+		if (depositsValue === "" || isNaN(depositsValue) || parseFloat(depositsValue) < 0) {
+			errorDeposits = true;
+			depositsInput.addClass("is-invalid");
+		}
+		else {
+			errorDeposits = false;
+			depositsInput.removeClass("is-invalid");
+		}
+	};
+
 	var errorPhonenumber = true;
 	async function errorPhoneNumber() {
 		var phoneNumberInput = $("#phoneNumber");
@@ -359,6 +376,7 @@
 			phoneNumberInput.removeClass("is-invalid")
 		}
 	};
+
 
 	var errorIdno = true;
 	async function errorIdNo() {
@@ -482,21 +500,49 @@
 		$("#dateTo").addClass("is-invalid");
 	}
 
-	async function setVal(datefrom,dateto){
-	 $.ajax({
-			url: '/BookRoom/Quoc',
-            type: 'GET',
-			data: { startDate: today.toISOString(), endDate: endDay.toISOString() },
-            success: function (result) {
-               console.log(result);
-            },
-            error: function (xhr, status, error) {
-                console.log(xhr.responseText);
-            }
+	var bookRoom;
+	var mergeCD;
 
-        })
+	async function setVal(t,d){
+	 try {
+        const result = await $.ajax({
+            url: '/BookRoom/Quoc',
+            type: 'GET',
+            data: { startDate: t.toISOString(), endDate: d.toISOString() }
+        });
+        bookRoom=result.bookRoom;
+		merge=result.mergeCD;
+        // Tiếp tục xử lí dữ liệu tại đây
+    } catch (error) {
+        console.log(error);
+    }
 	}
 
+	var roomIds=[];
+	async function addRoom(id, name){
+		$("#roomadd"+id).addClass("d-none");
+		addLayOut(getLayout(id,name));
+		roomIds.push(id);
+		console.log(roomIds);
+	}
+
+	function getLayout(id,name){
+		return '<div onclick="removeRoom(\''+ id +'\')" id="roommove'+id+'" class="text-white text-center d-inline-block" style="width: 100px;height:28px;border-radius: 40px; background-color: #0000d0;"><p>' +name+ '</p></div>';
+	}
+
+	function addLayOut(html){
+		$("#viewAddLayOut").append(html);
+	}
+	async function removeRoom(id){
+		var i;
+		$("#roomadd"+id).removeClass("d-none");
+		$("#roommove"+id).remove();
+		var chiSo = roomIds.findIndex(function(element) {
+		 element === id;
+		 i===element;
+		});
+roomIds.splice(i); console.log(roomIds);
+	}
 </script>
 
 
