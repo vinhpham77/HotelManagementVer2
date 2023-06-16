@@ -1,28 +1,38 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HotelManagement.Models;
+using HotelManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManagement.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly AccountService _accountService;
 
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
+    public HomeController(AccountService accountService) =>
+        _accountService = accountService;
 
     public IActionResult Index()
     {
         return View();
     }
-
-    public IActionResult Privacy()
+    
+    [HttpGet("Profile/{username}")]
+    public async Task<IActionResult> Profile(string username)
     {
-        return View();
+        try
+        {
+            var accountDto = await _accountService.GetAccountDtoAsync(username);
+            return View(accountDto);
+        }
+        catch
+        {
+            return View(null);
+        }
     }
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

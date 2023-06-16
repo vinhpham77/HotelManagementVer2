@@ -10849,10 +10849,31 @@ a:focus {
   }
 }
 
+.app-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bg-hotel {
+  background-image: url("../images/hotel.svg");
+  background-origin: content-box;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .bg-login-image {
-  background: url("https://source.unsplash.com/K4mSJ7kc0As/600x800");
+  background: url("https://source.unsplash.com/uocSnWMhnAs/600x800");
   background-position: center;
   background-size: cover;
+  border-right: 1px solid rgba(0, 0, 0, 0.01);
 }
 
 .bg-register-image {

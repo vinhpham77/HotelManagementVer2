@@ -1,9 +1,11 @@
 using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.Controllers;
 
+[Authorize (Roles = "admin")]
 public class RoomTypesController : Controller
 {
     private readonly RoomTypeService _roomTypeService;

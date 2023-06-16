@@ -1,0 +1,531 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+	<link rel="icon" href="./images/favicon.ico">
+	<title>Hotel</title>
+</head>
+<style>
+	.mr-2 {
+		margin-right: 20px;
+	}
+
+	.hide {
+		display: none;
+	}
+
+	.unlist-Style li {
+		cursor: pointer;
+		/* background-color: aqua; */
+		display: inline-block;
+	}
+
+		.unlist-Style li:hover {
+			cursor: pointer;
+		}
+
+	.active-tab {
+		border-bottom: 3px solid rgb(0, 94, 255);
+	}
+
+	.tab-list li {
+		text-align: center;
+		height: 60px;
+		line-height: 60px;
+		padding: 0 20px;
+	}
+
+	.show {
+		display: block;
+	}
+
+	#formAddCustomer {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		display: none;
+		box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+		padding: 8px 16px;
+	}
+</style>
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@model MyViewModel
+
+@{
+	var reservation = JsonConvert.SerializeObject(Model.Reservation);
+	var rooms = JsonConvert.SerializeObject(Model.Rooms);
+	var customer = JsonConvert.SerializeObject(Model.Customer);
+}
+
+<body>
+	<div id="formAddNew" class="col col-4 ">
+
+		<div class="mb-3">
+			<label for="hoTen" class="form-label"> CMT/CCCD</label>
+			<input type="text" class="form-control" onchange="searchIdNo()" id="idNo" value="@Model.Customer.IdNo" >
+		</div>
+
+
+		<div class="mb-3">
+			<label for="hoTen" class="form-label">Họ Tên Khách Hàng</label>
+			<div class="input-group" id="addCustomer">
+				<!-- Add a container div -->
+				<input type="text" class="form-control" id="hoTen" value ="@Model.Customer.FullName">
+			
+			</div>
+		</div>
+
+		<div class="row mb-3">
+			<div class="col">
+				<label class="fs-6">Từ ngày</label>
+				<input class="form-control" type="date" name="" id="dateFrom" onchange="checkDate()" value="@(Model.Reservation.ReservedAt.ToString("yyyy-MM-dd"))">
+			</div>
+			<div class="col">
+				<label class="fs-6">Đến ngày</label>
+				<input class="form-control" type="date" name="" id="dateTo" onchange="checkDate()" value="@(Model.Reservation.CheckedOut.ToString("yyyy-MM-dd"))">
+			</div>
+		</div>
+		<div class="mb-3">
+			<label class="fs-6">Tiền Trả Trước</label>
+			<input class="form-control" type="text" name="" id="" value="@(Model.Reservation.Deposit)">
+		</div>
+		<div>
+			<table class="table">
+				<tbody>
+					<tr>
+						<th>Phòng Đặt</th>
+						<td>
+							<button id="btnThemPhongMoi" style="padding: 4px 14px; border:none; color: rgb(233, 109, 0);">
+								<i class="fas fa-plus"></i> Thêm phòng
+							</button>
+						</td>
+					</tr>
+					<tr>
+						
+					
+							
+								<div id="viewAddLayOut" class="d-flex flex-wrap room-list-panel ng-star-inserted">
+										@foreach (var room in Model.Rooms)
+						{
+									if (room.IsEmpty)
+							{	
+									<div id="roomadd@(room.Id)" onclick="addRoom('@room.Id', '@room.Name')" class="text-white text-center d-inline-block" style="width: 100px; height: 28px; border-radius: 40px; background-color: #0000d0;">
+										<p>@room.Name</p>
+									</div>
+							}
+						}
+								</div>
+							
+						
+							
+
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<button type="submit" class="w-100 btn btn-success">Chỉnh sửa</button>
+
+	</div>
+	</div>
+
+	<div id="formAddCustomer" class="col col-4 flex-column">
+		<div class="mb-3 d-flex me-3">
+			<div class="me-3">
+				<label for="hoTen" class="form-label">Họ</label>
+				<input type="text" class="form-control is-invalid" id="firstName" onchange="errorFirstName()">
+			</div>
+			<div>
+				<label for="hoTen" class="form-label">Tên</label>
+				<input type="text" class="form-control is-invalid" id="lastName" onchange="errorLastName()">
+			</div>
+
+		</div>
+
+
+		<div class="mb-3">
+			<label for="hoTen" class="form-label">Họ Tên Khách Hàng</label>
+			<div class="input-group">
+				<!-- Add a container div -->
+				<input type="text" class="form-control is-invalid" id="fullName" onchange="errorFullName()">
+			</div>
+		</div>
+		<div class="mb-3">
+			<label for="hoTen" class="form-label">Số điện thoại</label>
+			<input type="text" class="form-control is-invalid" id="phoneNumber" onchange="errorPhoneNumber()">
+		</div>
+
+		<div class="mb-3">
+			<label class="fs-6">CMT/CCCD</label>
+			<input class="form-control is-invalid" type="text" name="" id="idno" onchange="errorIdNo()">
+		</div>
+		<div class="mb-3">
+			<label class="fs-6">Quốc Gia</label>
+			<input class="form-control is-invalid" type="text" name="" id="nationality" onchange="errorCounTry()">
+		</div>
+		<div class="mb-3">
+			<label class="fs-6">Ngày sinh</label>
+			<input class="form-control is-invalid" type="date" name="" id="birthdate" onchange="errorBirthDate()">
+		</div>
+		<div class="mb-3">
+
+			<label class="fs-6">Giới tính</label>
+			<div class="d-flex">
+				<div class="form-check mr-2">
+					<input class="form-check-input" type="radio" name="gioiTinh" value="nam" id="gioiTinhNam" checked>
+					<label class="form-check-label" for="gioiTinhNam">
+						Nam
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="gioiTinh" value="nu" id="gioiTinhNu">
+					<label class="form-check-label" for="gioiTinhNu">
+						Nữ
+					</label>
+				</div>
+			</div>
+
+		</div>
+
+		<button type="submit" class="w-100 btn btn-success" id="btnAddCusstomer">Tạo</button>
+	</div>
+
+	<div id="choicePhong" class="shadow hide" style="width: 650px; height: 400px; top: 50%; left: 35vw; background-color: white; position: fixed;">
+		<div>
+			<ul class="unlist-Style tab-list">
+				<li class="active-tab" id="tab1">
+					Tất cả
+				</li>
+			</ul>
+		</div>
+		<div id="box-tab1 " class="show d-flex flex-wrap room-list-panel ng-star-inserted">
+			@foreach (var room in Model.Rooms)
+			{
+				if (room.IsEmpty)
+				{
+					<div id="roomadd@(room.Id)" onclick="addRoom('@room.Id', '@room.Name')" class="text-white text-center d-inline-block" style="width: 100px; height: 28px; border-radius: 40px; background-color: #0000d0;">
+						<p>@room.Name</p>
+					</div>
+				}
+			}
+		</div>
+
+	</div>
+
+</body>
+</html>
+<script>
+	var reservation1 = @Html.Raw(reservation);
+    var rooms1 = @Html.Raw(rooms);
+	console.log(reservation1,rooms1)
+</script>
+<script>
+
+
+
+	const btnThemMoi = document.getElementById("btnThemMoi")
+
+	document.getElementById("btnThemPhongMoi").addEventListener("click", () => {
+
+		if (document.getElementById("choicePhong").classList.contains("hide")) {
+			document.getElementById("choicePhong").classList.add("show");
+			document.getElementById("choicePhong").classList.remove("hide");
+		}
+		else {
+			document.getElementById("choicePhong").classList.add("hide");
+			document.getElementById("choicePhong").classList.remove("show");
+		}
+	})
+
+
+	document.getElementById("tab1").addEventListener("click", () => {
+		if (document.getElementById("box-tab1").classList.contains("hide") && !document.getElementById("tab1").classList.contains("active-tab")) {
+			document.getElementById("box-tab1").classList.add("show");
+			document.getElementById("box-tab1").classList.remove("hide");
+			document.getElementById("tab1").classList.add("active-tab");
+		}
+	});
+
+
+</script>
+<script>
+	var addButton = $("#addCustomerButton");
+	var viewAddCustomer = $("#formAddCustomer");
+	addButton.click(function () {
+		viewAddCustomer.css('display', 'flex');
+	})
+	$(document).click(function (event) {
+		if (!$(event.target).closest(viewAddCustomer).length && !$(event.target).is(addButton)) {
+			viewAddCustomer.css('display', 'none');
+		}
+	});
+</script>
+
+
+<script>
+	var idCustomer = "";
+	async function searchIdNo() {
+
+		console.log($("#idNo").val());
+		$.ajax({
+			url: '/BookRoom/GetCustomerById',
+			type: 'GET',
+			data: { idNo: $("#idNo").val() },
+			success: function (result) {
+				if (result != null) {
+					$("#hoTen").val(result.fullName);
+					idCustomer = result.id
+
+				}
+				else {
+					$("#hoTen").val('');
+					idCustomer = "";
+
+				}
+
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr.responseText);
+			}
+
+		})
+	}
+
+	var errorFirstname = true;
+	async function errorFirstName() {
+		var hoInput = $("#firstName");
+		if (hoInput.val() != "") {
+			errorFirstname = false;
+			hoInput.removeClass("is-invalid");
+		}
+		else {
+			errorFirstname = true;
+			hoInput.addClass("is-invalid");
+
+		}
+	};
+
+
+	var errorLastname = true;
+	async function errorLastName() {
+		var tenInput = $("#lastName");
+		if (tenInput.val().trim() === "") {
+			errorLastname = true;
+			tenInput.addClass("is-invalid");
+		}
+		else {
+			errorLastname = false;
+			tenInput.removeClass("is-invalid");
+		}
+	};
+	var errorFullname = true;
+	async function errorFullName() {
+		var fullNameInput = $("#fullName");
+		if (fullNameInput.val().trim() === "") {
+			errorFullname = true;
+			fullNameInput.addClass("is-invalid");
+		}
+		else {
+			errorFullname = false;
+			fullNameInput.removeClass("is-invalid");
+		}
+	};
+
+	var errorPhonenumber = true;
+	async function errorPhoneNumber() {
+		var phoneNumberInput = $("#phoneNumber");
+		var phoneNumber = phoneNumberInput.val().trim();
+
+		// Kiểm tra số điện thoại chỉ chứa số và có đúng 10 chữ số
+		var phoneNumberPattern = /^\d{10}$/;
+		if (phoneNumber === "" || !phoneNumberPattern.test(phoneNumber)) {
+			errorPhonenumber = true;
+			phoneNumberInput.addClass("is-invalid");
+		}
+
+		else {
+			errorPhonenumber = false;
+			phoneNumberInput.removeClass("is-invalid")
+		}
+	};
+
+	var errorIdno = true;
+	async function errorIdNo() {
+		var idNoInput = $("#idno");
+		var idNo = idNoInput.val().trim();
+		// Kiểm tra số điện thoại chỉ chứa số và có đúng 10 chữ số
+		var idNoPattern = /^\d{12}$/;
+		if (idNo === "" || !idNoPattern.test(idNo)) {
+			errorIdno = true;
+			idNoInput.addClass("is-invalid");
+		}
+
+		else {
+			errorIdno = false;
+			idNoInput.removeClass("is-invalid")
+		}
+	};
+
+	var errorCountry = true;
+	async function errorCounTry() {
+
+		var countryInput = $("#nationality");
+		var country = countryInput.val().trim();
+
+		// Kiểm tra quốc gia không chứa số
+		var numberPattern = /\d/;
+		if (country === "" || numberPattern.test(country)) {
+			countryInput.addClass("error");
+			errorCountry = true;
+			countryInput.addClass("is-invalid");
+		}
+
+		else {
+			errorCountry = false;
+			countryInput.removeClass("is-invalid");
+		}
+	}
+
+	var errorBirthdate = true;
+	async function errorBirthDate() {
+
+		var dateOfBirthInput = $("#birthdate");
+		var dateOfBirth = new Date(dateOfBirthInput.val());
+		var currentDate = new Date();
+
+		// Kiểm tra ngày sinh không có sự thay đổi hoặc lớn hơn ngày hiện tại
+		if (
+			isNaN(dateOfBirth.getTime()) ||  // K
+			dateOfBirth >= currentDate       // Kiểm tra ngày sinh lớn hơn ngày hiện tại
+		) {
+
+			errorBirthdate = true;
+			dateOfBirthInput.addClass("is-invalid");
+
+		}
+		else {
+			errorBirthdate = false;
+			dateOfBirthInput.removeClass("is-invalid");
+		}
+	}
+
+	var btnCreateCustomer = $("#btnAddCusstomer");
+
+
+	var hoTen = $("#hoTen")
+	btnCreateCustomer.click(function () {
+		if (!errorFirstname && !errorLastname && !errorFullname && !errorPhonenumber && !errorIdno && !errorCountry && !errorBirthdate) {
+			hoTen.val($("#fullName").val());
+			idCustomer = "";
+		}
+		else {
+			hoTen.val("");
+		}
+
+	})
+	var today = new Date();
+
+	var endDay = new Date(today.getTime())
+	endDay.setDate(endDay.getDate() + 1);
+
+	// Chuyển đổi birthdate thành định dạng yyyy-mm-dd
+	let day = (today.getDate()).toString().padStart(2, '0');
+	let month = (today.getMonth() + 1).toString().padStart(2, '0');
+	let year = today.getFullYear();
+	let formattedBirthdate = new Date(year, month - 1, day); // Chuyển đổi thành kiểu Date
+
+	$("#dateFrom").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
+
+	day = (endDay.getDate() + 1).toString().padStart(2, '0');
+	month = (endDay.getMonth() + 1).toString().padStart(2, '0');
+	year = endDay.getFullYear();
+	formattedBirthdate = new Date(year, month - 1, day); // Chuyển đổi thành kiểu Date
+
+	$("#dateTo").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
+
+	setVal(today, endDay);
+
+	var errorCheckDate = false;
+	async function checkDate() {
+		var dateFromInput = $("#dateFrom").val();
+		var dateToInput = $("#dateTo").val();
+
+
+		if ((dateFromInput && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dateFromInput)) &&
+			(dateToInput && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dateToInput))
+		) {
+			var dateFrom = new Date(dateFromInput);
+			var dateTo = new Date(dateToInput);
+			if (dateTo > dateFrom) {
+				errorCheckDate = false;
+				$("#dateFrom").removeClass("is-invalid");
+				$("#dateTo").removeClass("is-invalid");
+				setVal(dateFrom, dateTo);
+				return;
+			}
+
+		}
+
+		errorCheckDate = true;
+		$("#dateFrom").addClass("is-invalid");
+		$("#dateTo").addClass("is-invalid");
+	}
+
+	var bookRoom;
+	var mergeCD;
+
+	async function setVal(t, d) {
+		try {
+			const result = await $.ajax({
+				url: '/BookRoom/Quoc',
+				type: 'GET',
+				data: { startDate: t.toISOString(), endDate: d.toISOString() }
+			});
+			bookRoom = result.bookRoom;
+			merge = result.mergeCD;
+			// Tiếp tục xử lí dữ liệu tại đây
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	var roomIds = [];
+	async function addRoom(id, name) {
+		$("#roomadd" + id).addClass("d-none");
+		addLayOut(getLayout(id, name));
+		roomIds.push(id);
+		console.log(roomIds);
+	}
+
+	function getLayout(id, name) {
+		return '<div onclick="removeRoom(\'' + id + '\')" id="roommove' + id + '" class="text-white text-center d-inline-block" style="width: 100px;height:28px;border-radius: 40px; background-color: #0000d0;"><p>' + name + '</p></div>';
+	}
+
+	function addLayOut(html) {
+		$("#viewAddLayOut").append(html);
+	}
+	async function removeRoom(id) {
+		var i;
+		$("#roomadd" + id).removeClass("d-none");
+		$("#roommove" + id).remove();
+		var chiSo = roomIds.findIndex(function (element) {
+			element === id;
+			i === element;
+		});
+		roomIds.splice(i); console.log(roomIds);
+	}
+</script>
+
+
