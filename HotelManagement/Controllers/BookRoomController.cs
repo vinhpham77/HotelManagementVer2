@@ -73,10 +73,11 @@ namespace HotelManagement.Controllers
 
 
 
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
+            var room=await _roomService.GetAllAsync();
 
-            return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
+            return PartialView(room.Items); // Trả về partial view (file .cshtml) chứa form đăng kí
         }
         public async Task<JsonResult> GetCustomerById(string idNo)
         {
