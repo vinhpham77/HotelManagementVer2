@@ -7,13 +7,41 @@
 @using Newtonsoft.Json;
 
 @model HotelManagement.Models.Rent
-
+@{
+    var order = JsonConvert.SerializeObject(Model.Order);
+}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<style>
+    .container-form {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,.32);
+    }
+
+    .content-form {
+        padding: 8px 16px;
+        box-sizing: border-box;
+        display: block;
+        outline: 0;
+        overflow: auto;
+        box-shadow: 0 8px 10px -5px rgba(0,0,0,.2), 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12);
+        background: #fff;
+        color: rgba(0,0,0,.87);
+    }
+</style>
 
 <style>
 
@@ -83,9 +111,7 @@
                                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownW@(room.Id)" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 </button>
                                                                 <ul class="dropdown-menu" aria-labelledby="dropdownW@(room.Id)">
-                                                                    <li><button class="dropdown-item" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
-                                                                    <li><button class="dropdown-item" type="button"><i class="fa-regular fa-calendar-week"></i> Nhận phòng đặt trước</button></li>
-
+                                                                    <li><button class="dropdown-item" onclick="viewRent('@(room.Id)')" type="button"><i class="fa-solid fa-key"></i> Nhận phòng</button></li>
                                                                     <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
                                                                 </ul>
                                                             </div>
@@ -174,7 +200,7 @@
                                                                         <li><button class="dropdown-item" onclick="viewCheck('@(room.Id)')" type="button"><i class="fa-solid fa-user-check"></i> Trả phòng</button></li>
                                                                         <li><button class="dropdown-item" onclick="viewRoomChange('@(room.Id)')" type="button"><i class="fa-solid fa-rotate"></i> Đổi phòng</button></li>
                                                                         <li><button class="dropdown-item" onclick="requestClean('@(JsonConvert.SerializeObject(@room))')" type="button" @(room.IsCleaned ? "" : "disabled")><i class="fa-regular fa-tag"></i> Yêu cầu dọn phòng</button></li>
-                                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                                        <li><button class="dropdown-item" onclick="deleteDetail('@reOrder.Detail.Id')" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -309,7 +335,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownH@(item.Id)">
                                                         <li><button class="dropdown-item" onclick="viewEditHistory('@(item.Id)')" type="button"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button></li>
-                                                        <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
+                                                        <li><button class="dropdown-item" onclick="deleteReceipt('@(item.Receipt.Id)')" type="button"><i class="fa-solid fa-trash"></i> Xóa</button></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -337,10 +363,23 @@
     <div id="rightLayout" class="p-3"></div>
 </div>
 
+<div class="container-form" onclick="exitform()" id="containerform">
+    <div class="content-form" val="" id="contentform">
+        <h2 class="my-4">Xác nhận</h2>
+        <div class="m-3">
+            Xác nhận xóa dữ liệu
+        </div>
+        <div class="my-2 d-flex justify-content-end">
+            <button class="btn" onclick="exitform()">Hủy bỏ</button>
+            <button class="btn" onclick="confirmform()">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
 <script>
 
     var sort = "name";
-    var order = "asc";
+    var order = @Html.Raw(order);
     var keyword = "";
     var tap="";
 
@@ -473,5 +512,66 @@
                 $("#rightLayout").html(result);
             }
         })
+    }
+
+    var deleteT = true;
+
+    async function deleteDetail(id)
+    {
+        $("#containerform").css('display', 'flex');
+        deleteT = true;
+        $("#contentform").attr("val", id);
+    }
+
+    async function deleteReceipt(id)
+    {
+        $("#containerform").css('display', 'flex');
+        deleteT = false;
+        $("#contentform").attr("val", id);
+    }
+
+    async function confirmform() {
+     var id = $("#contentform").attr("val");
+        console.log(deleteT, id);
+        if (deleteT) {
+            $.ajax({
+                url: '/rent/DeleteDetail',
+                    type: 'DELETE',
+                    data: { id: id },
+                    success: function (result) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+
+                })
+        }
+        else
+        {
+            $.ajax({
+                url: '/rent/DeleteReceipt',
+                type: 'DELETE',
+                data: { id: id },
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        
+    }
+
+    async function exitform() {
+        $("#containerform").hide();
+    }
+    $("#contentform").click(function (event) {
+        event.stopPropagation();
+    })
+
+    async function viewRent(id)
+    {
+        console.log(id);
     }
 </script>
