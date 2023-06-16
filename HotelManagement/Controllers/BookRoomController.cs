@@ -11,12 +11,13 @@ using Microsoft.CodeAnalysis.Differencing;
 
 using System.Runtime.InteropServices;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using HotelManagementAPI.Models;
 
 namespace HotelManagement.Controllers
 {
     public class BookRoomController : Controller
     {
-
+        private readonly RentRoomService _rentRoomService;
         private readonly RoomService _roomService;
         private readonly ReservationDetailService _reservationDetailService;
         private readonly ReservationService _reservationService;
@@ -24,8 +25,12 @@ namespace HotelManagement.Controllers
         private readonly MergeCDService _mergeService;
         private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
+<<<<<<< HEAD
 		
 		public BookRoomController(
+=======
+        public BookRoomController(RentRoomService rentRoomService,
+>>>>>>> 4f096e43d58bcbc1c6fce36c8d8fff9f1affe922
             RoomService roomService,
           ReservationDetailService reservationDetailService,
           ILogger<BookRoomController> logger,
@@ -34,7 +39,7 @@ namespace HotelManagement.Controllers
           ReservationService reservationService)
           
         {
-                   
+            _rentRoomService = rentRoomService;
             _roomService = roomService;
             _reservationDetailService = reservationDetailService;
             _logger = logger;
@@ -121,6 +126,7 @@ namespace HotelManagement.Controllers
 			}
 			return Json(new { success = false });
 		}
+<<<<<<< HEAD
 		public async Task<IActionResult> Update(string? id)
 		{
 			var roomItems = await _roomService.GetAllAsync();
@@ -137,6 +143,28 @@ namespace HotelManagement.Controllers
 			return PartialView(viewModel);
 		}
 
+=======
+
+        public async Task<IActionResult> RentRoom(string id)
+        {
+            try
+            {
+                var rentRooms = await _rentRoomService.GetAsync(null, null, null);
+                var reservation = await _reservationService.GetByIdAsync(id);
+                var data = new RentBook
+                {
+                    reservation = reservation,
+                    RentRooms = rentRooms
+                };
+                return PartialView(data);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error retrieving room types");
+                return View("Error");
+            }
+        }
+>>>>>>> 4f096e43d58bcbc1c6fce36c8d8fff9f1affe922
 		//public async Task<JsonResult> GetVal(DateTime? startDate, DateTime? endDate)
 		//{
 		//	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
