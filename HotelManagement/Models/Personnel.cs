@@ -5,8 +5,7 @@ namespace HotelManagement.Models;
 
 public class Personnel
 {
-    [JsonProperty("id")]
-    public string? Id { get; set; }
+    [JsonProperty("id")] public string? Id { get; set; }
 
     [JsonProperty("username")] public string Username { get; set; } = null!;
 
@@ -15,8 +14,8 @@ public class Personnel
     [JsonProperty("lastName")] public string LastName { get; set; } = null!;
 
     [JsonProperty("fullName")] public string FullName { get; set; } = null!;
-    
-    [JsonProperty("phoneNumber")] public string? PhoneNumber { get; set; } = null!;
+
+    [JsonProperty("phoneNumber")] public string? PhoneNumber { get; set; }
 
     [JsonProperty("idNo")] public string IdNo { get; set; } = null!;
 

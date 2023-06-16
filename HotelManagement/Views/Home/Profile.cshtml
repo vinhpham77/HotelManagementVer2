@@ -1,0 +1,63 @@
+@model AccountDto?;
+
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+    Layout = "_Layout";
+}
+
+@if (Model is null)
+{
+    <div style="height: 400px" class="d-flex flex-column align-items-center justify-content-center">
+        <div class="text-center">
+            <div class="error mx-auto" data-text="404">404</div>
+            <p class="lead text-gray-800 mb-5">Sự cố</p>
+            <p class="text-gray-500 mb-0">Đã có lỗi xảy ra. Vui lòng thử lại sau</p>
+            <a href="/">&larr; Quay lại trang chủ</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Họ tên</dt>
+                <dd class="col-sm-9">@Model?.Personnel.FullName</dd>
+
+                <dt class="col-sm-3">Giới tính</dt>
+                <dd class="col-sm-9">
+                    @if (Model?.Personnel.Sex != null && Model?.Personnel.Sex is true)
+                    {
+                        @("Nam")
+                    }
+                    else
+                    {
+                        @("Nữ")
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày sinh</dt>
+                <dd class="col-sm-9">@Model?.Personnel.Birthdate.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Số điện thoại</dt>
+                <dd class="col-sm-9">@Model?.Personnel.PhoneNumber</dd>
+
+                <dt class="col-sm-3">CMT/Hộ chiếu</dt>
+                <dd class="col-sm-9">@Model?.Personnel.IdNo</dd>
+                <dt class="col-sm-3">Tên đăng nhập</dt>
+                <dd class="col-sm-9">@Model?.Username</dd>
+                <dt class="col-sm-3">Vai trò</dt>
+                <dd class="col-sm-9">
+                    @if (Model?.Role != null && Model?.Role is "admin")
+                    {
+                        @("Quản trị viên")
+                    }
+                    else
+                    {
+                        @("Nhân viên")
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+}
