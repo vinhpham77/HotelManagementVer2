@@ -75,8 +75,8 @@ namespace HotelManagement.Services
             }
 
             throw new HttpRequestException(
-                $"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
-        }
+				$"Request to create RoomType failed with status code: {response.StatusCode}");
+		}
 
         public async Task DeleteAsync(string id)
         {
