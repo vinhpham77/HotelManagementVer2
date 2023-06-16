@@ -198,7 +198,7 @@
         <div class="col col-8">
             <!-- tabs -->
             <div style="padding-left: 10px;">
-                <button id="btnThemMoi" style="padding: 15px 14px; margin-left: 20px; border: none; color: rgb(0, 124, 0);">
+                <button onclick="viewAdd()" id="btnThemMoi" style="padding: 15px 14px; margin-left: 20px; border: none; color: rgb(0, 124, 0);">
                     <i class="fas fa-plus"></i> Thêm mới
                 </button>
                 <ul class="unlist-Style tab-list">
@@ -595,5 +595,15 @@
 
     async function deleteView(id) {
         console.log(id);
+    }
+
+    async function viewAdd() {
+        $.ajax({
+            url: '/bookroom/add',
+            type: 'GET',
+            success: function (result) {
+                $("#formAddNew").html(result);
+            }
+        })
     }
 </script>
