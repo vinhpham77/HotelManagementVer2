@@ -18,6 +18,44 @@
     <link rel="icon" href="./images/favicon.ico">
     <title>Hotel</title>
 </head>
+
+<style>
+    .card-body ul li {
+        padding: 2px 0;
+    }
+
+    .menuBoxThaoTac1 {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        left: 80px;
+        z-index: 1;
+        background-color: white;
+    }
+
+        .menuBoxThaoTac1 li {
+            padding: 8px 0;
+        }
+
+            .menuBoxThaoTac1 li:hover {
+                padding-left: 4px;
+            }
+
+
+            .menuBoxThaoTac1 li a {
+                text-decoration: none;
+                color: black;
+            }
+
+    .hide {
+        display: none;
+    }
+
+    .show {
+        display: block;
+    }
+
+</style>
 <style>
    *{
     margin: 0;
@@ -38,6 +76,11 @@
     z-index:100;
     align-items: center;
     border-radius: 3px;
+}
+
+.name-item-cus {
+        height: 26px;
+        overflow: hidden;
 }
 
 .w-110{
@@ -193,14 +236,8 @@
                     <li class="active-tab" id="lichTheoPhong">
                         <i class="fas fa-bed" style="width: 30px;"></i> Lịch theo phòng
                     </li>
-                    <li id="lichTheoLoaiPhong">
-                        <i class="fas fa-calendar-alt" style="width: 30px;"></i> Lịch theo loaị phòng
-                    </li>
                     <li id="xemTheoNgay">
                         <i class="fas fa-calendar-check" style="width: 30px;"></i> Xem theo ngày
-                    </li>
-                    <li id="timKiem">
-                        <i class="fas fa-search"  style="width: 30px;"></i> Tìm kiếm
                     </li>
                 </ul>
             </div>
@@ -310,7 +347,7 @@
                                                             }
                                                             <div class="timeLine d-flex bg-primary item-cus py-1 px-2" style="width: @(t*107)px; left: @(v)px">
                                                                     <i class="fa-solid fa-user-tie" style="height: 18px;"></i>
-                                                                    <div>@item.Customer.FullName</div>
+                                                                <div class="name-item-cus">@item.Customer.FullName</div>
                                                                 <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
                                                                     <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
                                                                         <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
@@ -341,7 +378,7 @@
                                                     }
                                                     <div class=" timeLine d-flex item-cus py-1 px-2" style="width: @(t*107)px; left: @(v)px; background-color: rgb(0, 142, 35);">
                                                             <i class="fa-solid fa-user-tie" style="height: 18px;"></i>
-                                                            <div>@item.customer.FullName</div>
+                                                            <div class="name-item-cus">@item.customer.FullName</div>
                                                         <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
                                                             <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
                                                                 <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
@@ -358,56 +395,6 @@
                                     
                                 </div>
                             }
-
-
-                            
-                            
-
-                                              
-                            <tr>
-                                <td colspan="3">
-                                    <div class="timeLine bg-primary rounded text-white position-relative" style="height: 25px;">
-                                        <i class="fas fa-user fs-6 text-white ps-2"></i> 1111111
-                                        <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
-                                            <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
-                                                <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                                <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li>
-                                                <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
-                                                <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td colspan="3">
-                                    <div class="timeLine bg-warning rounded text-white position-relative" style="height: 25px;">
-                                        <i class="fas fa-user fs-6 text-white ps-2"></i> 1111111
-                                        <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
-                                            <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
-                                                <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                                <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li>
-                                                <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
-                                                <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>Phòng 2</td>
-                                <td></td>
-                                <td colspan="3">
-                                    <div class="timeLine bg-primary rounded text-white position-relative" style="height: 25px;">
-                                        <i class="fas fa-user fs-6 text-white ps-2 "></i> 1111111
-                                        <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
-                                            <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
-                                                <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                                <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                                <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
-                                                <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td colspan="2"></td>
-                            </tr>
                         </div>
                     </div>
                 </div>
@@ -415,147 +402,24 @@
 
             <div id="box2" class="hide">
                 <ul class="unlist-Style">
-                    <li><i class="fas fa-arrow-left"></i></li>
-                    <li class="ms-3"><i class="fas fa-arrow-right"></i></li>
-                    <li class="ms-4">Tháng 6 - 2023</li>
+                    <input class="form-control" type="date" onchange="dayReservationChange()" id="ReservationDay">
                 </ul>
-            </div>
-
-            <div id="box3" class="hide">
-                <ul class="unlist-Style">
-                    <li><i class="fas fa-arrow-left"></i></li>
-                    <li class="ms-3"><i class="fas fa-arrow-right"></i></li>
-                    <li class="ms-4">Tháng 6 - 2023</li>
-                    <li class="ms-2">
-                        <input style="width: 22px;" type="date" name="" id="">
-                    </li>
-                </ul>
-            </div>
-
-            <div id="box4" class="hide">
-                <ul class="unlist-Style control-space">
-                    <li>
-                        <label class="fs-6">Từ ngày</label>
-                        <input class="form-control" type="date" name="" id="">
-                    </li>
-                    <li>
-                        <label class="fs-6">Đến ngày</label>
-                        <input class="form-control" type="date" name="" id="">
-                    </li>
-                    <li>
-                        <i class="fas fa-search fs-4"  style="width: 30px;"></i>
-                    </li>
-                    <li class="d-block mt-3">
-                        <label class="fs-6">Tìm kiếm</label>
-                        <input class="form-control" type="text" name="" id="">
-                    </li>
-                </ul>
-
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Khách Hàng</th>
-                            <th scope="col">Ngày Nhận Phòng</th>
-                            <th scope="col">Ngày Trả Phòng</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Trạng thái</th>
-                            <th scope="col">Ghi chú</th>
-                            <th scope="col">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td class="text-center position-relative">
-                                <i class="fas fa-ellipsis-v menu-his btnThaoTac" style="cursor: pointer;"></i>
-                                <div class="menuBoxThaoTac shadow hide">
-                                    <ul class="text-start p-0 ps-2" style="list-style: none;">
-                                        <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                        <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
-                                        <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td>item</td>
-                            <td class="text-center position-relative">
-                                <i class="fas fa-ellipsis-v menu-his btnThaoTac" style="cursor: pointer;"></i>
-                                <div class="menuBoxThaoTac shadow hide">
-                                    <ul class="text-start p-0 ps-2" style="list-style: none;">
-                                        <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
-                                        <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
-                                        <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="d-flex flex-wrap room-list-panel ng-star-inserted" id="viewReservationInDay">
+                    
+                </div>
             </div>
         </div>
       
     </div>
     
-    <div id="choicePhong" class="shadow hide" style="width: 650px; height: 400px; top: 50%; left: 35vw; background-color: white; position: fixed;">
-        <div>
-            <ul class="unlist-Style tab-list">
-                <li class="active-tab" id="tab1">
-                    Tất cả
-                </li>
-                <li id="tab2">
-                    Phòng đơn
-                </li>
-                <li id="tab3">
-                    Phòng đôi
-                </li>
-            </ul>
-        </div>
-        <div id="box-tab1" class="show">
-            <ul>
-                <li>1</li>
-                <li>1</li>
-                <li>1</li>
-            </ul>
-        </div>
-        <div id="box-tab2" class="hide">
-            <ul>
-                <li>2</li>
-                <li>2</li>
-                <li>2</li>
-            </ul>
-        </div>
-        <div id="box-tab3" class="hide">
-            <ul>
-                <li>3</li>
-                <li>3</li>
-                <li>3</li>
-            </ul>
-        </div>
-    </div>
     
 
     <script>
         const btnLichTheoPhong = document.getElementById("lichTheoPhong");
-        const btnLichTheoLoaiPhong = document.getElementById("lichTheoLoaiPhong")
         const btnXemTheoNgay = document.getElementById("xemTheoNgay")
-        const btnTimKiem = document.getElementById("timKiem")
 
         const box1 = document.getElementById("box1");
         const box2 = document.getElementById("box2");
-        const box3 = document.getElementById("box3");
-        const box4 = document.getElementById("box4");
 
         const btnThemMoi = document.getElementById("btnThemMoi")
         const formAddNew = document.getElementById("formAddNew")
@@ -575,77 +439,28 @@
             if(box1.classList.contains("hide") && !btnLichTheoPhong.classList.contains("active-tab")){
                 box1.classList.add("show");
                 box2.classList.add("hide");
-                box3.classList.add("hide");
-                box4.classList.add("hide");
                 
                 box1.classList.remove("hide");
                 box2.classList.remove("show");
-                box3.classList.remove("show");
-                box4.classList.remove("show");
 
-                btnLichTheoPhong.classList.add("active-tab")
-                btnLichTheoLoaiPhong.classList.remove("active-tab")
-                btnTimKiem.classList.remove("active-tab");
+                btnLichTheoPhong.classList.add("active-tab");
                 btnXemTheoNgay.classList.remove("active-tab");
             }
         });
 
-        btnLichTheoLoaiPhong.addEventListener("click", ()=>{
-            if(box2.classList.contains("hide") && !btnLichTheoLoaiPhong.classList.contains("active-tab")){
+        btnXemTheoNgay.addEventListener("click", () => {
+            if (box2.classList.contains("hide") && !btnXemTheoNgay.classList.contains("active-tab")) {
                 box2.classList.add("show");
                 box1.classList.add("hide");
-                box3.classList.add("hide");
-                box4.classList.add("hide");
                 
                 box2.classList.remove("hide");
                 box1.classList.remove("show");
-                box3.classList.remove("show");
-                box4.classList.remove("show");
 
-                btnLichTheoLoaiPhong.classList.add("active-tab");
                 btnLichTheoPhong.classList.remove("active-tab")
-                btnTimKiem.classList.remove("active-tab");
                 btnXemTheoNgay.classList.remove("active-tab");
             }
         });
 
-        btnXemTheoNgay.addEventListener("click", ()=>{
-            if(box3.classList.contains("hide") && !btnXemTheoNgay.classList.contains("active-tab")){
-                box3.classList.add("show");
-                box1.classList.add("hide");
-                box2.classList.add("hide");
-                box4.classList.add("hide");
-                
-                box3.classList.remove("hide");
-                box1.classList.remove("show");
-                box2.classList.remove("show");
-                box4.classList.remove("show");
-
-                btnXemTheoNgay.classList.add("active-tab");
-                btnLichTheoPhong.classList.remove("active-tab")
-                btnLichTheoLoaiPhong.classList.remove("active-tab")
-                btnTimKiem.classList.remove("active-tab");
-            }
-        });
-
-        btnTimKiem.addEventListener("click", ()=>{
-            if(box4.classList.contains("hide") && !btnTimKiem.classList.contains("active-tab")){
-                box4.classList.add("show");
-                box1.classList.add("hide");
-                box2.classList.add("hide");
-                box3.classList.add("hide");
-                
-                box4.classList.remove("hide");
-                box1.classList.remove("show");
-                box2.classList.remove("show");
-                box3.classList.remove("show");
-
-                btnTimKiem.classList.add("active-tab");
-                btnLichTheoPhong.classList.remove("active-tab")
-                btnLichTheoLoaiPhong.classList.remove("active-tab")
-                btnXemTheoNgay.classList.remove("active-tab");
-            }
-        });
 
         var list = document.querySelectorAll(".menuBoxThaoTac");
         document.querySelectorAll(".btnThaoTac").forEach((val, index) => {
@@ -677,115 +492,45 @@
             })
         });
 
-        document.getElementById("btnThemPhongMoi").addEventListener("click",()=>{
-            
-            if(document.getElementById("choicePhong").classList.contains("hide")){
-                    document.getElementById("choicePhong").classList.add("show");
-                    document.getElementById("choicePhong").classList.remove("hide");
-                }
-                else
-                {
-                    document.getElementById("choicePhong").classList.add("hide");
-                    document.getElementById("choicePhong").classList.remove("show");
-                }
-        })
 
-        document.getElementById("tab1").addEventListener("click", ()=>{
-            if(document.getElementById("box-tab1").classList.contains("hide") && !document.getElementById("tab1").classList.contains("active-tab")){
-                document.getElementById("box-tab1").classList.add("show");
-                document.getElementById("box-tab2").classList.add("hide");
-                document.getElementById("box-tab3").classList.add("hide");
-                
-                document.getElementById("box-tab1").classList.remove("hide");
-                document.getElementById("box-tab2").classList.remove("show");
-                document.getElementById("box-tab3").classList.remove("show");
 
-                document.getElementById("tab1").classList.add("active-tab");
-                document.getElementById("tab2").classList.remove("active-tab")
-                document.getElementById("tab3").classList.remove("active-tab")
-            }
-        });
-
-        document.getElementById("tab2").addEventListener("click", ()=>{
-            if(document.getElementById("box-tab2").classList.contains("hide") && !document.getElementById("tab2").classList.contains("active-tab")){
-                document.getElementById("box-tab2").classList.add("show");
-                document.getElementById("box-tab1").classList.add("hide");
-                document.getElementById("box-tab3").classList.add("hide");
-                
-                document.getElementById("box-tab2").classList.remove("hide");
-                document.getElementById("box-tab1").classList.remove("show");
-                document.getElementById("box-tab3").classList.remove("show");
-
-                document.getElementById("tab2").classList.add("active-tab");
-                document.getElementById("tab1").classList.remove("active-tab")
-                document.getElementById("tab3").classList.remove("active-tab")
-            }
-        });
-
-        document.getElementById("tab3").addEventListener("click", ()=>{
-            if(document.getElementById("box-tab3").classList.contains("hide") && !document.getElementById("tab3").classList.contains("active-tab")){
-                document.getElementById("box-tab3").classList.add("show");
-                document.getElementById("box-tab1").classList.add("hide");
-                document.getElementById("box-tab2").classList.add("hide");
-                
-                document.getElementById("box-tab3").classList.remove("hide");
-                document.getElementById("box-tab1").classList.remove("show");
-                document.getElementById("box-tab2").classList.remove("show");
-
-                document.getElementById("tab3").classList.add("active-tab");
-                document.getElementById("tab1").classList.remove("active-tab")
-                document.getElementById("tab2").classList.remove("active-tab")
-            }
-        });
 
     </script>
 
 </body>
 
-<script>
-    document.querySelector(".menu-his").addEventListener("click", () => {
-        const menu = document.getElementById("menu-box-his");
-        if (menu.classList.contains("hide")) {
-            menu.classList.remove("hide");
-            menu.classList.add("show");
-        }
-        else {
-            menu.classList.add("hide");
-            menu.classList.remove("show");
-        }
 
-    })
-</script>
 
 
 </html>
 
 <script>
-
+    var today = new Date();
     var startDate = @Html.Raw(dayStart);
     startDate = new Date(startDate);
-    startDate.setHours(startDate.getHours() - 7);
     var bookRoom = @Html.Raw(bookRoom);
     var mergeCD = @Html.Raw(mergeCD);
-    var enDay = @Html.Raw(enDay);
-    enDay= new Date(enDay)
-    console.log(bookRoom);
-    console.log(mergeCD);
-    console.log(startDate,"haha");
-    console.log(enDay);
- 
     
-                
-            // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
-            let day = startDate.getDate().toString().padStart(2, '0');
-            console.log(day,"1")
-            let month = (startDate.getMonth() + 1).toString().padStart(2, '0');
-            let year = startDate.getFullYear();
-            let formattedBirthdate = year+ "/"+month+"/"+"/"+day
-        
-            // Gán giá trị đã định dạng vào trường birthdate
-           
-               $("#dayStart").val(formattedBirthdate);
+
+    loadReservation();
+    
+    // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
+    let day = (startDate.getDate() + 1).toString().padStart(2, '0');
+    let month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+    let year = startDate.getFullYear();
+    let formattedBirthdate = new Date(year, month - 1, day); // Chuyển đổi thành kiểu Date
+
+    // Gán giá trị đã định dạng vào trường birthdate
+    $("#dayStart").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
+
+    // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
+    day = (today.getDate()).toString().padStart(2, '0');
+    month = (today.getMonth() + 1).toString().padStart(2, '0');
+    year = today.getFullYear();
+    formattedBirthdate = new Date(year, month - 1, day); // Chuyển đổi thành kiểu Date
+
+    // Gán giá trị đã định dạng vào trường birthdate
+    $("#ReservationDay").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
 
     async function dayStartChange()
     {
@@ -796,5 +541,78 @@
     function redirect()
     {
         window.location.href = `/BookRoom?startDate=${startDate}`;
+    }
+
+    async function dayReservationChange()
+    {
+        var reservationDayVal = $("#ReservationDay").val();
+        if (reservationDayVal && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(reservationDayVal)) {
+            today = new Date(reservationDayVal);
+            loadReservation();
+        }
+        
+    }
+
+    async function loadReservation()
+    {
+        today.setHours(0, 0, 0, 0);
+        var enDay = new Date(today.getTime())
+        enDay.setHours(0, 0, 0, 0);
+        enDay.setDate(enDay.getDate() + 1);
+        $("#viewReservationInDay").html('');
+
+        $.ajax({
+            url: '/BookRoom/GetReservation',
+            type: 'Get',
+            data: { startDate: today.toISOString(), endDate: enDay.toISOString(), onlyReservedAt: true },
+            success: function (result) {
+                result.forEach(function(item, index) {
+                    addView(stringLayOut(item.customer, item.reservationDetail, index));
+                })
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
+    }
+
+    function stringLayOut(item, detail, index)
+    {
+        return '<div style="width: 200px; height: 200px;" class="shadow mt-3 me-3"><div class="card-head row"><div class="col"><span class="text-danger fw-bold ps-2">#' + index + '</span></div><div class="col text-end position-relative"><i class="fas fa-ellipsis-v menu-his btnThaoTac1" onclick="onmenuhis(\'' + index + '\')" style="cursor: pointer; position: relative; right: 10px;"></i><div id="btnThaoTac' + index + '" class="menuBoxThaoTac1 shadow hide" style="z-index: 1;"><ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;"><li><a onclick="editView(\'' + item.id + '\')"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li><li><a onclick="rentView(\'' + item.id + '\')" ><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li><li><a onclick="canceView(\'' + item.id + '\')"><i class="fas fa-times-circle ' + (detail.length > 0 ? "d-none" : "") + '" style="width: 25px;"></i> Hủy đặt phòng</a></li><li><a onclick="deleteView(\'' + item.id + '\')"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li></ul></div></div></div><hr class="p-0 m-0" /><div class="card-body"><ul style="list-style: none;" class="p-0 ps-2"><li><i class="fas fa-user-circle" style="width: 24px;"></i>' + item.fullName + '</li><li><i class="fas fa-exchange-alt" style="width: 24px;"></i>' + (detail.length > 0 ? "Đã nhận phòng" : "Chưa nhận phòng") + '</li><li><i class="fas fa-phone" style="width: 24px;"></i> 0111 111 111</li></ul></div></div>'
+    }
+
+    function addView(html) {
+        $("#viewReservationInDay").append(html);
+    }
+
+    async function onmenuhis(index)
+    {
+        if($("#btnThaoTac" + index).hasClass("hide")){
+            $("#btnThaoTac" + index).removeClass("hide");
+            $("#btnThaoTac" + index).addClass("show");
+        } 
+        else
+        {
+            $("#btnThaoTac" + index).removeClass("show");
+            $("#btnThaoTac" + index).addClass("hide");
+        }
+    }
+
+    async function editView(id)
+    {
+        console.log(id);
+    }
+
+    async function rentView(id) {
+        console.log(id);
+    }
+
+    async function canceView(id) {
+        console.log(id);
+    }
+
+    async function deleteView(id) {
+        console.log(id);
     }
 </script>

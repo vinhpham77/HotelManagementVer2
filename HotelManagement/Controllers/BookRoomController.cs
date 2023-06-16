@@ -4,8 +4,13 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+<<<<<<< HEAD
 using System.Drawing;
+=======
+using Microsoft.CodeAnalysis.Differencing;
+>>>>>>> c31088013ce9d6b3bba3f11bf225f82477f5acce
 using System.Runtime.InteropServices;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace HotelManagement.Controllers
 {
@@ -47,11 +52,17 @@ namespace HotelManagement.Controllers
                 temp = true;
             }
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
+<<<<<<< HEAD
                 var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp);
             LCount<Room>? room = await _roomService.GetAllAsync();
             var mergeCD = await _mergeService.GetAsync(startDate, endDay);
             
                  
+=======
+                var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp, null);
+                LCount<Room>? room = await _roomService.GetAllAsync();
+                 var mergeCD = await _mergeService.GetAsync(startDate, endDay);
+>>>>>>> c31088013ce9d6b3bba3f11bf225f82477f5acce
             var data = new Book
             {
                 Rooms = room.Items,
@@ -73,10 +84,30 @@ namespace HotelManagement.Controllers
 
             return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
         }
+<<<<<<< HEAD
         public async Task<JsonResult> GetCustomerById(string idNo)
         {
             LCount<Customer>? customer = await _customerService.GetAsync(null, null, null, null, null, idNo);
             return Json(customer.Items.FirstOrDefault());
         } 
+=======
+
+        public async Task<JsonResult> GetReservation(DateTime startDate, DateTime endDate, Boolean onlyReservedAt)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var data = await _bookRoomService.GetAsync("",null,null, startDate, endDate, null,onlyReservedAt);
+                    return Json(data);
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
+        }
+>>>>>>> c31088013ce9d6b3bba3f11bf225f82477f5acce
     }
 }
