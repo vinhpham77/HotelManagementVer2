@@ -42,16 +42,20 @@
                 <span>Trang chủ</span>
             </a>
         </li>
-
-      
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">         
-             <a class="collapse-item" asp-controller="BookRoom" asp-action="Index">Đặt phòng</a>              
+        
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="BookRoom" asp-action="Index">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Đặt phòng</span>
+            </a>
         </li>
-            <li class="nav-item">
-                <a class="collapse-item" asp-controller="Rent" asp-action="Index">Thuê -trả phòng</a>
-            </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Rent" asp-action="Index">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Thuê - Trả phòng</span>
+            </a>
+        </li>
+        
         @if (User.IsInRole("admin"))
         {
             <li class="nav-item">
