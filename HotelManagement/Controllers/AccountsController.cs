@@ -1,12 +1,12 @@
-using System.Text.Json;
 using HotelManagement.Models;
 using HotelManagement.Services;
-using HotelManagement.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagement.Controllers;
-
+namespace HotelManagement.Controllers; 
+    
+[Authorize(Roles = "admin")]
 public class AccountsController : Controller
 {
     private readonly AccountService _accountService;
