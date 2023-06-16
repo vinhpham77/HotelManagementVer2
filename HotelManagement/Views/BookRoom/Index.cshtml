@@ -534,7 +534,7 @@
 
         $.ajax({
             url: '/BookRoom/GetReservation',
-            type: 'Get',
+            type: 'GET',
             data: { startDate: today.toISOString(), endDate: enDay.toISOString(), onlyReservedAt: true },
             success: function (result) {
                 result.forEach(function(item, index) {

@@ -63,16 +63,15 @@ namespace HotelManagement.Controllers
                 BookRooms = bookRoom,
                 MergeCDs = mergeCD,
                 Day = startDate.Value,
-                EndDay = endDay
-
-                   
+                EndDay = endDay     
             };
 
             return View(data);
         }
 
 
-
+        
+     
         public async Task<IActionResult> Add()
         {
             var room=await _roomService.GetAllAsync();
@@ -101,5 +100,32 @@ namespace HotelManagement.Controllers
             }
             return Json(new { success = false });
         }
-    }
+
+		public async Task<JsonResult>Quoc(DateTime startDate, DateTime endDate)
+		{
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
+					var mergeCD = await _mergeService.GetAsync(startDate, endDate);
+					return Json(new { bookRoom, mergeCD });
+				}
+				catch (HttpRequestException)
+				{
+					return Json(new { success = false });
+				}
+			}
+			return Json(new { success = false });
+		}
+		//public async Task<JsonResult> GetVal(DateTime? startDate, DateTime? endDate)
+		//{
+		//	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
+		//	var mergeCD = await _mergeService.GetAsync(startDate, endDate);
+		//	return Json(new { bookRoom, mergeCD });
+
+
+
+		//}
+	}
 }

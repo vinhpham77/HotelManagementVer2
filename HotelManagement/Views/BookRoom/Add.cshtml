@@ -85,11 +85,11 @@
 		<div class="row mb-3">
 			<div class="col">
 				<label class="fs-6">Từ ngày</label>
-				<input class="form-control" type="date" name="" id="dateFrom">
+				<input class="form-control" type="date" name="" id="dateFrom" onchange="checkDate()">
 			</div>
 			<div class="col">
 				<label class="fs-6">Đến ngày</label>
-				<input class="form-control" type="date" name="" id="dateTo">
+				<input class="form-control" type="date" name="" id="dateTo" onchange="checkDate()">
 			</div>
 		</div>
 		<div class="mb-3">
@@ -414,6 +414,7 @@
 
 			errorBirthdate = true;
 			dateOfBirthInput.addClass("is-invalid");
+
 		}
 		else {
 			errorBirthdate = false;
@@ -433,7 +434,6 @@
 		else {
 			hoTen.val("");
 		}
-
 
 	})
 	var today = new Date();
@@ -456,26 +456,49 @@
 
 	$("#dateTo").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
 
+	setVal(today,endDay);
+
 	var errorCheckDate=false;
 	async function checkDate(){
-		var dateFromInput = document.getElementById("dateFrom");
-		var dateToInput = document.getElementById("dateTo");
+		var dateFromInput = $("#dateFrom").val();
+		var dateToInput = $("#dateTo").val();
 
-		var dateFrom = new Date(dateFromInput.value);
-		var dateTo = new Date(dateToInput.value);
 
-		if (dateTo <= dateFrom) {
-			
-			errorCheckDate=true;
-			dateFromInput.add
+		if ((dateFromInput && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dateFromInput)) &&
+			(dateToInput && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dateToInput))
+		) {
+			var dateFrom = new Date(dateFromInput);
+			var dateTo = new Date(dateToInput);
+			if (dateTo > dateFrom){
+				errorCheckDate=false;
+				$("#dateFrom").removeClass("is-invalid");
+				$("#dateTo").removeClass("is-invalid");
+				setVal(dateFrom, dateTo);
+			return ;
+			}
 
-		}
-
-		else
-		{
-			errorCheckDate=false;
-		}
+        }
+		
+		errorCheckDate = true;
+		$("#dateFrom").addClass("is-invalid");
+		$("#dateTo").addClass("is-invalid");
 	}
+
+	async function setVal(datefrom,dateto){
+	 $.ajax({
+			url: '/BookRoom/Quoc',
+            type: 'GET',
+			data: { startDate: today.toISOString(), endDate: endDay.toISOString() },
+            success: function (result) {
+               console.log(result);
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+
+        })
+	}
+
 </script>
 
 
