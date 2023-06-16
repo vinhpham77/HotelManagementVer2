@@ -6,14 +6,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
     <link rel="icon" href="./images/favicon.ico">
     <title>Hotel</title>
@@ -339,9 +337,9 @@
                                         {
                                             @foreach (var item in Model.MergeCDs)
                                             {
-                                                if (item.reservationDetail.RoomId == room.Id)
+                                                if (item.reservationDetail.CheckedOutAt == null && item.reservationDetail.RoomId == room.Id)
                                                 {
-                                                    var t = GetTimeSpan(item.reservationDetail.CheckedInAt, item.reservationDetail.CheckedOutAt.Value);
+                                                    var t = GetTimeSpan(item.reservationDetail.CheckedInAt, DateTime.Now);
                                                     var v = t*107 - 54;
                                                     if (item.reservationDetail.CheckedInAt <= Model.Day)
                                                     {
@@ -352,9 +350,6 @@
                                                             <div class="name-item-cus">@item.customer.FullName</div>
                                                         <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
                                                             <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
-                                                                <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a>
-
-                                                    </li>
                                                                 <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li>
                                                                 <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
                                                                 <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
@@ -382,14 +377,16 @@
                 </div>
             </div>
         </div>
-        <div class="col col-2" id="contentu" >
-            
-        </div>
+        <div id="formAddNew" class="col col-4 ">
+
     </div>
-
-   
+      
+    </div>
     
+   </body>
 
+    
+    
 
     <script>
         const btnLichTheoPhong = document.getElementById("lichTheoPhong");
@@ -400,7 +397,6 @@
 
         const btnThemMoi = document.getElementById("btnThemMoi")
         const formAddNew = document.getElementById("formAddNew")
-        
 
         btnThemMoi.addEventListener("click",()=>{
             if(formAddNew.classList.contains("hide")){
@@ -475,7 +471,7 @@
 
     </script>
 
-</body>
+
 
 
 
@@ -502,7 +498,7 @@
     $("#dayStart").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
 
     // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
-    day = (today.getDate()).toString().padStart(2, '0');
+    day = (today.getDate() + 1).toString().padStart(2, '0');
     month = (today.getMonth() + 1).toString().padStart(2, '0');
     year = today.getFullYear();
     formattedBirthdate = new Date(year, month - 1, day); // Chuyển đổi thành kiểu Date
@@ -545,7 +541,7 @@
             data: { startDate: today.toISOString(), endDate: enDay.toISOString(), onlyReservedAt: true },
             success: function (result) {
                 result.forEach(function(item, index) {
-                    addView(stringLayOut(item.customer, item.reservationDetail, index));
+                    addView(stringLayOut(item.customer, item.reservationDetail, index, item.reservation.id));
                 })
             },
             error: function (xhr, status, error) {
@@ -555,9 +551,9 @@
         })
     }
 
-    function stringLayOut(item, detail, index)
+    function stringLayOut(item, detail, index, id)
     {
-        return '<div style="width: 200px; height: 200px;" class="shadow mt-3 me-3"><div class="card-head row"><div class="col"><span class="text-danger fw-bold ps-2">#' + index + '</span></div><div class="col text-end position-relative"><i class="fas fa-ellipsis-v menu-his btnThaoTac1" onclick="onmenuhis(\'' + index + '\')" style="cursor: pointer; position: relative; right: 10px;"></i><div id="btnThaoTac' + index + '" class="menuBoxThaoTac1 shadow hide" style="z-index: 1;"><ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;"><li><a onclick="editView(\'' + item.id + '\')"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li><li><a onclick="rentView(\'' + item.id + '\')" ><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li><li><a onclick="canceView(\'' + item.id + '\')"><i class="fas fa-times-circle ' + (detail.length > 0 ? "d-none" : "") + '" style="width: 25px;"></i> Hủy đặt phòng</a></li><li><a onclick="deleteView(\'' + item.id + '\')"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li></ul></div></div></div><hr class="p-0 m-0" /><div class="card-body"><ul style="list-style: none;" class="p-0 ps-2"><li><i class="fas fa-user-circle" style="width: 24px;"></i>' + item.fullName + '</li><li><i class="fas fa-exchange-alt" style="width: 24px;"></i>' + (detail.length > 0 ? "Đã nhận phòng" : "Chưa nhận phòng") + '</li><li><i class="fas fa-phone" style="width: 24px;"></i> 0111 111 111</li></ul></div></div>'
+        return '<div style="width: 200px; height: 200px;" class="shadow mt-3 me-3"><div class="card-head row"><div class="col"><span class="text-danger fw-bold ps-2">#' + index + '</span></div><div class="col text-end position-relative"><i class="fas fa-ellipsis-v menu-his btnThaoTac1" onclick="onmenuhis(\'' + index + '\')" style="cursor: pointer; position: relative; right: 10px;"></i><div id="btnThaoTac' + index + '" class="menuBoxThaoTac1 shadow hide" style="z-index: 1;"><ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;"><li><a onclick="editView(\'' + id + '\')"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li><li><a onclick="rentView(\'' + id + '\')" ><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li><li><a onclick="canceView(\'' + id + '\')"><i class="fas fa-times-circle ' + (detail.length > 0 ? "d-none" : "") + '" style="width: 25px;"></i> Hủy đặt phòng</a></li><li><a onclick="deleteView(\'' + item.id + '\')"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li></ul></div></div></div><hr class="p-0 m-0" /><div class="card-body"><ul style="list-style: none;" class="p-0 ps-2"><li><i class="fas fa-user-circle" style="width: 24px;"></i>' + item.fullName + '</li><li><i class="fas fa-exchange-alt" style="width: 24px;"></i>' + (detail.length > 0 ? "Đã nhận phòng" : "Chưa nhận phòng") + '</li><li><i class="fas fa-phone" style="width: 24px;"></i> 0111 111 111</li></ul></div></div>'
     }
 
     function addView(html) {
@@ -583,7 +579,14 @@
     }
 
     async function rentView(id) {
-        console.log(id);
+        $.ajax({
+            url: '/bookroom/RentRoom',
+            type: 'GET',
+            data: { id: id },
+            success: function (result) {
+                $("#formAddNew").html(result);
+            }
+        })
     }
 
     async function canceView(id) {
