@@ -38,18 +38,18 @@
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
             <a class="nav-link" asp-controller="Home" asp-action="Index">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <i class="fa-solid fa-house"></i>
                 <span>Trang chủ</span>
             </a>
         </li>
         
-        <li class="nav-item">
+        <li class="nav-item active">
             <a class="nav-link" asp-controller="BookRoom" asp-action="Index">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <i class="fa-solid fa-bed"></i>
                 <span>Đặt phòng</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item active">
             <a class="nav-link" asp-controller="Rent" asp-action="Index">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Thuê - Trả phòng</span>
@@ -58,7 +58,7 @@
         
         @if (User.IsInRole("admin"))
         {
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                    aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
