@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HotelManagement.Models;
+using HotelManagement.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.Controllers
 {
-    public class BookController : Controller
+    public class BookController
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-		public IActionResult Add()
-		{
-           
-			return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
-		}
-	}
+    
+
+    }
 }
