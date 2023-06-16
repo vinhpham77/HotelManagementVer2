@@ -24,12 +24,14 @@ namespace HotelManagement.Controllers
         private readonly MergeCDService _mergeService;
         private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
-        public BookRoomController(
+		
+		public BookRoomController(
             RoomService roomService,
           ReservationDetailService reservationDetailService,
           ILogger<BookRoomController> logger,
           BookRoomService bookRoomService,
-          MergeCDService mergeService, CustomerService customerService)
+          MergeCDService mergeService, CustomerService customerService,
+          ReservationService reservationService)
           
         {
                    
@@ -39,6 +41,7 @@ namespace HotelManagement.Controllers
             _bookRoomService = bookRoomService;
             _mergeService = mergeService;
             _customerService = customerService;
+            _reservationService = reservationService;
                
         }
         public async Task<IActionResult> Index(string? key, DateTime? startDate, bool? temp, int? page, int? size)
@@ -118,6 +121,22 @@ namespace HotelManagement.Controllers
 			}
 			return Json(new { success = false });
 		}
+		public async Task<IActionResult> Update(string? id)
+		{
+			var roomItems = await _roomService.GetAllAsync();
+			var reservation = await _reservationService.GetByIdAsync(id);
+            var customer=await _customerService.GetByIdAsync(reservation.CustomerId);
+
+
+            var viewModel = new MyViewModel
+            {
+                Rooms = roomItems.Items,
+                Reservation = reservation,
+                Customer = customer
+		};
+			return PartialView(viewModel);
+		}
+
 		//public async Task<JsonResult> GetVal(DateTime? startDate, DateTime? endDate)
 		//{
 		//	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);

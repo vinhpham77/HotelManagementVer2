@@ -2,7 +2,7 @@ using System.Net;
 using System.Text;
 using HotelManagement.Models;
 using System.Web;
-
+using HotelManagement.ViewModels;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 
@@ -54,18 +54,13 @@ public class AccountService
             return JsonConvert.DeserializeObject<AccountDto>(jsonResponse);
         } 
         
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            throw new UnauthorizedAccessException("Tên tài khoản hoặc mật khẩu không chính xác");
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+            throw new UnauthorizedAccessException("Tài khoản của bạn đã bị khóa");
         
-        switch (response.StatusCode)
-        {
-            case HttpStatusCode.Unauthorized:
-                throw new UnauthorizedAccessException("Tên tài khoản hoặc mật khẩu không chính xác");
-            case HttpStatusCode.Forbidden:
-                throw new Exception("Tài khoản của bạn đã bị khóa");
-            case HttpStatusCode.NotFound:
-                throw new Exception("Tài khoản chưa câp nhật thông tin nhân sự");
-        }
-        
-        throw new HttpRequestException("Có lỗi xảy ra, vui lòng thử lại sau!");
+
+        throw new HttpRequestException($"Có lỗi xảy ra, vui lòng thử lại sau!");
     }
     
     public async Task<List<string>?> GetUsernamesAsync()
