@@ -3,7 +3,9 @@ using HotelManagement.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis.Differencing;
 using System.Runtime.InteropServices;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace HotelManagement.Controllers
 {
@@ -42,7 +44,7 @@ namespace HotelManagement.Controllers
                 temp = true;
             }
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
-                var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp);
+                var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp, null);
                 LCount<Room>? room = await _roomService.GetAllAsync();
                  var mergeCD = await _mergeService.GetAsync(startDate, endDay);
             var data = new Book
@@ -63,6 +65,23 @@ namespace HotelManagement.Controllers
         {
 
             return PartialView("Add"); // Trả về partial view (file .cshtml) chứa form đăng kí
+        }
+
+        public async Task<JsonResult> GetReservation(DateTime startDate, DateTime endDate, Boolean onlyReservedAt)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var data = await _bookRoomService.GetAsync("",null,null, startDate, endDate, null,onlyReservedAt);
+                    return Json(data);
+                }
+                catch (HttpRequestException)
+                {
+                    return Json(new { success = false });
+                }
+            }
+            return Json(new { success = false });
         }
     }
 }

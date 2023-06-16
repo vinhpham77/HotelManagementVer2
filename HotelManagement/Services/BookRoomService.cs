@@ -15,7 +15,7 @@ namespace HotelManagement.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<List<BookRoom>?> GetAsync(string? keyword, int? page, int? size, DateTime? startDate, DateTime? endDate, Boolean? temp)
+        public async Task<List<BookRoom>?> GetAsync(string? keyword, int? page, int? size, DateTime? startDate, DateTime? endDate, Boolean? temp, Boolean? onlyReservedAt)
         {
 
             var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
@@ -25,7 +25,7 @@ namespace HotelManagement.Services
             queryBuilder["startDate"]= startDate?.ToString("yyyy-MM-ddTHH:mm:ssZ");
             queryBuilder["endDate"]= endDate?.ToString("yyyy-MM-ddTHH:mm:ssZ");
             if (temp.HasValue) queryBuilder["temp"]=temp.Value.ToString();   
-
+            if (onlyReservedAt.HasValue) queryBuilder["onlyReservedAt"] = onlyReservedAt.Value.ToString();  
             string? queryString = queryBuilder.ToString();
             string requestUrl = string.IsNullOrEmpty(queryString) ? _bookApiUrl : $"{_bookApiUrl}?{queryString}";
 
