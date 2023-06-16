@@ -1,6 +1,4 @@
-﻿@using Newtonsoft.Json;
-
-@model Book
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -31,12 +30,14 @@
 
 .content-customer {
         position: absolute;
-        top: 3px;
+        top: 8px;
         left: 108px;
 }
 
 .item-cus {
-
+    z-index:100;
+    align-items: center;
+    border-radius: 3px;
 }
 
 .w-110{
@@ -141,6 +142,16 @@
     color: black;
 }
 </style>
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@model Book
+@{
+    var dayStart = JsonConvert.SerializeObject(Model.Day);
+    var bookRoom = JsonConvert.SerializeObject(Model.BookRooms);
+    var mergeCD = JsonConvert.SerializeObject(Model.MergeCDs);
+    var enDay = JsonConvert.SerializeObject(Model.EndDay);
+}
+
 <body>
   @*  <nav class="d-block" style="float: left;">
         <div class="d-flex flex-column flex-shrink-0 p-3 bg-light shadow" style="width: 280px; height: 100vh;">
@@ -198,11 +209,7 @@
                 <ul class="unlist-Style control-space">
                     <li>
                         <label class="fs-6">Từ ngày</label>
-                        <input class="form-control" type="date" name="" id="">
-                    </li>
-                    <li>
-                        <label class="fs-6">Đến ngày</label>
-                        <input class="form-control" type="date" name="" id="">
+                        <input class="form-control" type="date" onchange="dayStartChange()" id="dayStart">
                     </li>
                     <li>
                         <select class="form-select" name="loaiPhong" id="loaiPhong">
@@ -241,34 +248,122 @@
                                     <th class="border w-110">@Model.Day.AddDays(3).ToString("dd/MM")</th>
                                     <th class="border w-110">@Model.Day.AddDays(4).ToString("dd/MM")</th>
                                     <th class="border w-110">@Model.Day.AddDays(5).ToString("dd/MM")</th>
+                                    <th class="border w-110">@Model.Day.AddDays(6).ToString("dd/MM")</th>
                                 </tr>
                             </table>
                             
                         </div>
                         <div>
-                            <div class="container-customer">
-                                <table>
-                                    <tr>
-                                        <td class="border w-110">Name</td>
-                                        <td class="border w-110 "></td>
-                                        <td class="border w-110"></td>
-                                        <td class="border w-110"></td>
-                                        <td class="border w-110"></td>
-                                        <td class="border  w-110"></td>
-                                        <td class="border  w-110"></td>
+                            @functions {
 
-                                    </tr>
-                                </table>
-                                
-                                <div class="content-customer">
-                                    <div class="item-cus px-2">
-                                        <i></i>
-                                        <div>Lương</div>
+                                public int GetTimeSpan(DateTime startDate, DateTime endDate)
+                                {
+                                    DateTime modelDay = Model.Day;
+                                    DateTime modelEndDay = Model.EndDay;
+
+                                    if (startDate < modelDay)
+                                        startDate = modelDay;
+                                    if (endDate > modelEndDay)
+                                        endDate = modelEndDay;
+
+                                    TimeSpan timeSpan = endDate - startDate;
+                                    int totalDays = (int)Math.Floor(timeSpan.TotalDays);
+
+                                    
+
+                                    return totalDays + 1;
+                                }
+                            }
+                            @foreach (var room in Model.Rooms)
+                            {
+
+                                <div class="container-customer">
+                                    <table>
+                                        <tr>
+                                            <td class="border w-110">@room.Name</td>
+                                            <td class="border w-110 "></td>
+                                            <td class="border w-110"></td>
+                                            <td class="border w-110"></td>
+                                            <td class="border w-110"></td>
+                                            <td class="border  w-110"></td>
+                                            <td class="border  w-110"></td>
+                                            <td class="border  w-110"></td>
+
+                                        </tr>
+                                    </table>
+                                    <div class="content-customer p-0 ">
+                                        @if(Model.BookRooms != null)
+                                        {
+                                            @foreach (var item in Model.BookRooms)
+                                            {
+                                                @if (item.Reservation != null)
+                                                {
+                                                    @foreach (var roomId in item.Reservation.RoomIds)
+                                                    {
+                                                        if (roomId == room.Id && item.ReservationDetail.Count == 0)
+                                                        {
+                                                            var t = GetTimeSpan(item.Reservation.ReservedAt, item.Reservation.CheckedOut);
+                                                            var v = t*107 - 54;
+                                                            if (item.Reservation.ReservedAt <= Model.Day)
+                                                            {
+                                                                v = 0;
+                                                            }
+                                                            <div class="timeLine d-flex bg-primary item-cus py-1 px-2" style="width: @(t*107)px; left: @(v)px">
+                                                                    <i class="fa-solid fa-user-tie" style="height: 18px;"></i>
+                                                                    <div>@item.Customer.FullName</div>
+                                                                <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
+                                                                    <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
+                                                                        <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
+                                                                        <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li>
+                                                                        <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
+                                                                        <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                                </div>
+                                                        }
+                                                    }
+                                                }
+                                            
+                                            }
+                                        }
+                                    
+                                        @if(Model.MergeCDs != null)
+                                        {
+                                            @foreach (var item in Model.MergeCDs)
+                                            {
+                                                if (item.reservationDetail.RoomId == room.Id)
+                                                {
+                                                    var t = GetTimeSpan(item.reservationDetail.CheckedInAt, item.reservationDetail.CheckedOutAt.Value);
+                                                    var v = t*107 - 54;
+                                                    if (item.reservationDetail.CheckedInAt <= Model.Day)
+                                                    {
+                                                        v = 0;
+                                                    }
+                                                    <div class=" timeLine d-flex item-cus py-1 px-2" style="width: @(t*107)px; left: @(v)px; background-color: rgb(0, 142, 35);">
+                                                            <i class="fa-solid fa-user-tie" style="height: 18px;"></i>
+                                                            <div>@item.customer.FullName</div>
+                                                        <div class="boxTimeLineAction shadow hide" style="z-index: 1;">
+                                                            <ul class="text-start p-0 ps-2" style="list-style: none; height: 300px;">
+                                                                <li><a href="#"><i class="fas fa-edit" style="width: 25px;"></i> Chỉnh sửa</a></li>
+                                                                <li><a href="#"><i class="fas fa-key" style="width: 25px;"></i> Nhận phòng</a></li>
+                                                                <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
+                                                                <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
+                                                            </ul>
+                                                        </div>
+                                                        </div>
+                                                }
+                                            }
+                                        }
                                     </div>
+                                    
                                 </div>
-                            </div>
+                            }
+
+
                             
-                    
+                            
+
+                                              
                             <tr>
                                 <td colspan="3">
                                     <div class="timeLine bg-primary rounded text-white position-relative" style="height: 25px;">
@@ -280,9 +375,6 @@
                                                 <li><a href="#"><i class="fas fa-times-circle" style="width: 25px;"></i> Hủy đặt phòng</a></li>
                                                 <li><a href="#"><i class="fas fa-trash" style="width: 25px;"></i> Xóa</a></li>
                                             </ul>
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                haha
-                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -728,3 +820,42 @@
 
 
 </html>
+
+<script>
+
+    var startDate = @Html.Raw(dayStart);
+    startDate = new Date(startDate);
+    startDate.setHours(startDate.getHours() - 7);
+    var bookRoom = @Html.Raw(bookRoom);
+    var mergeCD = @Html.Raw(mergeCD);
+    var enDay = @Html.Raw(enDay);
+    enDay= new Date(enDay)
+    console.log(bookRoom);
+    console.log(mergeCD);
+    console.log(startDate,"haha");
+    console.log(enDay);
+ 
+    
+                
+            // Chuyển đổi birthdate thành định dạng yyyy-mm-dd
+            let day = startDate.getDate().toString().padStart(2, '0');
+            console.log(day,"1")
+            let month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+            let year = startDate.getFullYear();
+            let formattedBirthdate = year+ "/"+month+"/"+"/"+day
+        
+            // Gán giá trị đã định dạng vào trường birthdate
+           
+               $("#dayStart").val(formattedBirthdate);
+
+    async function dayStartChange()
+    {
+        startDate = $("#dayStart").val();
+        redirect()
+    }
+
+    function redirect()
+    {
+        window.location.href = `/BookRoom?startDate=${startDate}`;
+    }
+</script>

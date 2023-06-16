@@ -7,5 +7,6 @@
         public List<MergeCD> MergeCDs { get; set; }
 
         public DateTime Day { get; set; }
+        public DateTime EndDay { get; set; }
     }
 }

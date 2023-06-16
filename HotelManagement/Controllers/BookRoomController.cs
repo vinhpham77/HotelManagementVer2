@@ -1,5 +1,6 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Runtime.InteropServices;
@@ -32,11 +33,15 @@ namespace HotelManagement.Controllers
         }
         public async Task<IActionResult> Index(string? key, DateTime? startDate, bool? temp, int? page, int? size)
         {
-            if (startDate != DateTime.MinValue)
+            if (startDate == null)
             {
                 startDate = DateTime.Now;
             }
-                DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
+            if(!temp.HasValue)
+            {
+                temp = true;
+            }
+            DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
                 var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp);
                 LCount<Room>? room = await _roomService.GetAllAsync();
                  var mergeCD = await _mergeService.GetAsync(startDate, endDay);
@@ -44,8 +49,10 @@ namespace HotelManagement.Controllers
                 {
                     Rooms = room.Items,
                     BookRooms = bookRoom,
-                    MergeCDs=mergeCD
-                };
+                    MergeCDs=mergeCD,
+                    Day = startDate.Value,
+                    EndDay = endDay
+            };
 
             return View(data);
         }

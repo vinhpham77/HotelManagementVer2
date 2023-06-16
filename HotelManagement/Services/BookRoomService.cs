@@ -17,12 +17,13 @@ namespace HotelManagement.Services
         }
         public async Task<List<BookRoom>?> GetAsync(string? keyword, int? page, int? size, DateTime? startDate, DateTime? endDate, Boolean? temp)
         {
+
             var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
             queryBuilder["keyword"] = keyword;
             if (page.HasValue) queryBuilder["page"] = page.Value.ToString();
             if (size.HasValue) queryBuilder["size"] = size.Value.ToString();
-            queryBuilder["startDate"]= startDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
-            queryBuilder["endDate"]= endDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+            queryBuilder["startDate"]= startDate?.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            queryBuilder["endDate"]= endDate?.ToString("yyyy-MM-ddTHH:mm:ssZ");
             if (temp.HasValue) queryBuilder["temp"]=temp.Value.ToString();   
 
             string? queryString = queryBuilder.ToString();
