@@ -217,7 +217,7 @@
         });
 
         async function getAccountByUsername(username) {
-            let response = await fetch(`/Accounts/GetByUsername/${username}`);
+            let response = await fetch(`/Accounts/${username}`);
             
             return await response.json();
         }
@@ -245,7 +245,7 @@
                 { "op": "replace", "path": "/password", "value": account.password }
             ];
             
-            let response = await fetch(`/Accounts/Update/${username}`, {
+            let response = await fetch(`/Accounts/${username}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -327,6 +327,7 @@
             
             // Kiểm tra các trường bắt buộc
             if (password !== rePassword) {
+                showAlert('Mật khẩu không khớp', 'danger');
                 return;
             }
 
@@ -374,7 +375,7 @@
                 'value': status
             }];
             
-            let response = await fetch(`/Accounts/Update/${username}`, {
+            let response = await fetch(`/Accounts/ChangeStatus/${username}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'

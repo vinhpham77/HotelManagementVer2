@@ -1,6 +1,7 @@
 using System.Text.Json;
 using HotelManagement.Models;
 using HotelManagement.Services;
+using HotelManagement.ViewModels;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,10 +53,10 @@ public class AccountsController : Controller
         }
     }
     
-    [HttpGet]
-    public async Task<JsonResult> GetByUsername(string id)
+    [HttpGet("Accounts/{username}")]
+    public async Task<JsonResult> GetByUsername(string username)
     {
-        var account = await _accountService.GetByUsernameAsync(id);
+        var account = await _accountService.GetByUsernameAsync(username);
         return Json(account);
     }
 
@@ -71,14 +72,33 @@ public class AccountsController : Controller
         return BadRequest();
     }
 
-    [HttpPatch]
-    public async Task<IActionResult> Update(string id, [FromBody] JsonPatchDocument<Account> patchDocument)
+    [HttpPatch("Accounts/{username}")]
+    public async Task<IActionResult> Update(string username, [FromBody] JsonPatchDocument<Account> patchDocument)
     {
         if (ModelState.IsValid)
         {
             try
             {
-                await _accountService.UpdateAsync(id, patchDocument);
+                await _accountService.UpdateAsync(username, patchDocument);
+                return NoContent();
+            }
+            catch (HttpRequestException)
+            {
+                return NotFound();
+            }
+        }
+        
+        return BadRequest();
+    }
+    
+    [HttpPatch("Accounts/ChangeStatus/{username}")]
+    public async Task<IActionResult> ChangeStatus(string username, [FromBody] JsonPatchDocument<Account> patchDocument)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _accountService.ChangeStatus(username, patchDocument);
                 return NoContent();
             }
             catch (HttpRequestException)
