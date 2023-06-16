@@ -58,5 +58,16 @@ namespace HotelManagement.Services
                     $"Request to update RoomType with id {receipt.Id} failed with status code: {response.StatusCode}");
             }
         }
+
+        public async Task DeleteAsync(string id)
+        {
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"{_receiptApiUrl}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"Request to delete RoomType with id {id} failed with status code: {response.StatusCode}");
+            }
+        }
     }
 }
