@@ -11,12 +11,13 @@ using Microsoft.CodeAnalysis.Differencing;
 
 using System.Runtime.InteropServices;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using HotelManagementAPI.Models;
 
 namespace HotelManagement.Controllers
 {
     public class BookRoomController : Controller
     {
-
+        private readonly RentRoomService _rentRoomService;
         private readonly RoomService _roomService;
         private readonly ReservationDetailService _reservationDetailService;
         private readonly ReservationService _reservationService;
@@ -24,7 +25,7 @@ namespace HotelManagement.Controllers
         private readonly MergeCDService _mergeService;
         private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
-        public BookRoomController(
+        public BookRoomController(RentRoomService rentRoomService,
             RoomService roomService,
           ReservationDetailService reservationDetailService,
           ILogger<BookRoomController> logger,
@@ -32,7 +33,7 @@ namespace HotelManagement.Controllers
           MergeCDService mergeService, CustomerService customerService)
           
         {
-                   
+            _rentRoomService = rentRoomService;
             _roomService = roomService;
             _reservationDetailService = reservationDetailService;
             _logger = logger;
@@ -118,6 +119,26 @@ namespace HotelManagement.Controllers
 			}
 			return Json(new { success = false });
 		}
+
+        public async Task<IActionResult> RentRoom(string id)
+        {
+            try
+            {
+                var rentRooms = await _rentRoomService.GetAsync(null, null, null);
+                var reservation = await _reservationService.GetByIdAsync(id);
+                var data = new RentBook
+                {
+                    reservation = reservation,
+                    RentRooms = rentRooms
+                };
+                return PartialView(data);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Error retrieving room types");
+                return View("Error");
+            }
+        }
 		//public async Task<JsonResult> GetVal(DateTime? startDate, DateTime? endDate)
 		//{
 		//	var bookRoom = await _bookRoomService.GetAsync("", null, null, startDate, endDate, true, null);
