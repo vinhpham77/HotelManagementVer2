@@ -59,8 +59,8 @@ namespace HotelManagement.Controllers
             }
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
 
-                var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp, null);
-                LCount<Room>? room = await _roomService.GetAllAsync();
+                var bookRoom = await _bookRoomService.GetAsync(null, page, size, startDate, endDay, temp, null);
+                LCount<Room>? room = await _roomService.GetAllAsync(key);
                  var mergeCD = await _mergeService.GetAsync(startDate, endDay);
 
             var data = new Book
@@ -80,7 +80,7 @@ namespace HotelManagement.Controllers
      
         public async Task<IActionResult> Add()
         {
-            var room=await _roomService.GetAllAsync();
+            var room=await _roomService.GetAllAsync(null);
 
             return PartialView(room.Items); // Trả về partial view (file .cshtml) chứa form đăng kí
         }
@@ -127,7 +127,7 @@ namespace HotelManagement.Controllers
 
 		public async Task<IActionResult> Update(string? id)
 		{
-			var roomItems = await _roomService.GetAllAsync();
+			var roomItems = await _roomService.GetAllAsync(null);
 			var reservation = await _reservationService.GetByIdAsync(id);
             var customer=await _customerService.GetByIdAsync(reservation.CustomerId);
 
