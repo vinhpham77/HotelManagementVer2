@@ -35,6 +35,21 @@ namespace HotelManagement.Services
             throw new HttpRequestException($"Request to {requestUrl} failed with status code: {response.StatusCode}");
         }
 
+        public async Task<Order?> CreateAsync(Order order)
+        {
+            StringContent content =
+                new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync(_orderApiUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Order>(jsonResponse);
+            }
+
+            throw new HttpRequestException(
+                $"Request to create Room failed with status code: {response.StatusCode}");
+        }
+
         public async Task UpdateAsync(Order order)
         {
             StringContent content =

@@ -481,7 +481,8 @@
     async function changekey()
     {
         key = $("#key").val();
-        redirect();
+        if(key.length > 0)
+             window.location.href = `/bookroom?key=${key}&startDate=${startDate}`;
     }
     
 
@@ -515,7 +516,7 @@
 
     function redirect()
     {
-        window.location.href = `/bookroom?key=${key}&startDate=${startDate}`;
+        window.location.href = `/bookroom?startDate=${startDate}`;
     }
 
     async function dayReservationChange()

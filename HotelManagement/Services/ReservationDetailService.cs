@@ -45,7 +45,7 @@ namespace HotelManagement.Services
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException(
-                    $"Request to update RoomType with id {reservationDetail.Id} failed with status code: {response.StatusCode}");
+                    $"Request to update ReservationDetail with id {reservationDetail.Id} failed with status code: {response.StatusCode}");
             }
         }
 
@@ -60,7 +60,7 @@ namespace HotelManagement.Services
 			}
 
 			throw new HttpRequestException(
-				$"Request to get RoomType by id {id} failed with status code: {response.StatusCode}");
+				$"Request to get ReservationDetail by id {id} failed with status code: {response.StatusCode}");
 		}
 		public async Task<ReservationDetail?> CreateAsync(ReservationDetail reservationDetail)
         {
@@ -75,7 +75,7 @@ namespace HotelManagement.Services
             }
 
             throw new HttpRequestException(
-				$"Request to create RoomType failed with status code: {response.StatusCode}");
+				$"Request to create ReservationDetail failed with status code: {response.StatusCode}");
 		}
 
         public async Task DeleteAsync(string id)

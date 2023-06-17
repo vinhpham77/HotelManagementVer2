@@ -1,7 +1,9 @@
-﻿using HotelManagement.Models;
+﻿using AspNetCore;
+using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace HotelManagement.Controllers
 {
@@ -14,6 +16,7 @@ namespace HotelManagement.Controllers
         private readonly ReservationService _reservationService;
         private readonly BookRoomService _bookRoomService;
         private readonly MergeCDService _mergeService;
+        private readonly OrderService _orderService;
         private readonly CustomerService _customerService;
         private readonly ILogger<BookRoomController> _logger;
 
@@ -23,10 +26,11 @@ namespace HotelManagement.Controllers
             ILogger<BookRoomController> logger,
             BookRoomService bookRoomService,
             ReservationService reservationService,
-            MergeCDService mergeService, CustomerService customerService)
+            MergeCDService mergeService, CustomerService customerService, OrderService orderService)
 
 
         {
+            _orderService= orderService;
             _rentRoomService = rentRoomService;
             _roomService = roomService;
             _reservationDetailService = reservationDetailService;
@@ -48,6 +52,10 @@ namespace HotelManagement.Controllers
             if (!temp.HasValue)
             {
                 temp = true;
+            }
+            if(string.IsNullOrEmpty(key))
+            {
+                key = "";
             }
 
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
@@ -166,6 +174,13 @@ namespace HotelManagement.Controllers
                     {
                         await _reservationService.UpdateAsync(data.Reservation);
                         await _reservationDetailService.CreateAsync(data.ReservationDetail);
+                    var detail = await _reservationDetailService.GetAsync(data.ReservationDetail.RoomId, false);
+                    var order = new Order
+                    {
+                        ReservationDetailId = detail.Items.FirstOrDefault().Id,
+                        Details = new OrderDetail[0]
+                    };
+                    await _orderService.CreateAsync(order);
                         await _roomService.UpdateAsync(data.Room);
                         return Json(new { success = true });
                     }
