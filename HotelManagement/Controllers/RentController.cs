@@ -1,5 +1,6 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Dependency;
@@ -7,6 +8,7 @@ using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace HotelManagement.Controllers
 {
+    [Authorize]
     public class RentController : Controller
     {
         private readonly RentRoomService _rentRoomService;
