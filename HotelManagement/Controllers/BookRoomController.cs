@@ -1,9 +1,7 @@
-﻿using AspNetCore;
-using HotelManagement.Models;
+﻿using HotelManagement.Models;
 using HotelManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.WebRequestMethods;
 
 namespace HotelManagement.Controllers
 {
