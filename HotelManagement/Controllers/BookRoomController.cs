@@ -52,8 +52,8 @@ namespace HotelManagement.Controllers
 
             DateTime endDay = startDate.Value.AddDays(6); // Cộng thêm 6 ngày
 
-            var bookRoom = await _bookRoomService.GetAsync(key, page, size, startDate, endDay, temp, null);
-            LCount<Room>? room = await _roomService.GetAllAsync();
+            var bookRoom = await _bookRoomService.GetAsync(null, page, size, startDate, endDay, temp, null);
+            LCount<Room>? room = await _roomService.GetAllAsync(key);
             var mergeCD = await _mergeService.GetAsync(startDate, endDay);
 
             var data = new Book
@@ -71,7 +71,7 @@ namespace HotelManagement.Controllers
 
         public async Task<IActionResult> Add()
         {
-            var room = await _roomService.GetAllAsync();
+            var room = await _roomService.GetAllAsync(null);
 
             return PartialView(room.Items); // Trả về partial view (file .cshtml) chứa form đăng kí
         }
@@ -116,110 +116,110 @@ namespace HotelManagement.Controllers
                     return Json(new { success = false });
                 }
             }
-
             return Json(new { success = false });
         }
 
-        public async Task<IActionResult> Update(string? id)
-        {
-            var roomItems = await _roomService.GetAllAsync();
-            var reservation = await _reservationService.GetByIdAsync(id);
-            var customer = await _customerService.GetByIdAsync(reservation.CustomerId);
 
-
-            var viewModel = new MyViewModel
+            public async Task<IActionResult> Update(string? id)
             {
-                Rooms = roomItems.Items,
-                Reservation = reservation,
-                Customer = customer
-            };
-            return PartialView(viewModel);
-        }
-
-
-        public async Task<IActionResult> RentRoom(string id)
-        {
-            try
-            {
-                var rentRooms = await _rentRoomService.GetAsync(null, null, null);
+                var roomItems = await _roomService.GetAllAsync(null);
                 var reservation = await _reservationService.GetByIdAsync(id);
-                var data = new RentBook
+                var customer = await _customerService.GetByIdAsync(reservation.CustomerId);
+
+
+                var viewModel = new MyViewModel
                 {
-                    reservation = reservation,
-                    RentRooms = rentRooms
+                    Rooms = roomItems.Items,
+                    Reservation = reservation,
+                    Customer = customer
                 };
-                return PartialView(data);
+                return PartialView(viewModel);
             }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Error retrieving room types");
-                return View("Error");
-            }
-        }
 
-        [HttpPut]
-        public async Task<JsonResult> RentBookRoom([FromBody] RentBookRoom data)
-        {
-            if (ModelState.IsValid)
+
+            public async Task<IActionResult> RentRoom(string id)
             {
                 try
                 {
-                    await _reservationService.UpdateAsync(data.Reservation);
-                    await _reservationDetailService.CreateAsync(data.ReservationDetail);
-                    await _roomService.UpdateAsync(data.Room);
-                    return Json(new { success = true });
+                    var rentRooms = await _rentRoomService.GetAsync(null, null, null);
+                    var reservation = await _reservationService.GetByIdAsync(id);
+                    var data = new RentBook
+                    {
+                        reservation = reservation,
+                        RentRooms = rentRooms
+                    };
+                    return PartialView(data);
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException ex)
                 {
-                    return Json(new { success = false });
+                    _logger.LogError(ex, "Error retrieving room types");
+                    return View("Error");
                 }
             }
 
-            return Json(new { success = false });
-        }
-
-        [HttpPut]
-        public async Task<JsonResult> PutReservationAndCustumer([FromBody] MergeRC data)
-        {
-            if (ModelState.IsValid)
+            [HttpPut]
+            public async Task<JsonResult> RentBookRoom([FromBody] RentBookRoom data)
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    await _customerService.CreateAsync(data.Customer);
-                    LCount<Customer>? customer =
-                        await _customerService.GetAsync(null, null, null, null, null, data.Customer.IdNo);
-                    var cus = customer.Items.FirstOrDefault();
-                    data.Reservation.CustomerId = cus.Id;
-                    await _reservationService.CreateAsync(data.Reservation);
-                    return Json(new { success = true });
+                    try
+                    {
+                        await _reservationService.UpdateAsync(data.Reservation);
+                        await _reservationDetailService.CreateAsync(data.ReservationDetail);
+                        await _roomService.UpdateAsync(data.Room);
+                        return Json(new { success = true });
+                    }
+                    catch (HttpRequestException)
+                    {
+                        return Json(new { success = false });
+                    }
                 }
-                catch (HttpRequestException)
-                {
-                    return Json(new { success = false });
-                }
+
+                return Json(new { success = false });
             }
 
-            return Json(new { success = false });
-        }
-
-
-        [HttpPut]
-        public async Task<JsonResult> PutReservation([FromBody] Reservation data)
-        {
-            if (ModelState.IsValid)
+            [HttpPut]
+            public async Task<JsonResult> PutReservationAndCustumer([FromBody] MergeRC data)
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    await _reservationService.CreateAsync(data);
-                    return Json(new { success = true });
+                    try
+                    {
+                        await _customerService.CreateAsync(data.Customer);
+                        LCount<Customer>? customer =
+                            await _customerService.GetAsync(null, null, null, null, null, data.Customer.IdNo);
+                        var cus = customer.Items.FirstOrDefault();
+                        data.Reservation.CustomerId = cus.Id;
+                        await _reservationService.CreateAsync(data.Reservation);
+                        return Json(new { success = true });
+                    }
+                    catch (HttpRequestException)
+                    {
+                        return Json(new { success = false });
+                    }
                 }
-                catch (HttpRequestException)
-                {
-                    return Json(new { success = false });
-                }
+
+                return Json(new { success = false });
             }
 
-            return Json(new { success = false });
+
+            [HttpPut]
+            public async Task<JsonResult> PutReservation([FromBody] Reservation data)
+            {
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        await _reservationService.CreateAsync(data);
+                        return Json(new { success = true });
+                    }
+                    catch (HttpRequestException)
+                    {
+                        return Json(new { success = false });
+                    }
+                }
+
+                return Json(new { success = false });
+            }
         }
-    }
-}
+    } 
