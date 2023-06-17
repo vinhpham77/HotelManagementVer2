@@ -40,11 +40,11 @@ namespace HotelManagement.Services
             throw new HttpRequestException($"Request to {requestUrl} failed with status code: {response.StatusCode}");
         }
 
-        public async Task<LCount<Room>?> GetAllAsync()
+        public async Task<LCount<Room>?> GetAllAsync(string? keyword)
         {
             var queryBuilder = HttpUtility.ParseQueryString(string.Empty);
-
-            string? queryString = queryBuilder.ToString();
+			queryBuilder["keyword"] = keyword;
+			string? queryString = queryBuilder.ToString();
             string requestUrl = string.IsNullOrEmpty(queryString) ? _roomApiUrl : $"{_roomApiUrl}?{queryString}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);

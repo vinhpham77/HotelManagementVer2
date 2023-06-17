@@ -104,7 +104,7 @@
 				</tbody>
 			</table>
 		</div>
-		<button type="submit" class="w-100 btn btn-success">Lưu</button>
+<button onclick="submitAdd()" class="w-100 btn btn-success">Lưu</button>
 	</div>
 
 
@@ -190,7 +190,7 @@
 
 		</div>
 
-		<button onclick="submitAdd()" type="submit" class="w-100 btn btn-success" id="btnAddCusstomer">Tạo</button>
+		<button type="submit" class="w-100 btn btn-success" id="btnAddCusstomer">Tạo</button>
 	</div>
 </div>
 
@@ -507,10 +507,33 @@
 
 	var roomIds=[];
 	async function addRoom(id, name){
-		$("#roomadd"+id).addClass("d-none");
-		addLayOut(getLayout(id,name));
-		roomIds.push(id);
-		console.log(roomIds);
+		if(testRoom(id)) {
+			$("#roomadd" + id).addClass("d-none");
+			addLayOut(getLayout(id, name));
+			roomIds.push(id);
+			console.log(roomIds);
+		}
+		
+	}
+
+	function testRoom(roomid)
+	{
+		for (var i = 0; i < bookRoom.length; i++)
+		{
+			var ids = bookRoom[i].roomIds;
+			for(var j=0;j < ids.length; j++)
+			{
+				if(ids[j] == roomid)
+				    return false;
+			}
+		}
+		for (var i=0; i < mergeCD.length; i++)
+		{
+			if(mergeCD[i].reservationDetail.roomId == roomid)
+			     return false;
+		}
+
+		return true;
 	}
 
 	function getLayout(id,name){
@@ -521,30 +544,31 @@
 		$("#viewAddLayOut").append(html);
 	}
 	async function removeRoom(id){
-		var i;
-		$("#roomadd"+id).removeClass("d-none");
-		$("#roommove"+id).remove();
-		var chiSo = roomIds.findIndex(function(element) {
-		 element === id;
-		 i===element;
-		});
-roomIds.splice(i); console.log(roomIds);
+			var i;
+			$("#roomadd"+id).removeClass("d-none");
+			$("#roommove"+id).remove();
+			var chiSo = roomIds.findIndex(function(element) {
+			 element === id;
+			 i===element;
+			});
+			roomIds.splice(i); console.log(roomIds);
 	}
+
+
 	async function submitAdd() {
-		if (hoTen.val() != "" && !errorCheckDate) {
+		if ($("#hoTen").val() != "" && !errorCheckDate) {
 			var reservation = {
 				roomIds: roomIds,
 				reservedAt: dateFrom,
 				checkedOut: dateTo,
-
 				deposit: $("#deposits").val(),
 				personnelId: ""
 
 			}
 			
 			if (id == "") {
-				var sex;
-				$("#gioiTinhNam").is(':checked')? sex = true: sex = false;
+
+				var sex = $('input[name="gioiTinh"]:checked').val();
 				customer = {
 					customer: $("#firstName").val(),
 					lastName: $("#lastName").val(),
@@ -555,14 +579,14 @@ roomIds.splice(i); console.log(roomIds);
 					birthdate: $("#birthdate").val(),
 					fullName: $("#fullName").val()
 				}
+				console.log(customer);
 				$.ajax({
 					url: '/bookRoom/PutReservationAndCustumer',
 					type: 'PUT',
 					data: JSON.stringify({ reservation: reservation, customer: customer }),
 					contentType: 'application/json',
 					success: function (result) {
-						if(result.success)
-						    location.reload;
+						console.log(result)
 					},
 					error: function (xhr, status, error) {
 
@@ -572,6 +596,7 @@ roomIds.splice(i); console.log(roomIds);
 				})
 			}
 			else {
+				console.log("chạy");
 				reservation.customerId = id;
 				$.ajax({
 					url: '/bookRoom/PutReservation',

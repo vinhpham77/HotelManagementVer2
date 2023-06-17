@@ -220,15 +220,8 @@
                         <input class="form-control" type="date" onchange="dayStartChange()" id="dayStart">
                     </li>
                     <li>
-                        <select class="form-select" name="loaiPhong" id="loaiPhong">
-                            <option value="">Loại phòng</option>
-                            <option value="don">Phòng đơn</option>
-                            <option value="doi">Phòng đôi</option>
-                        </select>
-                    </li>
-                    <li>
                         <label class="fs-6">Tên phòng</label>
-                        <input class="form-control" type="text" name="" id="">
+                        <input onchange="changekey()" class="form-control" type="text" name="" id="key">
                     </li>
                 </ul>
 
@@ -238,9 +231,6 @@
                     </li>
                     <li>
                         <span class="square" style="background-color: rgb(0, 142, 35);"></span> Đã nhận phòng
-                    </li>
-                    <li>
-                        <span class="square" style="background-color: rgb(191, 255, 0);"></span> Đã trả phòng
                     </li>
                 </ul>
 
@@ -486,6 +476,13 @@
     startDate = new Date(startDate);
     var bookRoom = @Html.Raw(bookRoom);
     var mergeCD = @Html.Raw(mergeCD);
+    var key;
+
+    async function changekey()
+    {
+        key = $("#key").val();
+        redirect();
+    }
     
 
     loadReservation();
@@ -508,6 +505,8 @@
     // Gán giá trị đã định dạng vào trường birthdate
     $("#ReservationDay").val(formattedBirthdate.toISOString().slice(0, 10)); // Gán giá trị Date vào thuộc tính value của input
 
+    startDate = $("#dayStart").val();
+
     async function dayStartChange()
     {
         startDate = $("#dayStart").val();
@@ -516,7 +515,7 @@
 
     function redirect()
     {
-        window.location.href = `/BookRoom?startDate=${startDate}`;
+        window.location.href = `/bookroom?key=${key}&startDate=${startDate}`;
     }
 
     async function dayReservationChange()
